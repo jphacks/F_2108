@@ -7,7 +7,9 @@
 ### 製品説明（具体的な製品の説明）
 ### 特長
 ####1. 特長1
+
 ####2. 特長2
+
 ####3. 特長3
 
 ### 解決出来ること
@@ -37,4 +39,29 @@
 
 #### 製品に取り入れた研究内容（データ・ソフトウェアなど）（※アカデミック部門の場合のみ提出必須）
 * 
-* 
+
+
+---
+# 開発
+
+## パッケージ構成
+yarn workspaceを利用してfront/serverのパッケージを作成しています。tsconfig/esLintrc/prettierrc等をまとめて設定しています。
+```
+packages/
+  ├─ front/  クライアントサイド
+  └─ server/ サーバーサイド
+```
+
+## npm scripts
+yarnを利用します。npmを利用するとエラーが出ます。
+
+- yarn dev: 開発サーバーの立ち上げ
+- yarn build: ビルド
+- yarn start: ビルドしたものを実行する
+- yarn lint: Linterを実行する
+- yarn format: フォーマッタを実行する
+- yarn fix: Linter / フォーマッタの自動修正を行う
+
+`:front`, `:server`がついているものは、それぞれのパッケージ内で実行します
+
+- yarn workspace front/server add xxx: ライブラリの追加（各パッケージのディレクトリに移動してyarn add xxxでも可）
