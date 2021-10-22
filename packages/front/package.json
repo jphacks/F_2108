@@ -1,0 +1,26 @@
+{
+  "name": "front",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint --ext \".js,.ts,.jsx,.tsx\" --cache ./src",
+    "lint:fix": "yarn lint --fix",
+    "fix": "run-p lint:fix format:fix",
+    "format": "prettier --check \"**/*.{js,ts,jsx,tsx,json}\" .",
+    "format:fix": "yarn format --write"
+  },
+  "dependencies": {
+    "axios": "^0.23.0",
+    "next": "11.1.2",
+    "react": "17.0.2",
+    "react-dom": "17.0.2"
+  },
+  "devDependencies": {
+    "@next/eslint-plugin-next": "^11.1.2",
+    "@types/react": "17.0.31",
+    "eslint": "^8.0.1"
+  }
+}
