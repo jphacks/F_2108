@@ -16,8 +16,8 @@
       "hooks": ["./src/hooks"],
       "lib": ["./src/lib"],
       "mocks": ["./src/mocks"],
-      "useCase": ["./src/useCase"],
-    },
+      "useCase": ["./src/useCase"]
+    }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules"]
