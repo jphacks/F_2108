@@ -9,18 +9,22 @@
     "lint": "eslint --ext \".js,.ts,.jsx,.tsx\" --cache ./src",
     "lint:fix": "yarn lint --fix",
     "fix": "run-p lint:fix format:fix",
+    "type-check": "tsc -p . --noEmit",
     "format": "prettier --check \"**/*.{js,ts,jsx,tsx,json}\" .",
     "format:fix": "yarn format --write"
   },
   "dependencies": {
+    "autoprefixer": "^10.3.7",
     "axios": "^0.23.0",
     "next": "11.1.2",
+    "postcss": "^8.3.11",
     "react": "17.0.2",
     "react-dom": "17.0.2"
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "^11.1.2",
     "@types/react": "17.0.31",
-    "eslint": "^8.0.1"
+    "eslint": "^8.0.1",
+    "tailwindcss": "^2.2.17"
   }
 }
