@@ -61,17 +61,6 @@
     /* Advanced Options */
     "skipLibCheck": true, /* Skip type checking of declaration files. */
     "forceConsistentCasingInFileNames": true,/* Disallow inconsistently-cased references to the same file. */
-    "jsx": "preserve",
-    "baseUrl": ".",
-    "paths": {
-      "@*": ["./packages/front/src/*"],
-      "components": ["./packages/front/src/components"],
-      "domain": ["./packages/front/src/domain"],
-      "hooks": ["./packages/front/src/hooks"],
-      "lib": ["./packages/front/src/lib"],
-      "mocks": ["./packages/front/src/mocks"],
-      "useCase": ["./packages/front/src/useCase"],
-    }
   },
   "exclude": ["./packages/front/next.config.js"]
 }
