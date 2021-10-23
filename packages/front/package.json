@@ -9,6 +9,7 @@
     "lint": "eslint --ext \".js,.ts,.jsx,.tsx\" --cache ./src",
     "lint:fix": "yarn lint --fix",
     "fix": "run-p lint:fix format:fix",
+    "type-check": "tsc -p . --noEmit",
     "format": "prettier --check \"**/*.{js,ts,jsx,tsx,json}\" .",
     "format:fix": "yarn format --write"
   },
