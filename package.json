@@ -21,6 +21,7 @@
     "lint": "run-p lint:*",
     "lint:front": "yarn workspace front lint",
     "lint:server": "yarn workspace server lint",
+    "type-check": "tsc -p . --noEmit",
     "type-check:front": "yarn workspace front type-check",
     "type-check:server": "yarn workspace front type-check",
     "format": "run-p format:*",
