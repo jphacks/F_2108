@@ -7,7 +7,17 @@
     "module": "esnext",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve"
+    "jsx": "preserve",
+    "baseUrl": ".",
+    "paths": {
+      "@*": ["./src/*"],
+      "components": ["./src/components"],
+      "domain": ["./src/domain"],
+      "hooks": ["./src/hooks"],
+      "lib": ["./src/lib"],
+      "mocks": ["./src/mocks"],
+      "useCase": ["./src/useCase"],
+    },
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules"]
