@@ -11,5 +11,7 @@
     "target": "ES2020",
     "module": "commonjs",
     "outDir": "./dist"
-  }
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["dist", "node_modules"]
 }

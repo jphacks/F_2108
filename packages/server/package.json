@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "ts-node-dev --require dotenv/config --transpile-only --rs ./src/index.ts",
     "build": "tsc -p .",
-    "start": "node --require dotenv/config ./dist/src/app.js",
+    "start": "node --require dotenv/config ./dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint --ext \".js,.ts\" --cache ./src",
     "format": "prettier --check \"**/*.{js,ts,json}\" .",
@@ -16,7 +16,9 @@
   },
   "license": "MIT",
   "devDependencies": {
+    "@types/node": "^16.11.4",
     "dotenv": "^10.0.0",
+    "fastify": "^3.22.1",
     "ts-node-dev": "^1.1.8",
     "typescript": "^4.4.4"
   }
