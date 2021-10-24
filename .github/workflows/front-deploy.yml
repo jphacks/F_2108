@@ -18,8 +18,12 @@ jobs:
         with:
           node-version: "14.x"
           cache: "yarn"
-      - uses: amondnet/vercel-action@v20
+      - name: Deply to vercel
+        uses: amondnet/vercel-action@v20
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.ORG_ID }}
           vercel-project-id: ${{ secrets.PROJECT_ID }}
+      - name: Show preview url
+          run: |
+            echo ${{ steps.now-deployment.outputs.preview-url }}
