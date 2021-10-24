@@ -129,7 +129,7 @@ paths:
         in: path
         required: true
     post:
-      summary: ''
+      summary: スタンプ投稿
       operationId: post-file-fileId-stamp
       description: スタンプと、スレッドの一つめのコメントを投稿する
       requestBody:
