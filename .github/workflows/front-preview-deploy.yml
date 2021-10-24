@@ -14,7 +14,7 @@ jobs:
           ref: ${{ github.event.inputs.ref }}
       - name: Check front change
         id: check-change
-        run: echo "::set-output name=diff::$(git diff HEAD~ HEAD --name-only --relative=packages/front | wc -l)"
+        run: echo "::set-output name=diff::$(git diff HEAD^ --name-only --relative=packages/front | wc -l)"
       - name: Deploy to vercel
         id: deploy-to-vercel
         uses: amondnet/vercel-action@v20
