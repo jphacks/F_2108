@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { Document, Page, pdfjs } from "react-pdf"
-import workerSrc from "../pdf-worker"
+import workerSrc from "./pdf-worker"
 import "react-pdf/dist/esm/Page/AnnotationLayer.css"
 pdfjs.GlobalWorkerOptions.workerSrc = workerSrc
 
