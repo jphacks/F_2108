@@ -182,7 +182,7 @@ paths:
         in: path
         required: true
     post:
-      summary: ''
+      summary: コメント投稿
       operationId: post-file-fileId-stamp-stampId-comment
       responses:
         '200':
