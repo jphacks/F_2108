@@ -1,9 +1,8 @@
 {
-  // "editor.formatOnSave": true,
-  // "editor.codeActionsOnSave": {
-  //   "source.fixAll.eslint": true
-  // },
-  // https://zenn.dev/naotaro0123/articles/4a633da53390f2
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
   "eslint.workingDirectories": [
     { "mode": "auto" }
   ]
