@@ -15,7 +15,9 @@ jobs:
           fetch-depth: 2
       - name: Check front change
         id: check-change
-        run: echo "::set-output name=diff::$(git diff HEAD^ --name-only --relative=packages/front | wc -l)"
+        run: |
+          echo "::set-output name=diff::$(git diff HEAD^ --name-only --relative=packages/front | wc -l)"
+          echo "$(git diff HEAD^ --name-only --relative=packages/front | wc -l)"
       - name: Deploy to vercel
         id: deploy-to-vercel
         uses: amondnet/vercel-action@v20
