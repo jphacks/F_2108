@@ -18,6 +18,7 @@ jobs:
         run: |
           echo "::set-output name=diff::$(git diff HEAD^ --name-only --relative=packages/front | wc -l)"
           echo "$(git diff HEAD^ --name-only --relative=packages/front | wc -l)"
+          echo "$(git diff HEAD^ --name-only)"
       - name: Deploy to vercel
         id: deploy-to-vercel
         uses: amondnet/vercel-action@v20
