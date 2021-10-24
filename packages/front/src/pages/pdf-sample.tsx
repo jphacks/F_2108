@@ -19,7 +19,7 @@ const pdf: NextPage = () => {
     <div className="bg-gray-200">
       <h1>PDFViewerコンポーネントのサンプルのページです</h1>
       <p>
-        PDF上でダブルクリックすることで、スタンプが追加されます。スタンプをクリックすることで削除できます。
+        PDF上でダブルクリックすることで、スタンプが追加されます。スタンプをクリックすることで削除ができます。
       </p>
       <PDFViewer
         src="/sample.pdf"
