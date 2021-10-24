@@ -30,7 +30,7 @@
     "fix": "run-p fix:*",
     "fix:front": "yarn workspace front fix",
     "fix:server": "yarn workspace server fix",
-    "doc-gen": "yarn redoc-cli bundle ./doc/reference/voice-tag-api.yaml -o ./doc/reference/voice-tag-api.html"
+    "doc-gen": "yarn redoc-cli bundle ./docs/reference/voice-tag-api.yaml -o ./docs/reference/voice-tag-api.html"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.1.0",
