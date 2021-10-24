@@ -12,13 +12,6 @@ jobs:
       - uses: actions/checkout@v2
         with:
           ref: ${{ github.event.inputs.ref }}
-          fetch-depth: 0
-      - name: Check front change
-        id: check-change
-        run: |
-          echo "::set-output name=diff::$(git diff HEAD~ HEAD --name-only --relative=packages/front | wc -l)"
-          echo "$(git diff HEAD~ HEAD --name-only --relative=packages/front | wc -l)"
-          echo "$(git diff HEAD~ HEAD --name-only)"
       - name: Deploy to vercel
         id: deploy-to-vercel
         uses: amondnet/vercel-action@v20
@@ -26,10 +19,8 @@ jobs:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.ORG_ID }}
           vercel-project-id: ${{ secrets.PROJECT_ID }}
-        if: steps.check-change.outputs.diff > 0
       - name: Comment to PR
         uses: thollander/actions-comment-pull-request@v1
         with:
           message: "Success to deploy preview URL!\n\n${{ steps.deploy-to-vercel.outputs.preview-url }}"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        if: steps.check-change.outputs.diff > 0
