@@ -8,7 +8,7 @@ paths:
   /login:
     parameters: []
     post:
-      summary: ''
+      summary: ログイン
       operationId: post-login
       responses:
         '200':
