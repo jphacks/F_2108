@@ -2,8 +2,8 @@ name: deploy website
 on:
   pull_request:
     paths:
-      - "packages/front/**"
-      - "yarn.lock"
+      - "./packages/front/**"
+      - "./yarn.lock"
 
 jobs:
   deploy:
