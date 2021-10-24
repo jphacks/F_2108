@@ -1,4 +1,4 @@
-name: deploy website
+name: Frontend preview deploy
 on:
   pull_request:
     paths:
