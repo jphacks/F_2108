@@ -1,11 +1,9 @@
 name: deploy website
 on:
-  push:
-    branches:
-      - main
   pull_request:
-    branches:
-      - main
+    paths:
+      - "./packages/front/**"
+      - "./yarn.lock"
 
 jobs:
   deploy:
@@ -25,11 +23,8 @@ jobs:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.ORG_ID }}
           vercel-project-id: ${{ secrets.PROJECT_ID }}
-      - name: Show preview url
-        run: |
-          echo ${{ steps.deploy-to-vercel.outputs.preview-url }}
-      - name: Comment PR
+      - name: Comment to PR
         uses: thollander/actions-comment-pull-request@v1
         with:
-          message: "Example of message ! ${{ steps.deploy-to-vercel.outputs.preview-url }}"
+          message: "Success to deploy preview URL!\n\n${{ steps.deploy-to-vercel.outputs.preview-url }}"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
