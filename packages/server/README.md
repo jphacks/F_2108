@@ -6,8 +6,8 @@ voice tag のサーバーサイドパッケージです。
 
 ### Prerequisites
 
-- Node.js, yarnのインストール
-- Docker, docker-composeのインストール
+- Node.js, yarn のインストール
+- Docker, docker-compose のインストール
 
 ### Build
 
@@ -15,11 +15,11 @@ voice tag のサーバーサイドパッケージです。
 docker-compose build
 ```
 
-※新たにyarnのパッケージをインストールした際はビルドし直す必要があります。
+※新たに yarn のパッケージをインストールした際はビルドし直す必要があります。
 
 ### Initial run DB
 
-※初回のDBの起動には時間がかかるので、先にDBのみ起動する
+※初回の DB の起動には時間がかかるので、先に DB のみ起動する
 
 ```bash
 doc-ercompose up db
