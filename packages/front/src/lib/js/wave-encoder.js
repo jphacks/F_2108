@@ -2,6 +2,7 @@ export const MimeType = "audio/wave"
 
 // Parts copied from https://github.com/chris-rudmin/Recorderjs
 // @ts-nocheck
+/* eslint-disable */
 export default function () {
   let BYTES_PER_SAMPLE = 2
   /**

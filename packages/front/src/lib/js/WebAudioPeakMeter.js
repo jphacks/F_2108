@@ -3,6 +3,7 @@
  * Modified to class form to allow multiple instances on a page.
  */
 // @ts-nocheck
+/* eslint-disable */
 export default class WebAudioPeakMeter {
   constructor() {
     this.options = {

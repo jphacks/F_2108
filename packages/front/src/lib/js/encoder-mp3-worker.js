@@ -1,6 +1,7 @@
 // import 'babel-polyfill'
 // import lamejs from 'lamejs'
 // @ts-nocheck
+/* eslint-disable */
 export default function () {
   // Note that relative paths don't work when loaded as a blob
   // https://stackoverflow.com/questions/22172426/using-importsscripts-within-blob-in-a-karma-environment

@@ -1,4 +1,5 @@
 // @ts-nocheck
+/* eslint-disable */
 export default function () {
   // Parts copied from https://github.com/chris-rudmin/Recorderjs
   let BYTES_PER_SAMPLE = 2

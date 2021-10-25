@@ -1,4 +1,5 @@
 // @ts-nocheck
+/* eslint-disable */
 export default function () {
   let channels = 1
   let quality = 0.4
