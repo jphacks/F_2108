@@ -1,9 +1,11 @@
 import { auth } from '../lib/auth'
 import { signInWithEmailAndPassword,createUserWithEmailAndPassword } from "firebase/auth";
+import { Dispatch } from 'react';
+import { Action } from '@reducers/authReducer';
 
 export const authUseCase = () => {
     /** サインイン */
-    const signIn = async (email: string, password:string, dispatch: any) => {
+    const signIn = async (email: string, password:string, dispatch: Dispatch<Action>) => {
 			signInWithEmailAndPassword(auth, email, password)
 				.then((userCredential) => {
 					// Signed in
@@ -20,7 +22,7 @@ export const authUseCase = () => {
 				});
     }
     /** サインアップ */
-    const signUp = async (email: string, password:string, dispatch: any) => {
+    const signUp = async (email: string, password:string, dispatch: Dispatch<Action>) => {
         createUserWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
                 // Signed Up

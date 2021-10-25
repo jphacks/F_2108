@@ -9,7 +9,7 @@ const SignUp: FC = () => {
   const router = useRouter()
 	const [email, setEmail] = useState<string>('');
 	const [password, setPassword] = useState<string>('');
-	const [dispatch] = useReducer(
+	const [sate, dispatch] = useReducer(
     authReducer.reducer,
     authReducer.initialState
 	);
