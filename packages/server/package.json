@@ -13,7 +13,9 @@
     "format": "prettier --check \"**/*.{js,ts,json}\" .",
     "fix": "run-p lint:fix format:fix",
     "lint:fix": "yarn lint --fix",
-    "format:fix": "yarn format --write"
+    "format:fix": "yarn format --write",
+    "migrate:generate": "yarn ts-node ./node_modules/.bin/typeorm migration:generate -n user -f ./src/config/ormconfig.ts",
+    "migrate:run": "yarn ts-node ./node_modules/.bin/typeorm migration:run -f ./src/config/ormconfig.ts"
   },
   "license": "MIT",
   "devDependencies": {

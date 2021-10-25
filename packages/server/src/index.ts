@@ -2,21 +2,12 @@ import Fastify from "fastify"
 import { Connection, createConnection } from "typeorm"
 import * as process from "process"
 import { File } from "./entity/File"
+import { ormconfig } from "./config/ormconfig"
 
 const server = Fastify()
 
 export let connection: Connection
-createConnection({
-  type: "mysql",
-  host: process.env.DB_HOST ?? "localhost",
-  port: parseInt(process.env.DB_PORT ?? "3306"),
-  username: process.env.DB_USER ?? "root",
-  password: process.env.DB_PASSWORD ?? "",
-  database: process.env.DB_NAME ?? "db",
-  entities: [__dirname + "/entity/*.ts"],
-  synchronize: process.env.NODE_ENV === "development",
-  logging: false,
-}).then((c) => (connection = c))
+createConnection(ormconfig).then((c) => (connection = c))
 
 server.get("/file", async (req, res) => {
   const file = new File()
