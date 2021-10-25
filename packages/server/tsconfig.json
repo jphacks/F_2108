@@ -13,6 +13,7 @@
     "outDir": "./dist",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    "strictPropertyInitialization": false, // https://github.com/typeorm/typeorm/issues/2797
     "lib": [
       "ES6"
     ]
