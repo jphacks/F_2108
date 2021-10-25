@@ -20,7 +20,7 @@ paths:
         - auth
   /file:
     post:
-      summary: ''
+      summary: ファイルアップロード
       operationId: post-file
       responses:
         '201':
@@ -36,6 +36,29 @@ paths:
                       - success
                   data:
                     $ref: '#/components/schemas/FileDataSnapshot'
+                required:
+                  - result
+                  - data
+              examples:
+                example:
+                  value:
+                    result: success
+                    data:
+                      type: own
+                      file:
+                        id: abcdef
+                        author:
+                          id: qwerty
+                          name: joen doe
+                          iconUrl: 'http://example.com/icon/qwerty.png'
+                        postedAt: '2019-08-24T14:15:22Z'
+                        url: 'http://example.com/sample.pdf'
+                        thumbnail: 'http://example.com/sample.jpg'
+                      updatedAt: '2019-08-24T14:15:22Z'
+                      updatedBy:
+                        id: qwerty
+                        name: joen doe
+                        iconUrl: 'http://example.com/icon/qwerty.png'
         '400':
           $ref: '#/components/responses/ErrorResponse'
         '401':
@@ -52,11 +75,17 @@ paths:
                   type: string
                   format: binary
                   description: アップロードするPDFファイル
+              required:
+                - file
+            examples:
+              example:
+                value:
+                  file: string
         description: ''
       tags:
         - file
     get:
-      summary: ''
+      summary: ファイル一覧
       operationId: get-file
       responses:
         '200':
@@ -77,6 +106,41 @@ paths:
                 required:
                   - result
                   - data
+              examples:
+                example:
+                  value:
+                    result: success
+                    data:
+                      - type: own
+                        file:
+                          id: abcdef
+                          author:
+                            id: qwerty
+                            name: joen doe
+                            iconUrl: 'http://example.com/icon/qwerty.png'
+                          postedAt: '2019-08-24T14:15:22Z'
+                          url: 'http://example.com/sample.pdf'
+                          thumbnail: 'http://example.com/sample.jpg'
+                        updatedAt: '2019-08-25T14:15:22Z'
+                        updatedBy:
+                          id: qwerty
+                          name: joen doe
+                          iconUrl: 'http://example.com/icon/qwerty.png'
+                      - type: shared
+                        file:
+                          id: ghijk
+                          author:
+                            id: qwerty
+                            name: joen doe
+                            iconUrl: 'http://example.com/icon/qwerty.png'
+                          postedAt: '2019-08-26T14:15:22Z'
+                          url: 'http://example.com/sample.pdf'
+                          thumbnail: 'http://example.com/sample.jpg'
+                        updatedAt: '2019-08-27T14:15:22Z'
+                        updatedBy:
+                          id: qwerty
+                          name: joen doe
+                          iconUrl: 'http://example.com/icon/qwerty.png'
         '401':
           $ref: '#/components/responses/ErrorResponse'
       description: 自分がアクセスできるファイルのリストを取得する（つまり、自分がアップロードしたファイルおよび共有されたファイルのリストを取得する）
@@ -91,7 +155,7 @@ paths:
         required: true
         description: ファイルID
     get:
-      summary: Your GET endpoint
+      summary: ファイル詳細
       tags:
         - file
       responses:
@@ -108,13 +172,19 @@ paths:
                       - success
                   data:
                     type: object
+                    required:
+                      - fileSnapshot
+                      - stamps
                     properties:
-                      file:
+                      fileSnapshot:
                         $ref: '#/components/schemas/FileDataSnapshot'
                       stamps:
                         type: array
                         items:
                           $ref: '#/components/schemas/Stamp'
+                required:
+                  - result
+                  - data
         '400':
           description: Bad Request
         '401':
@@ -134,7 +204,7 @@ paths:
       description: スタンプと、スレッドの一つめのコメントを投稿する
       requestBody:
         content:
-          application/json:
+          multipart/form-data:
             schema:
               type: object
               properties:
@@ -167,8 +237,70 @@ paths:
               required:
                 - position
                 - comment
+            examples:
+              example:
+                value:
+                  position:
+                    page: 0
+                    x: 0
+                    'y': 0
+                  comment:
+                    dataType: audio
+                    content: string
       tags:
         - file
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: string
+                    enum:
+                      - success
+                  data:
+                    $ref: '#/components/schemas/Stamp'
+                required:
+                  - result
+                  - data
+              examples:
+                example:
+                  value:
+                    result: success
+                    data:
+                      id: 0
+                      author:
+                        id: qwerty
+                        name: joen doe
+                        iconUrl: 'http://example.com/icon/qwerty.png'
+                      comments:
+                        - id: 1
+                          dataType: audio
+                          content: audio file binary or url to audio file
+                          author:
+                            id: qwerty
+                            name: joen doe
+                            iconUrl: 'http://example.com/icon/qwerty.png'
+                          postedAt: '2019-08-24T14:15:22Z'
+                        - id: 2
+                          dataType: text
+                          content: コメント
+                          author:
+                            id: qwerty
+                            name: joen doe
+                            iconUrl: 'http://example.com/icon/qwerty.png'
+                          postedAt: '2019-08-25T14:15:22Z'
+                      position:
+                        page: 0
+                        x: 0
+                        'y': 0
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/ErrorResponse'
   '/file/{fileId}/stamp/{stampId}/comment':
     parameters:
       - schema:
@@ -185,12 +317,30 @@ paths:
       summary: コメント投稿
       operationId: post-file-fileId-stamp-stampId-comment
       responses:
-        '200':
-          description: OK
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: string
+                    enum:
+                      - success
+                  data:
+                    $ref: '#/components/schemas/Comment'
+                required:
+                  - result
+                  - data
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/ErrorResponse'
       description: コメントを投稿する
       requestBody:
         content:
-          application/json:
+          multipart/form-data:
             schema:
               type: object
               properties:
@@ -212,6 +362,13 @@ paths:
               required:
                 - result
                 - data
+            examples:
+              example:
+                value:
+                  result: success
+                  data:
+                    dataType: audio
+                    content: string
         description: ''
       tags:
         - file
@@ -220,7 +377,7 @@ components:
     FileData:
       title: FileData
       type: object
-      description: ファイルを表すモデル。
+      description: ファイル
       examples:
         - id: abcdef
           author:
@@ -273,6 +430,7 @@ components:
         - id: qwerty
           name: joen doe
           iconUrl: 'http://example.com/icon/qwerty.png'
+      description: ユーザー
     FileDataSnapshot:
       title: FileDataSnapshot
       type: object
@@ -311,7 +469,7 @@ components:
         - type
         - file
         - updatedAt
-      description: 特定のユーザーが所有するファイルを表すモデル
+      description: 特定のユーザーが所有するファイル
     Stamp:
       title: Stamp
       type: object
@@ -342,6 +500,7 @@ components:
             page: 0
             x: 0
             'y': 0
+      description: スタンプ
       properties:
         id:
           type: integer
@@ -358,7 +517,6 @@ components:
         - author
         - comments
         - position
-      description: スタンプ
     Comment:
       title: Comment
       type: object
@@ -394,7 +552,7 @@ components:
     Position:
       title: Position
       type: object
-      description: スタンプの位置情報を表す
+      description: スタンプの位置情報
       properties:
         page:
           type: integer
@@ -459,5 +617,11 @@ components:
                   message:
                     type: string
                     description: エラーメッセージ
+          examples:
+            example:
+              result: error
+              error:
+                code: ERROR_CODE_HERE
+                message: error message
 security:
   - idtoken: []
