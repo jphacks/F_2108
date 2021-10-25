@@ -8,17 +8,6 @@ import { NextPage } from "next"
 import { AuthProvider } from "@contexts/authContext";
 
 const MyApp: NextPage<AppProps> = ({ Component, pageProps }) => {
-  // const [state, dispatch] = useReducer(
-  //   authReducer.reducer,
-  //   authReducer.initialState
-  // );
-  // useEffect(() => {
-  //   async function fetchData() {
-  //     await authUseCase().listenAuthState(dispatch);
-  //   }
-  //   fetchData();
-  // }, []);
-
   return (
     <AuthProvider>
       <Component {...pageProps} />
