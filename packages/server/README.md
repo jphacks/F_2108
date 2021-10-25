@@ -22,7 +22,7 @@ docker-compose build
 ※初回の DB の起動には時間がかかるので、先に DB のみ起動する
 
 ```bash
-doc-ercompose up db
+docker-compose up db
 ```
 
 ### DB Migration
