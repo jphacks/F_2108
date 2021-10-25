@@ -5,7 +5,7 @@ import { NextPage } from "next"
 // import { useReducer, useEffect } from "react";
 // import authReducer from "@reducers/authReducer";
 // import { authUseCase } from "@useCase/authUseCase";
-import { AuthProvider } from "@contexts/authContext";
+import { AuthProvider } from "@contexts/authContext"
 
 const MyApp: NextPage<AppProps> = ({ Component, pageProps }) => {
   return (

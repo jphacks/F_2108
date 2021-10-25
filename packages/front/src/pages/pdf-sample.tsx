@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react"
 import dynamic from "next/dynamic"
 import type { PDFViewerProps } from "../components/PdfViewer"
 import type { NextPage } from "next"
-import { useRouter } from 'next/router'
-import { authUseCase } from "@useCase/authUseCase";
-import { useAuth } from "@hooks/useAuth";
+import { useRouter } from "next/router"
+import { authUseCase } from "@useCase/authUseCase"
+import { useAuth } from "@hooks/useAuth"
 
 const PDFViewer: React.ComponentType<PDFViewerProps> = dynamic(
   () => import("../components/PdfViewer").then((module) => module.PDFViewer),
@@ -15,9 +15,9 @@ const PDFViewer: React.ComponentType<PDFViewerProps> = dynamic(
 
 const pdf: NextPage = () => {
   const router = useRouter()
-  const user = useAuth();
-  useEffect(() => {;
-		!user && router.push('/login')
+  const user = useAuth()
+  useEffect(() => {
+    !user && router.push("/login")
   }, [user])
 
   const [stamps, setStamps] = useState<
@@ -26,7 +26,9 @@ const pdf: NextPage = () => {
 
   return (
     <div className="bg-gray-200">
-      {user && <button onClick={() => authUseCase().logout()}>ログアウト</button>}
+      {user && (
+        <button onClick={() => authUseCase().logout()}>ログアウト</button>
+      )}
       <h1>PDFViewerコンポーネントのサンプルのページです</h1>
       <p>
         PDF上でダブルクリックすることで、スタンプが追加されます。スタンプをクリックすることで削除できます。

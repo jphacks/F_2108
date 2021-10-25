@@ -1,8 +1,8 @@
-import type firebase from 'firebase/auth';
+import type firebase from "firebase/auth"
 
 export type Action =
-  { type: 'login', payload: { user: firebase.User }} |
-  { type: 'logout', payload: { user: firebase.User }}
+  | { type: "login"; payload: { user: firebase.User } }
+  | { type: "logout"; payload: { user: firebase.User } }
 
 const initialState = null
 
