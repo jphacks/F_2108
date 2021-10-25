@@ -359,16 +359,26 @@ paths:
                     content:
                       type: string
                       description: 文字列（テキスト）または音声バイナリ（オーディオ）
+                    title:
+                      type: string
+                      description: コメントのタイトル（音声データの場合のみ含む）
               required:
                 - result
                 - data
             examples:
-              example:
+              example1:
                 value:
                   result: success
                   data:
                     dataType: audio
-                    content: string
+                    content: audio file
+                    title: タイトル
+              example2:
+                value:
+                  result: success
+                  data:
+                    dataType: text
+                    content: コメント本文
         description: ''
       tags:
         - file
@@ -392,6 +402,9 @@ components:
           type: string
         author:
           $ref: '#/components/schemas/User'
+        name:
+          type: string
+          description: ファイル名
         postedAt:
           type: string
           format: date-time
@@ -406,6 +419,7 @@ components:
       required:
         - id
         - author
+        - name
         - postedAt
         - url
         - thumbnail
@@ -529,6 +543,7 @@ components:
             name: joen doe
             iconUrl: 'http://example.com/icon/qwerty.png'
           postedAt: '2019-08-24T14:15:22Z'
+      description: スタンプに連なるコメント
       properties:
         id:
           type: integer
@@ -542,13 +557,15 @@ components:
         postedAt:
           type: string
           format: date-time
+        title:
+          type: string
+          description: コメントのタイトル（音声データの場合のみ含まれる）
       required:
         - id
         - dataType
         - content
         - author
         - postedAt
-      description: スタンプに連なるコメント
     Position:
       title: Position
       type: object
