@@ -1,10 +1,10 @@
 // @ts-nocheck
 export default function () {
-// Parts copied from https://github.com/chris-rudmin/Recorderjs
+  // Parts copied from https://github.com/chris-rudmin/Recorderjs
   let BYTES_PER_SAMPLE = 2
   let recorded = []
 
-  function encode (buffer) {
+  function encode(buffer) {
     let length = buffer.length
     let data = new Uint8Array(length * BYTES_PER_SAMPLE)
     for (let i = 0; i < length; i++) {
@@ -12,8 +12,7 @@ export default function () {
       let sample = buffer[i]
       if (sample > 1) {
         sample = 1
-      }
-      else if (sample < -1) {
+      } else if (sample < -1) {
         sample = -1
       }
       sample = sample * 32768
@@ -23,7 +22,7 @@ export default function () {
     recorded.push(data)
   }
 
-  function dump (sampleRate) {
+  function dump(sampleRate) {
     let bufferLength = recorded.length ? recorded[0].length : 0
     let length = recorded.length * bufferLength
     let wav = new Uint8Array(44 + length)
@@ -67,13 +66,11 @@ export default function () {
   }
 
   self.onmessage = function (e) {
-    if (e.data[0] === 'encode') {
+    if (e.data[0] === "encode") {
       encode(e.data[1])
-    }
-    else if (e.data[0] === 'dump') {
+    } else if (e.data[0] === "dump") {
       dump(e.data[1])
-    }
-    else if (e.data[0] === 'close') {
+    } else if (e.data[0] === "close") {
       self.close()
     }
   }
