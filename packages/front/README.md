@@ -18,6 +18,19 @@ You can start editing the page by modifying `pages/index.tsx`. The page auto-upd
 
 The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
 
+## Architecture
+
+```
+├── components.          ## UIコンポーネントを定義(AtomicDesign)
+├── domain               ## ドメインモデルとドメインロジック
+├── hooks                ## 汎用的なhooksとuseCase周りのhooks
+├── lib                  ## 例外クラスとAPIクライアントクラス
+├── mocks                ## ドメインモデルに紐づくmockObject(使わないかも)
+├── useCase              ## APIコールに関する処理をアプリケーションサービスとして定義
+├── styles               ## CSSファイル定義
+└── pages                ## Next.jsにおける自動ルーティングファイル定義
+```
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

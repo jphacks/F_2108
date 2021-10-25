@@ -22,5 +22,7 @@ jobs:
         run: yarn
       - name: Run lint
         run: yarn lint
+      - name: Run type-check
+        run: yarn type-check
       - name: Run format
         run: yarn format

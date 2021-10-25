@@ -9,18 +9,25 @@
     "lint": "eslint --ext \".js,.ts,.jsx,.tsx\" --cache ./src",
     "lint:fix": "yarn lint --fix",
     "fix": "run-p lint:fix format:fix",
-    "format": "prettier --check \"**/*.{js,ts,jsx,tsx,json}\" .",
+    "type-check": "tsc -p . --noEmit",
+    "format": "prettier --check \"**/*.{js,ts,jsx,tsx,json}\" --ignore-path .gitignore .",
     "format:fix": "yarn format --write"
   },
   "dependencies": {
+    "autoprefixer": "^10.3.7",
     "axios": "^0.23.0",
     "next": "11.1.2",
+    "postcss": "^8.3.11",
     "react": "17.0.2",
-    "react-dom": "17.0.2"
+    "react-dom": "17.0.2",
+    "react-pdf": "^5.4.1"
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "^11.1.2",
     "@types/react": "17.0.31",
-    "eslint": "^8.0.1"
+    "@types/react-pdf": "^5.0.8",
+    "eslint": "^8.0.1",
+    "file-loader": "^6.2.0",
+    "tailwindcss": "^2.2.17"
   }
 }
