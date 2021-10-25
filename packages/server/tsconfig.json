@@ -14,15 +14,8 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "strictPropertyInitialization": false, // https://github.com/typeorm/typeorm/issues/2797
-    "lib": [
-      "ES6"
-    ]
+    "lib": ["ES6"]
   },
-  "include": [
-    "src/**/*.ts"
-  ],
-  "exclude": [
-    "dist",
-    "node_modules"
-  ],
+  "include": ["src/**/*.ts"],
+  "exclude": ["dist", "node_modules"]
 }
