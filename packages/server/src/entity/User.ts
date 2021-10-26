@@ -13,7 +13,7 @@ import { Comment } from "./Comment"
 @Entity()
 export class User {
   @PrimaryColumn()
-  id: string
+  userId: string
 
   @Column()
   name: string
