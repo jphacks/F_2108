@@ -3,7 +3,7 @@ import { User } from "@domain/user"
 export type Comment = AudioComment | TextComment
 
 export type AudioComment = {
-  id: number
+  id: string
   dataType: "audio"
   content: string
   author: User
@@ -12,7 +12,7 @@ export type AudioComment = {
 }
 
 export type TextComment = {
-  id: number
+  id: string
   dataType: "audio"
   content: string
   author: User
