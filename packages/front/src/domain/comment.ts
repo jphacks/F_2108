@@ -1,9 +1,21 @@
 import { User } from "./user"
 
-export type Comment = {
+export type Comment = AudioComment | TextComment
+
+export type AudioComment = {
   id: number
-  dataType: "audio" | "text"
+  dataType: "audio"
   content: string
   author: User
-  postedAt: Date
+  postedAt: string
+  title: string
+}
+
+export type TextComment = {
+  id: number
+  dataType: "audio"
+  content: string
+  author: User
+  postedAt: string
+  title?: undefined
 }
