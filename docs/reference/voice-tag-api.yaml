@@ -40,20 +40,21 @@ paths:
                   - result
                   - data
               examples:
-                example:
+                example-1:
                   value:
                     result: success
                     data:
                       type: own
                       file:
-                        id: abcdef
+                        id: string
                         author:
                           id: qwerty
                           name: joen doe
                           iconUrl: 'http://example.com/icon/qwerty.png'
+                        name: filename
                         postedAt: '2019-08-24T14:15:22Z'
-                        url: 'http://example.com/sample.pdf'
-                        thumbnail: 'http://example.com/sample.jpg'
+                        url: 'http://example.com'
+                        thumbnail: 'http://example.com'
                       updatedAt: '2019-08-24T14:15:22Z'
                       updatedBy:
                         id: qwerty
@@ -113,14 +114,15 @@ paths:
                     data:
                       - type: own
                         file:
-                          id: abcdef
+                          id: file_id
                           author:
                             id: qwerty
                             name: joen doe
                             iconUrl: 'http://example.com/icon/qwerty.png'
+                          name: filename
                           postedAt: '2019-08-24T14:15:22Z'
-                          url: 'http://example.com/sample.pdf'
-                          thumbnail: 'http://example.com/sample.jpg'
+                          url: 'http://example.com'
+                          thumbnail: 'http://example.com'
                         updatedAt: '2019-08-25T14:15:22Z'
                         updatedBy:
                           id: qwerty
@@ -128,15 +130,16 @@ paths:
                           iconUrl: 'http://example.com/icon/qwerty.png'
                       - type: shared
                         file:
-                          id: ghijk
+                          id: file_id2
                           author:
                             id: qwerty
                             name: joen doe
                             iconUrl: 'http://example.com/icon/qwerty.png'
-                          postedAt: '2019-08-26T14:15:22Z'
-                          url: 'http://example.com/sample.pdf'
-                          thumbnail: 'http://example.com/sample.jpg'
-                        updatedAt: '2019-08-27T14:15:22Z'
+                          name: filename
+                          postedAt: '2019-08-24T14:15:22Z'
+                          url: 'http://example.com'
+                          thumbnail: 'http://example.com'
+                        updatedAt: '2019-08-25T14:15:22Z'
                         updatedBy:
                           id: qwerty
                           name: joen doe
@@ -185,6 +188,55 @@ paths:
                 required:
                   - result
                   - data
+              examples:
+                example:
+                  value:
+                    result: success
+                    data:
+                      fileSnapshot:
+                        type: own
+                        file:
+                          id: string
+                          author:
+                            id: qwerty
+                            name: joen doe
+                            iconUrl: 'http://example.com/icon/qwerty.png'
+                          name: filename
+                          postedAt: '2019-08-24T14:15:22Z'
+                          url: 'http://example.com'
+                          thumbnail: 'http://example.com'
+                        updatedAt: '2019-08-24T14:15:22Z'
+                        updatedBy:
+                          id: qwerty
+                          name: joen doe
+                          iconUrl: 'http://example.com/icon/qwerty.png'
+                      stamps:
+                        - id: 0
+                          author:
+                            id: qwerty
+                            name: joen doe
+                            iconUrl: 'http://example.com/icon/qwerty.png'
+                          comments:
+                            - id: 1
+                              dataType: audio
+                              content: 'http://example.com/audio'
+                              author:
+                                id: qwerty
+                                name: joen doe
+                                iconUrl: 'http://example.com/icon/qwerty.png'
+                              postedAt: '2019-08-24T14:15:22Z'
+                            - id: 2
+                              dataType: text
+                              content: コメント
+                              author:
+                                id: qwerty
+                                name: joen doe
+                                iconUrl: 'http://example.com/icon/qwerty.png'
+                              postedAt: '2019-08-25T14:15:22Z'
+                          position:
+                            page: 0
+                            x: 0.3
+                            'y': 0.45
         '400':
           description: Bad Request
         '401':
@@ -389,14 +441,15 @@ components:
       type: object
       description: ファイル
       examples:
-        - id: abcdef
+        - id: string
           author:
             id: qwerty
             name: joen doe
             iconUrl: 'http://example.com/icon/qwerty.png'
+          name: filename
           postedAt: '2019-08-24T14:15:22Z'
-          url: 'http://example.com/sample.pdf'
-          thumbnail: 'http://example.com/sample.jpg'
+          url: 'http://example.com'
+          thumbnail: 'http://example.com'
       properties:
         id:
           type: string
@@ -451,14 +504,15 @@ components:
       examples:
         - type: own
           file:
-            id: abcdef
+            id: string
             author:
               id: qwerty
               name: joen doe
               iconUrl: 'http://example.com/icon/qwerty.png'
+            name: filename
             postedAt: '2019-08-24T14:15:22Z'
-            url: 'http://example.com/sample.pdf'
-            thumbnail: 'http://example.com/sample.jpg'
+            url: 'http://example.com'
+            thumbnail: 'http://example.com'
           updatedAt: '2019-08-24T14:15:22Z'
           updatedBy:
             id: qwerty
