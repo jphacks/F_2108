@@ -27,7 +27,7 @@ export class User {
   @UpdateDateColumn()
   updated_at: Date
 
-  @OneToMany(() => File, (file) => file.updatedBy)
+  @OneToMany(() => File, (file) => file.updated_by)
   updated_files: File[]
 
   @OneToMany(() => File, (file) => file.author)

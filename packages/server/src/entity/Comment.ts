@@ -31,9 +31,9 @@ export class Comment {
   @UpdateDateColumn()
   updated_at: Date
 
-  @ManyToOne(() => User, (user) => user.comments)
+  @ManyToOne(() => User, (user) => user.comments, { nullable: false })
   author: User
 
-  @ManyToOne(() => Stamp, (stamp) => stamp.comments)
+  @ManyToOne(() => Stamp, (stamp) => stamp.comments, { nullable: false })
   stamp: Stamp
 }

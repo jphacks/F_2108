@@ -1,73 +1,71 @@
-import {
-  FastifyInstance,
-  FastifyPluginOptions,
-  FastifyRegisterOptions,
-  FastifySchema,
-} from "fastify"
+import { FastifyInstance } from "fastify"
 import { File } from "../entity/File"
-import { connection } from "../index"
-import { RouteShorthandOptions } from "fastify/types/route"
-
-const routeOption = ({
-  body,
-  querystring,
-  headers,
-}: Partial<{
-  body: Record<string, unknown>
-  querystring: Record<string, unknown>
-  headers: Record<string, unknown>
-}>): RouteShorthandOptions => {
-  const schema: FastifySchema = {
-    response: {
-      200: {
-        type: "object",
-        properties: {
-          result: { type: "string" },
-          data: { type: "object" },
-        },
-      },
-    },
-  }
-
-  if (body) schema.body = body
-  if (querystring) schema.querystring = querystring
-  if (headers) schema.headers = headers
-
-  return { schema }
-}
-
-const response = (data: Record<string, unknown>) => ({
-  result: "success",
-  data,
-})
+import { connection, dummyUser } from "../index"
+import { LocalStorage } from "../storage/LocalStorage"
+import { MultipartFile, MultipartValue } from "fastify-multipart"
+import { ResponseBody } from "./schema"
+import { buildUser } from "./builders"
 
 export const fileHandler = async (server: FastifyInstance) => {
-  server.get("/file", routeOption({}), async () => {
-    const file = new File()
-    file.name = "sample document"
-
+  server.get<{ Reply: ResponseBody }>("/file", async (req, res) => {
     const repository = connection.getRepository(File)
+
+    // TODO: find only own and shared files
     const files = await repository.find()
 
-    return response({
-      files: files.map((f) => ({
-        id: f.id,
-        name: f.name,
+    res.send({
+      result: "success",
+      data: files.map((f) => ({
+        type: f.fileType(dummyUser),
+        file: {
+          id: f.file_id,
+          author: buildUser(f.author),
+          name: f.name,
+          postedAt: f.posted_at,
+          url: f.url,
+          thumbnail: f.thumbnail,
+        },
+        updatedAt: f.updated_at,
+        updatedBt: buildUser(f.updated_by),
       })),
     })
   })
 
-  server.post("/file", async () => {
-    const file = new File()
-    file.name = "awesome file"
+  server.post<{
+    Body: { name: MultipartValue<string>; file: MultipartFile }
+    Reply: ResponseBody
+  }>("/file", async (req, res) => {
+    const file = req.body.file
+    const buffer = await file.toBuffer()
+    const filename = file.filename
+
+    const storage = new LocalStorage()
+    const { url } = await storage.save("file", filename, buffer)
+
+    const fileModel = new File()
+    fileModel.name = req.body.name.value
+    fileModel.url = url
+    fileModel.thumbnail = "not thumbnail" // TODO: create thumbnail and pass its url
+    fileModel.author = dummyUser
+    fileModel.updated_by = dummyUser
 
     const repository = connection.getRepository(File)
-    const created = await repository.save(file)
+    const result = await repository.save(fileModel)
 
-    return response({
-      file: {
-        id: created.id,
-        name: created.name,
+    res.send({
+      result: "success",
+      data: {
+        type: "own",
+        file: {
+          id: result.file_id,
+          author: buildUser(result.author),
+          name: result.name,
+          postedAt: result.posted_at,
+          url: result.url,
+          thumbnail: result.thumbnail,
+        },
+        updatedAt: result.updated_at,
+        updatedBy: buildUser(result.updated_by),
       },
     })
   })

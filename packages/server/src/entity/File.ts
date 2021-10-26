@@ -10,6 +10,8 @@ import {
 import { Stamp } from "./Stamp"
 import { User } from "./User"
 
+type FileType = "own" | "shared"
+
 @Entity()
 export class File {
   @PrimaryGeneratedColumn("uuid")
@@ -30,12 +32,19 @@ export class File {
   @UpdateDateColumn()
   updated_at: Date
 
-  @ManyToOne(() => User, (user) => user.updated_files)
+  @ManyToOne(() => User, (user) => user.updated_files, {
+    nullable: false,
+    eager: true,
+  })
   updated_by: User
 
-  @ManyToOne(() => User, (user) => user.files)
+  @ManyToOne(() => User, (user) => user.files, { nullable: false, eager: true })
   author: User
 
   @OneToMany(() => Stamp, (stamp) => stamp.file)
   stamps: Stamp[]
+
+  fileType(currentUser: User): FileType {
+    return this.author.user_id === currentUser.user_id ? "own" : "shared"
+  }
 }
