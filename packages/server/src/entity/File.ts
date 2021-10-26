@@ -41,8 +41,8 @@ export class File {
   @ManyToOne(() => User, (user) => user.files, { nullable: false, eager: true })
   author: User
 
-  @OneToMany(() => Stamp, (stamp) => stamp.file)
-  stamps: Stamp[]
+  @OneToMany(() => Stamp, (stamp) => stamp.file, { lazy: true })
+  stamps: Promise<Stamp[]>
 
   fileType(currentUser: User): FileType {
     return this.author.user_id === currentUser.user_id ? "own" : "shared"

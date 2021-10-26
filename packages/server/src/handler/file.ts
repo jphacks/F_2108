@@ -4,7 +4,9 @@ import { connection, dummyUser } from "../index"
 import { LocalStorage } from "../storage/LocalStorage"
 import { MultipartFile, MultipartValue } from "fastify-multipart"
 import { ResponseBody } from "./schema"
-import { buildUser } from "./builders"
+import { buildFile, buildStamp, buildUser } from "./builders"
+import createError from "fastify-error"
+import { ERR_BAD_URL } from "./errors"
 
 export const fileHandler = async (server: FastifyInstance) => {
   server.get<{ Reply: ResponseBody }>("/file", async (req, res) => {
@@ -17,19 +19,46 @@ export const fileHandler = async (server: FastifyInstance) => {
       result: "success",
       data: files.map((f) => ({
         type: f.fileType(dummyUser),
-        file: {
-          id: f.file_id,
-          author: buildUser(f.author),
-          name: f.name,
-          postedAt: f.posted_at,
-          url: f.url,
-          thumbnail: f.thumbnail,
-        },
+        file: buildFile(f),
         updatedAt: f.updated_at,
         updatedBt: buildUser(f.updated_by),
       })),
     })
   })
+
+  server.get<{ Params: { fileId: string }; Reply: ResponseBody }>(
+    "/file/:fileId",
+    async (req, res) => {
+      const fileId = req.params.fileId
+
+      const repository = connection.getRepository(File)
+
+      const file = await repository.findOne(fileId)
+      if (!file) {
+        const e = createError(
+          ERR_BAD_URL,
+          `File(${fileId}) was not found.`,
+          400,
+        )
+        throw new e()
+      }
+
+      const stamps = await file.stamps
+
+      res.send({
+        result: "success",
+        data: {
+          fileSnapshot: {
+            type: file.fileType(dummyUser),
+            file: buildFile(file),
+            updatedAt: file.updated_at,
+            updatedBy: buildUser(file.updated_by),
+          },
+          stamps: stamps.map(buildStamp),
+        },
+      })
+    },
+  )
 
   server.post<{
     Body: { name: MultipartValue<string>; file: MultipartFile }
@@ -45,7 +74,7 @@ export const fileHandler = async (server: FastifyInstance) => {
     const fileModel = new File()
     fileModel.name = req.body.name.value
     fileModel.url = url
-    fileModel.thumbnail = "not thumbnail" // TODO: create thumbnail and pass its url
+    fileModel.thumbnail = "dummy-thumbnail-url" // TODO: create thumbnail and pass its url
     fileModel.author = dummyUser
     fileModel.updated_by = dummyUser
 
@@ -56,14 +85,7 @@ export const fileHandler = async (server: FastifyInstance) => {
       result: "success",
       data: {
         type: "own",
-        file: {
-          id: result.file_id,
-          author: buildUser(result.author),
-          name: result.name,
-          postedAt: result.posted_at,
-          url: result.url,
-          thumbnail: result.thumbnail,
-        },
+        file: buildFile(fileModel),
         updatedAt: result.updated_at,
         updatedBy: buildUser(result.updated_by),
       },

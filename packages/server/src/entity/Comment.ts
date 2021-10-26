@@ -31,7 +31,10 @@ export class Comment {
   @UpdateDateColumn()
   updated_at: Date
 
-  @ManyToOne(() => User, (user) => user.comments, { nullable: false })
+  @ManyToOne(() => User, (user) => user.comments, {
+    nullable: false,
+    eager: true,
+  })
   author: User
 
   @ManyToOne(() => Stamp, (stamp) => stamp.comments, { nullable: false })

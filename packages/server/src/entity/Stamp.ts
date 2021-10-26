@@ -31,7 +31,10 @@ export class Stamp {
   @UpdateDateColumn()
   updated_at: Date
 
-  @ManyToOne(() => User, (user) => user.stamps, { nullable: false })
+  @ManyToOne(() => User, (user) => user.stamps, {
+    nullable: false,
+    eager: true,
+  })
   author: User
 
   @ManyToOne(() => File, (file) => file.stamps, { nullable: false })
