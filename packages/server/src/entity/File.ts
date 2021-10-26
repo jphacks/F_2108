@@ -1,10 +1,34 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm"
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryColumn,
+  UpdateDateColumn,
+} from "typeorm"
 
 @Entity()
 export class File {
-  @PrimaryGeneratedColumn()
-  id: number
+  @PrimaryColumn()
+  id: string
 
   @Column()
   name: string
+
+  @Column()
+  authorId: string
+
+  @Column()
+  url: string
+
+  @Column()
+  thumbnail: string
+
+  @CreateDateColumn()
+  postedAt: Date
+
+  @UpdateDateColumn()
+  updatedAt: Date
+
+  @Column()
+  updatedBy: string // userId
 }

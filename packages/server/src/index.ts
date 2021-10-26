@@ -1,49 +1,15 @@
 import Fastify from "fastify"
 import { Connection, createConnection } from "typeorm"
 import * as process from "process"
-import { File } from "./entity/File"
 import { ormconfig } from "./config/ormconfig"
+import { fileHandler } from "./handler/file"
 
 const server = Fastify()
 
 export let connection: Connection
 createConnection(ormconfig).then((c) => (connection = c))
 
-server.get("/file", async (req, res) => {
-  const file = new File()
-  file.name = "sample document"
-
-  const repository = connection.getRepository(File)
-  const files = await repository.find()
-
-  return {
-    result: "success",
-    data: {
-      files: files.map((f) => ({
-        id: f.id,
-        name: f.name,
-      })),
-    },
-  }
-})
-
-server.post("/file", async (req, res) => {
-  const file = new File()
-  file.name = "awesome file"
-
-  const repository = connection.getRepository(File)
-  const created = await repository.save(file)
-
-  return {
-    result: "success",
-    data: {
-      file: {
-        id: created.id,
-        name: created.name,
-      },
-    },
-  }
-})
+server.register(fileHandler)
 
 const start = async () => {
   try {
