@@ -30,8 +30,8 @@ export class File {
   @UpdateDateColumn()
   updatedAt: Date
 
-  @Column()
-  updatedBy: string // userId
+  @ManyToOne(() => User, (user) => user.updatedFiles)
+  updatedBy: User
 
   @ManyToOne(() => User, (user) => user.files)
   author: User

@@ -27,6 +27,9 @@ export class User {
   @UpdateDateColumn()
   updatedAt: Date
 
+  @OneToMany(() => File, (file) => file.updatedBy)
+  updatedFiles: File[]
+
   @OneToMany(() => File, (file) => file.author)
   files: File[]
 
