@@ -4,15 +4,15 @@ import * as process from "process"
 import { ormconfig } from "./config/ormconfig"
 import { fileHandler } from "./handler/file"
 
-const server = Fastify()
-
 export let connection: Connection
-createConnection(ormconfig).then((c) => (connection = c))
+
+const server = Fastify()
 
 server.register(fileHandler)
 
 const start = async () => {
   try {
+    connection = await createConnection(ormconfig)
     const PORT = process.env.PORT || 3000
     await server.listen(PORT, "0.0.0.0")
     console.log(`listening localhost:${PORT}`)
