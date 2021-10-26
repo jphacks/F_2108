@@ -1,7 +1,7 @@
 import { auth } from "../lib/auth"
 import {
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithPopup
 } from "firebase/auth"
 import { Dispatch } from "react"
 import { Action } from "@reducers/authReducer"
@@ -9,46 +9,23 @@ import { Action } from "@reducers/authReducer"
 export const authUseCase = () => {
   /** サインイン */
   const signIn = async (
-    email: string,
-    password: string,
     dispatch: Dispatch<Action>,
   ) => {
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        // Signed in
-        const user = userCredential.user
-        dispatch({
-          type: "login",
-          payload: {
-            user,
-          },
-        })
-      })
-      .catch((error) => {
-        error.code ?? alert(error.code)
-      })
-  }
-  /** サインアップ */
-  const signUp = async (
-    email: string,
-    password: string,
-    dispatch: Dispatch<Action>,
-  ) => {
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        // Signed Up
-        const user = userCredential.user
-        dispatch({
-          type: "login",
-          payload: {
-            user,
-          },
-        })
-      })
-      .catch((error) => {
-        console.log(error)
-        alert(error.code)
-      })
+    const provider = new GoogleAuthProvider();
+    signInWithPopup(auth, provider)
+  .then((result) => {
+    const user = result.user;
+    dispatch({
+      type: "login",
+      payload: {
+        user,
+      },
+    })
+  }).catch((error) => {
+    const errorCode = error.code;
+    console.log(error)
+    alert(errorCode)
+  });
   }
   // ログイン状態の検知
   const isLoggedIn = async () => {
@@ -69,5 +46,5 @@ export const authUseCase = () => {
     })
   }
 
-  return { signIn, signUp, isLoggedIn, logout }
+  return { signIn, isLoggedIn, logout }
 }
