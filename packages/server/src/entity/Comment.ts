@@ -17,19 +17,19 @@ export enum CommentDataType {
 @Entity()
 export class Comment {
   @PrimaryGeneratedColumn()
-  commentId: number
+  comment_id: number
 
   @Column({ type: "enum", enum: CommentDataType })
-  dataType: CommentDataType
+  data_type: CommentDataType
 
   @Column()
   content: string
 
   @CreateDateColumn()
-  postedAt: Date
+  posted_at: Date
 
   @UpdateDateColumn()
-  updatedAt: Date
+  updated_at: Date
 
   @ManyToOne(() => User, (user) => user.comments)
   author: User

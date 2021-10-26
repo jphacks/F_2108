@@ -4,7 +4,7 @@ import {
   Entity,
   ManyToOne,
   OneToMany,
-  PrimaryColumn,
+  PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm"
 import { Stamp } from "./Stamp"
@@ -12,8 +12,8 @@ import { User } from "./User"
 
 @Entity()
 export class File {
-  @PrimaryColumn()
-  fileId: string
+  @PrimaryGeneratedColumn("uuid")
+  file_id: string
 
   @Column()
   name: string
@@ -25,13 +25,13 @@ export class File {
   thumbnail: string
 
   @CreateDateColumn()
-  postedAt: Date
+  posted_at: Date
 
   @UpdateDateColumn()
-  updatedAt: Date
+  updated_at: Date
 
-  @ManyToOne(() => User, (user) => user.updatedFiles)
-  updatedBy: User
+  @ManyToOne(() => User, (user) => user.updated_files)
+  updated_by: User
 
   @ManyToOne(() => User, (user) => user.files)
   author: User

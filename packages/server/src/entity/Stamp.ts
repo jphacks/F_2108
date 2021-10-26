@@ -14,7 +14,7 @@ import { User } from "./User"
 @Entity()
 export class Stamp {
   @PrimaryGeneratedColumn()
-  stampId: number
+  stamp_id: number
 
   @Column()
   position_page: number
@@ -26,10 +26,10 @@ export class Stamp {
   position_y: number
 
   @CreateDateColumn()
-  createdAt: Date
+  created_at: Date
 
   @UpdateDateColumn()
-  updatedAt: Date
+  updated_at: Date
 
   @ManyToOne(() => User, (user) => user.stamps)
   author: User

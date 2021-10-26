@@ -13,22 +13,22 @@ import { Comment } from "./Comment"
 @Entity()
 export class User {
   @PrimaryColumn()
-  userId: string
+  user_id: string
 
   @Column()
   name: string
 
   @Column()
-  iconUrl: string
+  icon_url: string
 
   @CreateDateColumn()
-  createdAt: Date
+  created_at: Date
 
   @UpdateDateColumn()
-  updatedAt: Date
+  updated_at: Date
 
   @OneToMany(() => File, (file) => file.updatedBy)
-  updatedFiles: File[]
+  updated_files: File[]
 
   @OneToMany(() => File, (file) => file.author)
   files: File[]
