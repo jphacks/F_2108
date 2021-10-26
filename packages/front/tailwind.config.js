@@ -11,10 +11,13 @@ module.exports = {
     extend: {
       colors: {
         primary: "#F4E12F",
-        secondary: "#333333",
+        black: "#333333",
       },
       boxShadow: {
         main: "4px 8px 4px rgba(0, 0, 0, 0.5)",
+      },
+      animation: {
+        "ping-slow": "ping 3s cubic-bezier(0, 0, 0.2, 1) infinite",
       },
     },
   },
