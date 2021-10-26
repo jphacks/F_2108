@@ -1,0 +1,57 @@
+version: "3.8"
+services:
+  db:
+    image: mysql:5.7
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: pass
+      MYSQL_DATABASE: $DB_NAME
+      MYSQL_USER: $DB_USER
+      MYSQL_PASSWORD: $DB_PASSWORD
+      TZ: Asia/Tokyo
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./logs/mysql:/var/log/mysql
+      - ./mysql/my.cnf:/etc/mysql/conf.d/my.cnf
+    expose:
+      - 3306
+    ports:
+      - "3306:3306"
+
+  app:
+    build:
+      context: ../../
+      dockerfile: packages/server/Dockerfile
+    command: yarn dev:server
+    environment:
+      PORT: $APP_PORT
+      NODE_ENV: $NODE_ENV
+      DB_HOST: db
+      DB_PORT: $DB_PORT
+      DB_USER: $DB_USER
+      DB_PASSWORD: $DB_PASSWORD
+      DB_NAME: $DB_NAME
+    volumes:
+      - .:/app/packages/server
+    expose:
+      - 3000
+    depends_on:
+      - db
+
+  web:
+    build:
+      context: nginx
+    environment:
+      APP_HOST: app
+      APP_PORT: $APP_PORT
+    volumes:
+      - ./nginx/template:/etc/nginx/templates
+      - ./logs/nginx:/var/log/nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - app
+
+volumes:
+  mysql-data:
