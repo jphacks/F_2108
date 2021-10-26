@@ -265,45 +265,37 @@ paths:
             schema:
               type: object
               properties:
-                position:
-                  type: object
-                  required:
-                    - page
-                    - x
-                    - 'y'
-                  properties:
-                    page:
-                      type: integer
-                    x:
-                      type: number
-                      description: 該当ページの左上を原点としたx座標（0~1に正規化）
-                    'y':
-                      type: number
-                      description: 該当ページの左上を原点としたy座標（0~1に正規化）
-                comment:
-                  type: object
-                  required:
-                    - dataType
-                    - content
-                  properties:
-                    dataType:
-                      $ref: '#/components/schemas/DataType'
-                    content:
-                      type: string
-                      description: 文字列（テキスト）または音声ファイル（オーディオ）
+                page:
+                  type: integer
+                  description: スタンプを追加するページ
+                x:
+                  type: integer
+                  description: 該当ページの左上を原点としたx座標（0~1に正規化）
+                'y':
+                  type: integer
+                  description: 該当ページの左上を原点としたy座標（0~1に正規化）
+                dataType:
+                  $ref: '#/components/schemas/DataType'
+                content:
+                  type: string
+                  description: 文字列（テキスト）または音声ファイル（オーディオ）
+                title:
+                  type: string
+                  description: コメントのタイトル（音声データの場合のみ含む）
               required:
-                - position
-                - comment
+                - page
+                - x
+                - 'y'
+                - dataType
+                - content
             examples:
               example:
                 value:
-                  position:
-                    page: 0
-                    x: 0
-                    'y': 0
-                  comment:
-                    dataType: audio
-                    content: string
+                  page: 1
+                  x: 0.2
+                  'y': 0.8
+                  dataType: audio
+                  content: string
       tags:
         - file
       responses:
@@ -400,42 +392,24 @@ paths:
           multipart/form-data:
             schema:
               type: object
-              properties:
-                result:
-                  type: string
-                  enum:
-                    - success
-                data:
-                  type: object
-                  required:
-                    - dataType
-                    - content
-                  properties:
-                    dataType:
-                      $ref: '#/components/schemas/DataType'
-                    content:
-                      type: string
-                      description: 文字列（テキスト）または音声バイナリ（オーディオ）
-                    title:
-                      type: string
-                      description: コメントのタイトル（音声データの場合のみ含む）
               required:
-                - result
-                - data
+                - dataType
+                - content
+              properties:
+                dataType:
+                  $ref: '#/components/schemas/DataType'
+                content:
+                  type: string
+                  description: 文字列（テキスト）または音声バイナリ（オーディオ）
+                title:
+                  type: string
+                  description: コメントのタイトル（音声データの場合のみ含む）
             examples:
-              example1:
+              example:
                 value:
-                  result: success
-                  data:
-                    dataType: audio
-                    content: audio file
-                    title: タイトル
-              example2:
-                value:
-                  result: success
-                  data:
-                    dataType: text
-                    content: コメント本文
+                  dataType: audio
+                  content: string
+                  title: タイトル
         description: ''
       tags:
         - file
