@@ -31,19 +31,29 @@ export const fileHandler = async (server: FastifyInstance) => {
     async (req, res) => {
       const fileId = req.params.fileId
 
-      const repository = connection.getRepository(File)
+      const query = connection.getRepository(File).createQueryBuilder("file")
 
-      const file = await repository.findOne(fileId)
+      const file = await query
+        .innerJoinAndSelect("file.author", "file_author")
+        .innerJoinAndSelect("file.updated_by", "file_updated_by")
+        .leftJoinAndSelect("file.stamps", "stamp")
+        .innerJoinAndSelect("stamp.author", "stamp_author")
+        .leftJoinAndSelect("stamp.comments", "comment")
+        .innerJoinAndSelect("comment.author", "comment_author")
+        .where("file.file_id = :fileId", { fileId })
+        .getOne()
+
       if (!file) {
         const e = createError(
           ERR_BAD_URL,
           `File(${fileId}) was not found.`,
-          400,
+          404,
         )
         throw new e()
       }
 
       const stamps = await file.stamps
+      const stampsResponse = await Promise.all(stamps.map((s) => buildStamp(s)))
 
       res.send({
         result: "success",
@@ -54,7 +64,7 @@ export const fileHandler = async (server: FastifyInstance) => {
             updatedAt: file.updated_at,
             updatedBy: buildUser(file.updated_by),
           },
-          stamps: stamps.map(buildStamp),
+          stamps: stampsResponse,
         },
       })
     },

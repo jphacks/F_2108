@@ -40,6 +40,6 @@ export class Stamp {
   @ManyToOne(() => File, (file) => file.stamps, { nullable: false })
   file: File
 
-  @OneToMany(() => Comment, (comment) => comment.stamp)
-  comments: Comment[]
+  @OneToMany(() => Comment, (comment) => comment.stamp, { lazy: true })
+  comments: Promise<Comment[]>
 }

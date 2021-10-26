@@ -6,6 +6,7 @@ import { fileHandler } from "./handler/file"
 import fastifyMultipart from "fastify-multipart"
 import { User } from "./entity/User"
 import { ResponseBody } from "./util/schema"
+import { stampHandler } from "./handler/stamp"
 
 export let connection: Connection
 
@@ -20,6 +21,7 @@ const server = Fastify()
 server.register(fastifyMultipart, { attachFieldsToBody: true })
 
 server.register(fileHandler)
+server.register(stampHandler)
 
 server.setErrorHandler<FastifyError, { Reply: ResponseBody }>((err, _, res) => {
   console.error(err)

@@ -17,7 +17,7 @@ type UserResponse = { id: string; name: string; iconUrl: string }
 type StampResponse = {
   id: number
   author: UserResponse
-  comments: CommentResponse[]
+  comments?: CommentResponse[]
   position: {
     page: number
     x: number
@@ -48,16 +48,27 @@ export const buildUser = (user: User): UserResponse => ({
   iconUrl: user.icon_url,
 })
 
-export const buildStamp = (stamp: Stamp): StampResponse => ({
-  id: stamp.stamp_id,
-  author: buildUser(stamp.author),
-  comments: stamp.comments.map(buildComment),
-  position: {
-    page: stamp.position_page,
-    x: stamp.position_x,
-    y: stamp.position_y,
-  },
-})
+export const buildStamp = async (
+  stamp: Stamp,
+  withComments = true,
+): Promise<StampResponse> => {
+  const stampResponse: StampResponse = {
+    id: stamp.stamp_id,
+    author: buildUser(stamp.author),
+    position: {
+      page: stamp.position_page,
+      x: stamp.position_x,
+      y: stamp.position_y,
+    },
+  }
+
+  if (withComments) {
+    const comments = await stamp.comments
+    stampResponse.comments = comments.map(buildComment)
+  }
+
+  return stampResponse
+}
 
 export const buildComment = (comment: Comment): CommentResponse => ({
   id: comment.comment_id,
