@@ -2,20 +2,21 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
+  OneToMany,
   PrimaryColumn,
   UpdateDateColumn,
 } from "typeorm"
+import { Stamp } from "./Stamp"
+import { User } from "./User"
 
 @Entity()
 export class File {
   @PrimaryColumn()
-  id: string
+  fileId: string
 
   @Column()
   name: string
-
-  @Column()
-  authorId: string
 
   @Column()
   url: string
@@ -31,4 +32,10 @@ export class File {
 
   @Column()
   updatedBy: string // userId
+
+  @ManyToOne(() => User, (user) => user.files)
+  author: User
+
+  @OneToMany(() => Stamp, (stamp) => stamp.file)
+  stamps: Stamp[]
 }
