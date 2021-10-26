@@ -5,7 +5,7 @@ import { ormconfig } from "./config/ormconfig"
 import { fileHandler } from "./handler/file"
 import fastifyMultipart from "fastify-multipart"
 import { User } from "./entity/User"
-import { ResponseBody } from "./handler/schema"
+import { ResponseBody } from "./util/schema"
 
 export let connection: Connection
 

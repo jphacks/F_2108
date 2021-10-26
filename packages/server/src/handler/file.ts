@@ -3,10 +3,10 @@ import { File } from "../entity/File"
 import { connection, dummyUser } from "../index"
 import { LocalStorage } from "../storage/LocalStorage"
 import { MultipartFile, MultipartValue } from "fastify-multipart"
-import { ResponseBody } from "./schema"
-import { buildFile, buildStamp, buildUser } from "./builders"
+import { ResponseBody } from "../util/schema"
+import { buildFile, buildStamp, buildUser } from "../util/builders"
 import createError from "fastify-error"
-import { ERR_BAD_URL } from "./errors"
+import { ERR_BAD_URL } from "../util/errors"
 
 export const fileHandler = async (server: FastifyInstance) => {
   server.get<{ Reply: ResponseBody }>("/file", async (req, res) => {
