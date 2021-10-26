@@ -76,12 +76,17 @@ paths:
                   type: string
                   format: binary
                   description: アップロードするPDFファイル
+                name:
+                  type: string
+                  description: ファイル名
               required:
                 - file
+                - name
             examples:
               example:
                 value:
-                  file: string
+                  file: ファイル
+                  name: ファイル名
         description: ''
       tags:
         - file
