@@ -6,7 +6,10 @@ import { File } from "../entity/File"
 import { Stamp } from "../entity/Stamp"
 import { connection, dummyUser } from "../index"
 import { LocalStorage } from "../storage/LocalStorage"
-import { buildComment } from "../util/builders"
+import { buildCommentResponse } from "../util/responseBuilders"
+import createError from "fastify-error"
+import { ERR_INVALID_PAYLOAD } from "../util/errors"
+import { User } from "../entity/User"
 
 export const commentHandler = async (server: FastifyInstance) => {
   server.post<{
@@ -26,25 +29,12 @@ export const commentHandler = async (server: FastifyInstance) => {
     const stamp = new Stamp()
     stamp.id = params.stampId
 
-    const comment = new Comment()
-    const dataType = body.dataType.value
-    comment.data_type = dataType
-    comment.author = dummyUser
-    comment.stamp = stamp
-
-    if (dataType === "text") {
-      // save text file
-      comment.content = (body.content as MultipartValue<string>).value
-    } else {
-      // save audio file
-      const content = body.content as MultipartFile
-      const filename = content.filename
-      const buffer = await content.toBuffer()
-
-      const storage = new LocalStorage()
-      const { url } = await storage.save("audio", filename, buffer)
-      comment.content = url
-    }
+    const comment = await buildComment(
+      body.dataType.value,
+      dummyUser,
+      stamp,
+      body.content,
+    )
 
     const repository = connection.getRepository(Comment)
     const result = await repository.save(comment)
@@ -52,8 +42,58 @@ export const commentHandler = async (server: FastifyInstance) => {
     res.send({
       result: "success",
       data: {
-        ...buildComment(result),
+        ...buildCommentResponse(result),
       },
     })
   })
+}
+
+export const buildComment = async (
+  dataType: CommentDataType,
+  author: User,
+  stamp: Stamp,
+  content: MultipartValue<string> | MultipartFile,
+): Promise<Comment> => {
+  const comment = new Comment()
+  comment.data_type = dataType
+  comment.author = dummyUser
+  comment.stamp = stamp
+
+  switch (dataType) {
+    // save text file
+    case CommentDataType.TEXT:
+      comment.content = (content as MultipartValue<string>).value
+      break
+
+    // save audio file
+    case CommentDataType.AUDIO: {
+      const audio = content as MultipartFile
+      const filename = audio.filename
+      if (!filename) {
+        const e = createError(
+          ERR_INVALID_PAYLOAD,
+          "`content` must be sent.",
+          400,
+        )
+        throw new e()
+      }
+      const buffer = await audio.toBuffer()
+
+      const storage = new LocalStorage()
+      const { url } = await storage.save("audio", filename, buffer)
+      comment.content = url
+      break
+    }
+
+    default: {
+      const e = createError(
+        ERR_INVALID_PAYLOAD,
+        `\`dataType\` is invalid. Specify ${CommentDataType.AUDIO} or ${CommentDataType.TEXT}`,
+        400,
+      )
+      throw new e()
+    }
+  }
+
+  return comment
 }

@@ -4,7 +4,11 @@ import { connection, dummyUser } from "../index"
 import { LocalStorage } from "../storage/LocalStorage"
 import { MultipartFile, MultipartValue } from "fastify-multipart"
 import { ResponseBody } from "../util/schema"
-import { buildFile, buildStamp, buildUser } from "../util/builders"
+import {
+  buildFileResponse,
+  buildStampResponse,
+  buildUserResponse,
+} from "../util/responseBuilders"
 import createError from "fastify-error"
 import { ERR_BAD_URL, ERR_INVALID_PAYLOAD } from "../util/errors"
 
@@ -19,9 +23,9 @@ export const fileHandler = async (server: FastifyInstance) => {
       result: "success",
       data: files.map((f) => ({
         type: f.fileType(dummyUser),
-        file: buildFile(f),
+        file: buildFileResponse(f),
         updatedAt: f.updated_at,
-        updatedBt: buildUser(f.updated_by),
+        updatedBt: buildUserResponse(f.updated_by),
       })),
     })
   })
@@ -53,16 +57,18 @@ export const fileHandler = async (server: FastifyInstance) => {
       }
 
       const stamps = await file.stamps
-      const stampsResponse = await Promise.all(stamps.map((s) => buildStamp(s)))
+      const stampsResponse = await Promise.all(
+        stamps.map((s) => buildStampResponse(s)),
+      )
 
       res.send({
         result: "success",
         data: {
           fileSnapshot: {
             type: file.fileType(dummyUser),
-            file: buildFile(file),
+            file: buildFileResponse(file),
             updatedAt: file.updated_at,
-            updatedBy: buildUser(file.updated_by),
+            updatedBy: buildUserResponse(file.updated_by),
           },
           stamps: stampsResponse,
         },
@@ -99,9 +105,9 @@ export const fileHandler = async (server: FastifyInstance) => {
       result: "success",
       data: {
         type: "own",
-        file: buildFile(fileModel),
+        file: buildFileResponse(fileModel),
         updatedAt: result.updated_at,
-        updatedBy: buildUser(result.updated_by),
+        updatedBy: buildUserResponse(result.updated_by),
       },
     })
   })

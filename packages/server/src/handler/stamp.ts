@@ -4,11 +4,12 @@ import { Comment, CommentDataType } from "../entity/Comment"
 import { Stamp } from "../entity/Stamp"
 import { connection, dummyUser } from "../index"
 import { File } from "../entity/File"
-import { buildComment, buildStamp } from "../util/builders"
+import {
+  buildCommentResponse,
+  buildStampResponse,
+} from "../util/responseBuilders"
 import { MultipartFile, MultipartValue } from "fastify-multipart"
-import { LocalStorage } from "../storage/LocalStorage"
-import createError from "fastify-error"
-import { ERR_INVALID_PAYLOAD } from "../util/errors"
+import { buildComment } from "./comment"
 
 export const stampHandler = async (server: FastifyInstance) => {
   server.post<{
@@ -34,49 +35,12 @@ export const stampHandler = async (server: FastifyInstance) => {
     stamp.author = dummyUser
     stamp.file = file
 
-    const comment = new Comment()
-    const dataType = body.dataType.value
-    comment.data_type = dataType
-    comment.author = dummyUser
-    comment.stamp = stamp
-
-    switch (dataType) {
-      // save text file
-      case CommentDataType.TEXT: {
-        comment.content = (body.content as MultipartValue<string>).value
-        break
-      }
-
-      // save audio file
-      case CommentDataType.AUDIO: {
-        const content = body.content as MultipartFile
-        const filename = content.filename
-        if (!filename) {
-          const e = createError(
-            ERR_INVALID_PAYLOAD,
-            "`content` must be sent.",
-            400,
-          )
-          throw new e()
-        }
-        const buffer = await content.toBuffer()
-
-        const storage = new LocalStorage()
-        const { url } = await storage.save("audio", filename, buffer)
-        comment.content = url
-
-        break
-      }
-
-      default: {
-        const e = createError(
-          ERR_INVALID_PAYLOAD,
-          `\`dataType\` is invalid. Specify ${CommentDataType.AUDIO} or ${CommentDataType.TEXT}`,
-          400,
-        )
-        throw new e()
-      }
-    }
+    const comment = await buildComment(
+      body.dataType.value,
+      dummyUser,
+      stamp,
+      body.content,
+    )
 
     const result = await connection.transaction<{
       stamp: Stamp
@@ -88,8 +52,8 @@ export const stampHandler = async (server: FastifyInstance) => {
       return { stamp: stampResult, comment: commentResult }
     })
 
-    const stampResponse = await buildStamp(result.stamp, false)
-    const commentResponse = buildComment(result.comment)
+    const stampResponse = await buildStampResponse(result.stamp, false)
+    const commentResponse = buildCommentResponse(result.comment)
 
     res.send({
       result: "success",
