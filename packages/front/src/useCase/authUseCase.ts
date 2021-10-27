@@ -25,7 +25,7 @@ export const authUseCase = () => {
   }
   // ログイン状態の検知
   const isLoggedIn = async () => {
-    const isLoggedIn = auth.currentUser ? true : false;
+    const isLoggedIn = auth.currentUser ? true : false
     return isLoggedIn
   }
 
