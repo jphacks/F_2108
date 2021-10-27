@@ -14,7 +14,7 @@ import { User } from "./User"
 @Entity()
 export class Stamp {
   @PrimaryGeneratedColumn()
-  stamp_id: number
+  id: number
 
   @Column()
   position_page: number

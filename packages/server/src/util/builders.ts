@@ -34,7 +34,7 @@ type CommentResponse = {
 }
 
 export const buildFile = (file: File): FileResponse => ({
-  id: file.file_id,
+  id: file.id,
   author: buildUser(file.author),
   name: file.name,
   postedAt: file.posted_at,
@@ -43,7 +43,7 @@ export const buildFile = (file: File): FileResponse => ({
 })
 
 export const buildUser = (user: User): UserResponse => ({
-  id: user.user_id,
+  id: user.id,
   name: user.name,
   iconUrl: user.icon_url,
 })
@@ -53,7 +53,7 @@ export const buildStamp = async (
   withComments = true,
 ): Promise<StampResponse> => {
   const stampResponse: StampResponse = {
-    id: stamp.stamp_id,
+    id: stamp.id,
     author: buildUser(stamp.author),
     position: {
       page: stamp.position_page,
@@ -71,7 +71,7 @@ export const buildStamp = async (
 }
 
 export const buildComment = (comment: Comment): CommentResponse => ({
-  id: comment.comment_id,
+  id: comment.id,
   dateType: comment.data_type,
   content: comment.content,
   author: buildUser(comment.author),

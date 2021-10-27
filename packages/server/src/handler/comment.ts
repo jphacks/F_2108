@@ -21,10 +21,10 @@ export const commentHandler = async (server: FastifyInstance) => {
     const { body, params } = req
 
     const file = new File()
-    file.file_id = params.fileId
+    file.id = params.fileId
 
     const stamp = new Stamp()
-    stamp.stamp_id = params.stampId
+    stamp.id = params.stampId
 
     const comment = new Comment()
     const dataType = body.dataType.value

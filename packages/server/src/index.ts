@@ -13,7 +13,7 @@ export let connection: Connection
 
 // TODO: this is dummy user for local demo
 export const dummyUser = new User()
-dummyUser.user_id = "abc"
+dummyUser.id = "abc"
 dummyUser.name = "dummy user"
 dummyUser.icon_url = "/user/icon/dummy.png"
 

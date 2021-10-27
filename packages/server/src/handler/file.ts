@@ -40,7 +40,7 @@ export const fileHandler = async (server: FastifyInstance) => {
         .innerJoinAndSelect("stamp.author", "stamp_author")
         .leftJoinAndSelect("stamp.comments", "comment")
         .innerJoinAndSelect("comment.author", "comment_author")
-        .where("file.file_id = :fileId", { fileId })
+        .where("file.id = :fileId", { fileId })
         .getOne()
 
       if (!file) {

@@ -17,7 +17,7 @@ export enum CommentDataType {
 @Entity()
 export class Comment {
   @PrimaryGeneratedColumn()
-  comment_id: number
+  id: number
 
   @Column({ type: "enum", enum: CommentDataType })
   data_type: CommentDataType

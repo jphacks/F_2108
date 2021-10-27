@@ -15,7 +15,7 @@ type FileType = "own" | "shared"
 @Entity()
 export class File {
   @PrimaryGeneratedColumn("uuid")
-  file_id: string
+  id: string
 
   @Column()
   name: string
@@ -45,6 +45,6 @@ export class File {
   stamps: Promise<Stamp[]>
 
   fileType(currentUser: User): FileType {
-    return this.author.user_id === currentUser.user_id ? "own" : "shared"
+    return this.author.id === currentUser.id ? "own" : "shared"
   }
 }

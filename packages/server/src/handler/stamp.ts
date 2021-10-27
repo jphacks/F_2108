@@ -23,7 +23,7 @@ export const stampHandler = async (server: FastifyInstance) => {
     const body = req.body
 
     const file = new File()
-    file.file_id = req.params.fileId
+    file.id = req.params.fileId
 
     const stamp = new Stamp()
     stamp.position_page = body.page.value
