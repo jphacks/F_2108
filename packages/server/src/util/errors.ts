@@ -1,1 +1,2 @@
 export const ERR_BAD_URL = "FST_ERR_BAD_URL"
+export const ERR_INVALID_PAYLOAD = "FST_ERR_INVALID_PAYLOAD"

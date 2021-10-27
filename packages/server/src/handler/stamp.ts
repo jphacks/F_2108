@@ -7,6 +7,8 @@ import { File } from "../entity/File"
 import { buildComment, buildStamp } from "../util/builders"
 import { MultipartFile, MultipartValue } from "fastify-multipart"
 import { LocalStorage } from "../storage/LocalStorage"
+import createError from "fastify-error"
+import { ERR_INVALID_PAYLOAD } from "../util/errors"
 
 export const stampHandler = async (server: FastifyInstance) => {
   server.post<{
@@ -38,18 +40,42 @@ export const stampHandler = async (server: FastifyInstance) => {
     comment.author = dummyUser
     comment.stamp = stamp
 
-    if (dataType === "text") {
+    switch (dataType) {
       // save text file
-      comment.content = (body.content as MultipartValue<string>).value
-    } else {
-      // save audio file
-      const content = body.content as MultipartFile
-      const filename = content.filename
-      const buffer = await content.toBuffer()
+      case CommentDataType.TEXT: {
+        comment.content = (body.content as MultipartValue<string>).value
+        break
+      }
 
-      const storage = new LocalStorage()
-      const { url } = await storage.save("audio", filename, buffer)
-      comment.content = url
+      // save audio file
+      case CommentDataType.AUDIO: {
+        const content = body.content as MultipartFile
+        const filename = content.filename
+        if (!filename) {
+          const e = createError(
+            ERR_INVALID_PAYLOAD,
+            "`content` must be sent.",
+            400,
+          )
+          throw new e()
+        }
+        const buffer = await content.toBuffer()
+
+        const storage = new LocalStorage()
+        const { url } = await storage.save("audio", filename, buffer)
+        comment.content = url
+
+        break
+      }
+
+      default: {
+        const e = createError(
+          ERR_INVALID_PAYLOAD,
+          `\`dataType\` is invalid. Specify ${CommentDataType.AUDIO} or ${CommentDataType.TEXT}`,
+          400,
+        )
+        throw new e()
+      }
     }
 
     const result = await connection.transaction<{

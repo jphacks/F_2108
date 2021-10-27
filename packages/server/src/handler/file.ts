@@ -6,7 +6,7 @@ import { MultipartFile, MultipartValue } from "fastify-multipart"
 import { ResponseBody } from "../util/schema"
 import { buildFile, buildStamp, buildUser } from "../util/builders"
 import createError from "fastify-error"
-import { ERR_BAD_URL } from "../util/errors"
+import { ERR_BAD_URL, ERR_INVALID_PAYLOAD } from "../util/errors"
 
 export const fileHandler = async (server: FastifyInstance) => {
   server.get<{ Reply: ResponseBody }>("/file", async (req, res) => {
@@ -75,6 +75,10 @@ export const fileHandler = async (server: FastifyInstance) => {
     Reply: ResponseBody
   }>("/file", async (req, res) => {
     const file = req.body.file
+    if (!file.filename) {
+      const e = createError(ERR_INVALID_PAYLOAD, "`file` should be sent.", 400)
+      throw new e()
+    }
     const buffer = await file.toBuffer()
     const filename = file.filename
 
