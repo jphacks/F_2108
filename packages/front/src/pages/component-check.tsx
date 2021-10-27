@@ -21,7 +21,7 @@ const ComponentCheck: NextPage = () => {
       <div className="flex flex-col items-start my-4 space-y-4">
         <AudioWave
           comment={{
-            id: 1,
+            id: "1",
             dataType: "audio",
             title: "犬の鳴き声",
             content: "/dog.wav",
