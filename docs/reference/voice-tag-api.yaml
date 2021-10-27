@@ -40,7 +40,7 @@ paths:
                   - result
                   - data
               examples:
-                example-1:
+                example:
                   value:
                     result: success
                     data:
@@ -296,6 +296,7 @@ paths:
                   'y': 0.8
                   dataType: audio
                   content: string
+        description: ''
       tags:
         - file
       responses:
@@ -334,6 +335,7 @@ paths:
                             name: joen doe
                             iconUrl: 'http://example.com/icon/qwerty.png'
                           postedAt: '2019-08-24T14:15:22Z'
+                          title: タイトル
                         - id: 2
                           dataType: text
                           content: コメント
@@ -382,6 +384,20 @@ paths:
                 required:
                   - result
                   - data
+              examples:
+                example:
+                  value:
+                    result: success
+                    data:
+                      id: 1
+                      dataType: audio
+                      content: string
+                      author:
+                        id: qwerty
+                        name: joen doe
+                        iconUrl: 'http://example.com/icon/qwerty.png'
+                      postedAt: '2019-08-24T14:15:22Z'
+                      title: タイトル
         '400':
           $ref: '#/components/responses/ErrorResponse'
         '401':
@@ -568,14 +584,15 @@ components:
       title: Comment
       type: object
       examples:
-        - id: 3
+        - id: 1
           dataType: audio
-          content: audio file binary or url to audio file
+          content: string
           author:
             id: qwerty
             name: joen doe
             iconUrl: 'http://example.com/icon/qwerty.png'
           postedAt: '2019-08-24T14:15:22Z'
+          title: タイトル
       description: スタンプに連なるコメント
       properties:
         id:
