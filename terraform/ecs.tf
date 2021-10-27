@@ -7,11 +7,13 @@ resource "aws_ecs_cluster" "main" {
 }
 
 resource "aws_ecs_service" "main" {
-  name            = var.project
-  cluster         = aws_ecs_cluster.main.arn
-  task_definition = aws_ecs_task_definition.main.arn
-  desired_count   = 1
-  launch_type     = "FARGATE"
+  name                               = var.project
+  cluster                            = aws_ecs_cluster.main.arn
+  task_definition                    = aws_ecs_task_definition.main.arn
+  desired_count                      = 1
+  launch_type                        = "FARGATE"
+  deployment_maximum_percent         = 100
+  deployment_minimum_healthy_percent = 0
 
   network_configuration {
     subnets          = [aws_subnet.public_a.id, aws_subnet.public_c.id]
