@@ -1,0 +1,3 @@
+src/lib/js
+src/components/PdfViewer/pdf-worker.js
+src/pages/audio-sample.tsx
