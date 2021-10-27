@@ -336,14 +336,6 @@ paths:
                             iconUrl: 'http://example.com/icon/qwerty.png'
                           postedAt: '2019-08-24T14:15:22Z'
                           title: タイトル
-                        - id: 2
-                          dataType: text
-                          content: コメント
-                          author:
-                            id: qwerty
-                            name: joen doe
-                            iconUrl: 'http://example.com/icon/qwerty.png'
-                          postedAt: '2019-08-25T14:15:22Z'
                       position:
                         page: 0
                         x: 0
