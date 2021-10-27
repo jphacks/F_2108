@@ -52,6 +52,9 @@ resource "aws_ecs_task_definition" "main" {
         { name : "DB_USER", value : var.db.user },
         { name : "DB_PASSWORD", value : var.db.password },
         { name : "DB_NAME", value : var.db.name },
+        { name : "FIREBASE_ADMIN_PROJECT_ID", value : var.firebase.project_id },
+        { name : "FIREBASE_ADMIN_CLIENT_EMAIL", value : var.firebase.client_email },
+        { name : "FIREBASE_ADMIN_PRIVATE_KEY", value : var.firebase.private_key },
       ]
       logConfiguration = {
         logDriver : "awslogs",

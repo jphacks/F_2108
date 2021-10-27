@@ -30,6 +30,15 @@ variable "db" {
   }
 }
 
+variable "firebase" {
+  type = map(string)
+  default = {
+    project_id   = ""
+    client_email = ""
+    private_key  = ""
+  }
+}
+
 variable "public_cidr" {
   type = map(string)
   default = {

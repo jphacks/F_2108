@@ -1,5 +1,5 @@
 resource "aws_ecr_repository" "app" {
-  name = "app"
+  name = "${var.project}-app"
 
   tags = {
     Project = var.project
@@ -7,7 +7,7 @@ resource "aws_ecr_repository" "app" {
 }
 
 resource "aws_ecr_repository" "nginx" {
-  name = "nginx"
+  name = "${var.project}-nginx"
 
   tags = {
     Project = var.project
