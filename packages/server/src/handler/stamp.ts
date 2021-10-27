@@ -2,7 +2,7 @@ import { FastifyInstance } from "fastify"
 import { ResponseBody } from "../util/schema"
 import { Comment, CommentDataType } from "../entity/Comment"
 import { Stamp } from "../entity/Stamp"
-import { connection, dummyUser } from "../index"
+import { connection } from "../index"
 import { File } from "../entity/File"
 import {
   buildCommentResponse,
@@ -10,6 +10,7 @@ import {
 } from "../util/responseBuilders"
 import { MultipartFile, MultipartValue } from "fastify-multipart"
 import { buildComment } from "./comment"
+import { dummyUser } from "../entity/User"
 
 export const stampHandler = async (server: FastifyInstance) => {
   server.post<{

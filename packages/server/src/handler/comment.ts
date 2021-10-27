@@ -4,12 +4,12 @@ import { Comment, CommentDataType } from "../entity/Comment"
 import { MultipartFile, MultipartValue } from "fastify-multipart"
 import { File } from "../entity/File"
 import { Stamp } from "../entity/Stamp"
-import { connection, dummyUser } from "../index"
+import { connection } from "../index"
 import { LocalStorage } from "../storage/LocalStorage"
 import { buildCommentResponse } from "../util/responseBuilders"
 import createError from "fastify-error"
 import { ERR_INVALID_PAYLOAD } from "../util/errors"
-import { User } from "../entity/User"
+import { dummyUser, User } from "../entity/User"
 
 export const commentHandler = async (server: FastifyInstance) => {
   server.post<{

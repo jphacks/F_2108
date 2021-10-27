@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify"
 import { File } from "../entity/File"
-import { connection, dummyUser } from "../index"
+import { connection } from "../index"
 import { LocalStorage } from "../storage/LocalStorage"
 import { MultipartFile, MultipartValue } from "fastify-multipart"
 import { ResponseBody } from "../util/schema"
@@ -11,6 +11,7 @@ import {
 } from "../util/responseBuilders"
 import createError from "fastify-error"
 import { ERR_BAD_URL, ERR_INVALID_PAYLOAD } from "../util/errors"
+import { dummyUser } from "../entity/User"
 
 export const fileHandler = async (server: FastifyInstance) => {
   server.get<{ Reply: ResponseBody }>("/file", async (req, res) => {
