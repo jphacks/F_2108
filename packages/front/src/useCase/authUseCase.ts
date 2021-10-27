@@ -7,7 +7,7 @@ export const authUseCase = () => {
   /** サインイン */
   const signIn = async (dispatch: Dispatch<Action>) => {
     const provider = new GoogleAuthProvider()
-    signInWithPopup(auth, provider)
+    await signInWithPopup(auth, provider)
       .then((result) => {
         const user = result.user
         dispatch({
@@ -25,13 +25,7 @@ export const authUseCase = () => {
   }
   // ログイン状態の検知
   const isLoggedIn = async () => {
-    let isLoggedIn = false
-    await auth.onAuthStateChanged(async function (user) {
-      console.log("user---", user)
-      if (user) {
-        isLoggedIn = true
-      }
-    })
+    const isLoggedIn = auth.currentUser ? true : false;
     return isLoggedIn
   }
 
