@@ -1,8 +1,8 @@
 import { Position } from "postcss"
-import { User } from "./user"
+import { User } from "@domain/user"
 
 export type Stamp = {
-  id: number
+  id: string
   author: User
   comments: Comment[]
   position: Position

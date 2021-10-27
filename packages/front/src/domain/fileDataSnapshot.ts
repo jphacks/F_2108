@@ -1,5 +1,5 @@
-import { FileData } from "./fileData"
-import { User } from "./user"
+import { FileData } from "@domain/fileData"
+import { User } from "@domain/user"
 
 export type FileDataSnapshot = {
   type: string

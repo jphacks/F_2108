@@ -27,6 +27,7 @@ services:
     environment:
       PORT: $APP_PORT
       NODE_ENV: $NODE_ENV
+      AUTH: $AUTH
       DB_HOST: db
       DB_PORT: $DB_PORT
       DB_USER: $DB_USER

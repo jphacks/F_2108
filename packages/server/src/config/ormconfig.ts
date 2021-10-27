@@ -9,7 +9,7 @@ export const ormconfig: ConnectionOptions = {
   database: process.env.DB_NAME ?? "db",
   entities: ["src/entity/*.ts"],
   migrations: ["src/migration/**/*.ts"],
-  synchronize: false,
+  synchronize: process.env.NODE_ENV === "development",
   logging: false,
   cli: {
     entitiesDir: "src/entity",
