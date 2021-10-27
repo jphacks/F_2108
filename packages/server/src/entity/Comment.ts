@@ -25,6 +25,9 @@ export class Comment {
   @Column()
   content: string
 
+  @Column({ nullable: true })
+  title: string
+
   @CreateDateColumn()
   posted_at: Date
 

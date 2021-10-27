@@ -29,6 +29,7 @@ type CommentResponse = {
   id: number
   dateType: CommentDataType
   content: string
+  title?: string
   author: UserResponse
   postedAt: Date
 }
@@ -70,10 +71,16 @@ export const buildStampResponse = async (
   return stampResponse
 }
 
-export const buildCommentResponse = (comment: Comment): CommentResponse => ({
-  id: comment.id,
-  dateType: comment.data_type,
-  content: comment.content,
-  author: buildUserResponse(comment.author),
-  postedAt: comment.posted_at,
-})
+export const buildCommentResponse = (comment: Comment): CommentResponse => {
+  const response: CommentResponse = {
+    id: comment.id,
+    dateType: comment.data_type,
+    content: comment.content,
+    author: buildUserResponse(comment.author),
+    postedAt: comment.posted_at,
+  }
+
+  if (comment.title) response.title = comment.title
+
+  return response
+}

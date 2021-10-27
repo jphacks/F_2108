@@ -20,6 +20,7 @@ export const stampHandler = async (server: FastifyInstance) => {
       y: MultipartValue<number>
       dataType: MultipartValue<CommentDataType>
       content: MultipartValue<string> | MultipartFile
+      title?: MultipartValue<string>
     }
     Reply: ResponseBody
   }>("/file/:fileId/stamp", async (req, res) => {
@@ -40,6 +41,7 @@ export const stampHandler = async (server: FastifyInstance) => {
       dummyUser,
       stamp,
       body.content,
+      body.title?.value,
     )
 
     const result = await connection.transaction<{

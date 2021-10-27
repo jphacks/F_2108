@@ -34,6 +34,7 @@ export const commentHandler = async (server: FastifyInstance) => {
       dummyUser,
       stamp,
       body.content,
+      body.title?.value,
     )
 
     const repository = connection.getRepository(Comment)
@@ -53,6 +54,7 @@ export const buildComment = async (
   author: User,
   stamp: Stamp,
   content: MultipartValue<string> | MultipartFile,
+  title?: string,
 ): Promise<Comment> => {
   const comment = new Comment()
   comment.data_type = dataType
@@ -82,6 +84,9 @@ export const buildComment = async (
       const storage = new LocalStorage()
       const { url } = await storage.save("audio", filename, buffer)
       comment.content = url
+
+      if (title) comment.title = title
+
       break
     }
 
