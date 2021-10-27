@@ -45,10 +45,3 @@ export class User {
   @OneToMany(() => Comment, (comment) => comment.author)
   comments: Comment[]
 }
-
-// NOTE: This is dummy user for dev.
-export const dummyUser = new User()
-dummyUser.id = "dummyuserid"
-dummyUser.name = "dummy user"
-dummyUser.icon_url =
-  User.ICON_URL_PREFIX + User.ADMIN_ICON_URL_PREFIX + "/dummy_user.png"

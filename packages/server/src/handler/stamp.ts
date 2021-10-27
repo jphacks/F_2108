@@ -10,9 +10,11 @@ import {
 } from "../util/responseBuilders"
 import { MultipartFile, MultipartValue } from "fastify-multipart"
 import { buildComment } from "./comment"
-import { dummyUser } from "../entity/User"
+import { registerFirebaseAuth } from "../util/auth"
 
 export const stampHandler = async (server: FastifyInstance) => {
+  await registerFirebaseAuth(server)
+
   server.post<{
     Params: { fileId: string }
     Body: {
@@ -34,12 +36,12 @@ export const stampHandler = async (server: FastifyInstance) => {
     stamp.position_page = body.page.value
     stamp.position_x = body.x.value
     stamp.position_y = body.y.value
-    stamp.author = dummyUser
+    stamp.author = server.currentUser()
     stamp.file = file
 
     const comment = await buildComment(
       body.dataType.value,
-      dummyUser,
+      server.currentUser(),
       stamp,
       body.content,
       body.title?.value,

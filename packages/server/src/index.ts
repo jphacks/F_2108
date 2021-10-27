@@ -4,14 +4,10 @@ import * as process from "process"
 import { ormconfig } from "./config/ormconfig"
 import { fileHandler } from "./handler/file"
 import fastifyMultipart from "fastify-multipart"
-import { User } from "./entity/User"
 import { ResponseBody } from "./util/schema"
 import { stampHandler } from "./handler/stamp"
 import { commentHandler } from "./handler/comment"
-import fastifyBearerAuth from "fastify-bearer-auth"
 import * as admin from "firebase-admin"
-import { auth } from "firebase-admin"
-import DecodedIdToken = auth.DecodedIdToken
 
 export let connection: Connection
 
@@ -28,34 +24,9 @@ if (process.env.AUTH !== "false") {
       privateKey: process.env.FIREBASE_ADMIN_PRIVATE_KEY?.replace(/\\n/g, "\n"),
     }),
   })
-
-  server.register(fastifyBearerAuth, {
-    keys: new Set<string>(), // this is ignored
-    auth: async (key) => {
-      let decoded: DecodedIdToken
-      try {
-        decoded = await admin.auth().verifyIdToken(key)
-      } catch (e) {
-        console.error(e)
-        return false
-      }
-
-      const uid = decoded.uid
-      const userRecord = await admin.auth().getUser(uid)
-
-      const user = new User()
-      user.id = uid
-      user.name = userRecord.displayName ?? User.NO_NAME
-      user.icon_url = userRecord.photoURL ?? User.NO_PHOTO_URL
-
-      const repository = connection.getRepository(User)
-      await repository.save(user)
-
-      return true
-    },
-  })
 }
 
+server.get("/health", async (_, res) => res.send("ok"))
 server.register(fileHandler)
 server.register(stampHandler)
 server.register(commentHandler)

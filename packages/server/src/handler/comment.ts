@@ -9,9 +9,12 @@ import { LocalStorage } from "../storage/LocalStorage"
 import { buildCommentResponse } from "../util/responseBuilders"
 import createError from "fastify-error"
 import { ERR_INVALID_PAYLOAD } from "../util/errors"
-import { dummyUser, User } from "../entity/User"
+import { User } from "../entity/User"
+import { registerFirebaseAuth } from "../util/auth"
 
 export const commentHandler = async (server: FastifyInstance) => {
+  await registerFirebaseAuth(server)
+
   server.post<{
     Params: { fileId: string; stampId: number }
     Body: {
@@ -31,7 +34,7 @@ export const commentHandler = async (server: FastifyInstance) => {
 
     const comment = await buildComment(
       body.dataType.value,
-      dummyUser,
+      server.currentUser(),
       stamp,
       body.content,
       body.title?.value,
@@ -58,7 +61,7 @@ export const buildComment = async (
 ): Promise<Comment> => {
   const comment = new Comment()
   comment.data_type = dataType
-  comment.author = dummyUser
+  comment.author = author
   comment.stamp = stamp
 
   switch (dataType) {
