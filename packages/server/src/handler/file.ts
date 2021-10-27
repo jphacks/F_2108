@@ -1,7 +1,6 @@
 import { FastifyInstance } from "fastify"
 import { File } from "../entity/File"
 import { connection } from "../index"
-import { LocalStorage } from "../storage/LocalStorage"
 import { MultipartFile, MultipartValue } from "fastify-multipart"
 import { ResponseBody } from "../util/schema"
 import {
@@ -91,8 +90,7 @@ export const fileHandler = async (server: FastifyInstance) => {
     const buffer = await file.toBuffer()
     const filename = file.filename
 
-    const storage = new LocalStorage()
-    const { url } = await storage.save("file", filename, buffer)
+    const { url } = await server.storage().save("file", filename, buffer)
 
     const fileModel = new File()
     fileModel.name = req.body.name.value
