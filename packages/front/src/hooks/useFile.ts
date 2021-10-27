@@ -15,10 +15,7 @@ type useFile = {
   UploadFile: (body: UploadRequestBody) => Promise<FileDataSnapshot>
   fetchFileList: () => Promise<FileDataSnapshot[]>
   fetchFileDetail: (fileId: string) => Promise<GetDetailResponse>
-  postStamp: (
-    body: StampRequestBody,
-    fileId: string,
-  ) => Promise<StampResponse>
+  postStamp: (body: StampRequestBody, fileId: string) => Promise<StampResponse>
   postComment: (
     body: CommentRequestBody,
     fileId: string,
