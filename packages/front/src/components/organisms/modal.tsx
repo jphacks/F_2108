@@ -5,15 +5,15 @@ type Props = {
   detail?: JSX.Element
   body: JSX.Element
   isOpen: boolean
-  onClick: Function
+  onClick: () => void
 }
 
 /**
  * モーダルコンポーネント
- * @param title
- * @param detail
+ * @param title タイトル
+ * @param detail 詳細
  * @param body 表示内容
- * @param isOpen　モーダルの開閉状態
+ * @param isOpen モーダルの開閉状態
  * @param onClick ハンドラ
  */
 
