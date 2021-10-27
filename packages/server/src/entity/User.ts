@@ -12,6 +12,12 @@ import { Comment } from "./Comment"
 
 @Entity()
 export class User {
+  static ICON_URL_PREFIX = "/icon"
+  static ADMIN_ICON_URL_PREFIX = "/admin"
+  static NO_NAME = "no name"
+  static NO_PHOTO_URL =
+    User.ICON_URL_PREFIX + User.ADMIN_ICON_URL_PREFIX + "/no_image.png"
+
   @PrimaryColumn()
   id: string
 

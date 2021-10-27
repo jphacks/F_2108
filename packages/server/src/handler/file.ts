@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify"
 import { File } from "../entity/File"
-import { connection, dummyUser } from "../index"
+import { connection } from "../index"
 import { LocalStorage } from "../storage/LocalStorage"
 import { MultipartFile, MultipartValue } from "fastify-multipart"
 import { ResponseBody } from "../util/schema"
@@ -11,8 +11,11 @@ import {
 } from "../util/responseBuilders"
 import createError from "fastify-error"
 import { ERR_BAD_URL, ERR_INVALID_PAYLOAD } from "../util/errors"
+import { registerFirebaseAuth } from "../util/auth"
 
 export const fileHandler = async (server: FastifyInstance) => {
+  await registerFirebaseAuth(server)
+
   server.get<{ Reply: ResponseBody }>("/file", async (req, res) => {
     const repository = connection.getRepository(File)
 
@@ -22,7 +25,7 @@ export const fileHandler = async (server: FastifyInstance) => {
     res.send({
       result: "success",
       data: files.map((f) => ({
-        type: f.fileType(dummyUser),
+        type: f.fileType(server.currentUser()),
         file: buildFileResponse(f),
         updatedAt: f.updated_at,
         updatedBt: buildUserResponse(f.updated_by),
@@ -65,7 +68,7 @@ export const fileHandler = async (server: FastifyInstance) => {
         result: "success",
         data: {
           fileSnapshot: {
-            type: file.fileType(dummyUser),
+            type: file.fileType(server.currentUser()),
             file: buildFileResponse(file),
             updatedAt: file.updated_at,
             updatedBy: buildUserResponse(file.updated_by),
@@ -95,8 +98,8 @@ export const fileHandler = async (server: FastifyInstance) => {
     fileModel.name = req.body.name.value
     fileModel.url = url
     fileModel.thumbnail = "dummy-thumbnail-url" // TODO: create thumbnail and pass its url
-    fileModel.author = dummyUser
-    fileModel.updated_by = dummyUser
+    fileModel.author = server.currentUser()
+    fileModel.updated_by = server.currentUser()
 
     const repository = connection.getRepository(File)
     const result = await repository.save(fileModel)
