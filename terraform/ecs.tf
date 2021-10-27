@@ -95,6 +95,48 @@ resource "aws_ecs_task_definition" "main" {
   }
 }
 
+resource "aws_iam_role" "ecs" {
+  name = "${var.project}-role-ecs"
+
+  assume_role_policy = jsonencode({
+    Version : "2012-10-17",
+    Statement : [
+      {
+        Sid : "",
+        Effect : "Allow",
+        Principal : {
+          Service : "ecs-tasks.amazonaws.com"
+        },
+        Action : "sts:AssumeRole"
+      }
+    ]
+  })
+
+  tags = {
+    Project = var.project
+  }
+}
+
+resource "aws_iam_role_policy" "access-s3" {
+  role = aws_iam_role.ecs.id
+
+  policy = jsonencode({
+    Version : "2012-10-17",
+    Statement : [
+      {
+        "Effect" : "Allow",
+        "Action" : [
+          "s3:GetObject",
+          "s3:PutObject"
+        ],
+        Resource : [
+          "arn:aws:s3:::${aws_s3_bucket.main.bucket}/*"
+        ]
+      }
+    ]
+  })
+}
+
 data "aws_iam_role" "ecsTaskExecutionRole" {
   name = "ecsTaskExecutionRole"
 }
