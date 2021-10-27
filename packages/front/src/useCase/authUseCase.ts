@@ -3,9 +3,9 @@ import { GoogleAuthProvider, signInWithPopup } from "firebase/auth"
 import { Dispatch } from "react"
 import { Action } from "@reducers/authReducer"
 
-export const authUseCase = () => {
+export default class AuthUseCase {
   /** サインイン */
-  const signIn = async (dispatch: Dispatch<Action>) => {
+  async signIn(dispatch: Dispatch<Action>) {
     const provider = new GoogleAuthProvider()
     await signInWithPopup(auth, provider)
       .then((result) => {
@@ -24,17 +24,15 @@ export const authUseCase = () => {
       })
   }
   // ログイン状態の検知
-  const isLoggedIn = async () => {
+  async isLoggedIn() {
     const isLoggedIn = auth.currentUser ? true : false
     return isLoggedIn
   }
 
   /**ログアウト */
-  const logout = () => {
+  logout() {
     auth.signOut().then(() => {
       window.location.reload()
     })
   }
-
-  return { signIn, isLoggedIn, logout }
 }

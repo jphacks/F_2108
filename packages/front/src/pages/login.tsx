@@ -1,15 +1,8 @@
-import React, {
-  useEffect,
-  useState,
-  FC,
-  useReducer,
-  ButtonHTMLAttributes,
-} from "react"
-import Link from "next/link"
+import React, { useEffect, FC, useReducer } from "react"
 import { useRouter } from "next/router"
-import { authUseCase } from "@useCase/authUseCase"
 import authReducer from "@reducers/authReducer"
 import { useAuth } from "@hooks/useAuth"
+import { authUseCase } from "@useCase"
 
 const Login: FC = () => {
   const router = useRouter()
@@ -25,7 +18,7 @@ const Login: FC = () => {
 
   const logIn = async () => {
     try {
-      await authUseCase().signIn(dispatch)
+      await authUseCase.signIn(dispatch)
       router.push("/pdf-sample")
     } catch (err) {
       console.log(err)
