@@ -10,18 +10,31 @@ export type UploadRequestBody = {
 }
 
 export type StampRequestBody = {
-  page: number
-  x: number
-  y: number
-  dataType: string
-  content: string
-}
+  page: string
+  x: string
+  y: string
+} & (
+  | {
+      dataType: "audio"
+      content: File
+      title: string
+    }
+  | {
+      dataType: "text"
+      content: string
+    }
+)
 
-export type CommentRequestBody = {
-  dataType: string
-  content: string
-  title: string
-}
+export type CommentRequestBody =
+  | {
+      dataType: "audio"
+      content: File
+      title: string
+    }
+  | {
+      dataType: "text"
+      content: string
+    }
 
 export type GetDetailResponse = {
   fileSnapshot: FileDataSnapshot
@@ -45,7 +58,7 @@ export type CommentResponse = {
   postedAt: string
 }
 
-type FileUseCaseInterface = {
+export type FileUseCaseInterface = {
   upload: (body: UploadRequestBody) => Promise<FileDataSnapshot>
   getList: () => Promise<FileDataSnapshot[]>
   getDetail: (fileId: string) => Promise<GetDetailResponse>
@@ -61,11 +74,15 @@ export class FileUseCase implements FileUseCaseInterface {
   constructor(private readonly restClient: RestClientInterface) {}
 
   public async upload(body: UploadRequestBody): Promise<FileDataSnapshot> {
-    return await this.restClient.post<UploadRequestBody, FileDataSnapshot>(
-      `/file`,
-      body,
-      true,
-    )
+    try {
+      const form = new FormData()
+      form.append("file", body.file)
+      form.append("name", body.name)
+      return await this.restClient.postForm<FileDataSnapshot>(`/file`, form)
+    } catch (e) {
+      console.log(e)
+      throw e
+    }
   }
 
   public async getList(): Promise<FileDataSnapshot[]> {
@@ -80,10 +97,16 @@ export class FileUseCase implements FileUseCaseInterface {
     body: StampRequestBody,
     fileId: string,
   ): Promise<StampResponse> {
-    return await this.restClient.post<StampRequestBody, StampResponse>(
+    const form = new FormData()
+    form.append("file", body.page)
+    form.append("file", body.x)
+    form.append("file", body.y)
+    form.append("file", body.dataType)
+    if ("title" in body) form.append("file", body.title)
+
+    return await this.restClient.postForm<StampResponse>(
       `/file/${fileId}`,
-      body,
-      true,
+      form,
     )
   }
 
@@ -92,9 +115,13 @@ export class FileUseCase implements FileUseCaseInterface {
     fileId: string,
     stampId: string,
   ): Promise<CommentResponse> {
-    return await this.restClient.post<CommentRequestBody, CommentResponse>(
+    const form = new FormData()
+    form.append("dataType", body.dataType)
+    form.append("content", body.content)
+    if ("title" in body) form.append("file", body.title)
+    return await this.restClient.postForm<CommentResponse>(
       `/file/${fileId}/stamp/${stampId}/comment`,
-      body,
+      form,
     )
   }
 }

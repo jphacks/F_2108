@@ -4,7 +4,8 @@ import { NetworkError } from "@lib/exception/NetworkError"
 
 export interface RestClientInterface {
   get: <Res>(path: string) => Promise<Res>
-  post: <Req, Res>(path: string, body: Req, isBinary?: boolean) => Promise<Res>
+  post: <Req, Res>(path: string, body: Req) => Promise<Res>
+  postForm: <Res>(path: string, formData: FormData) => Promise<Res>
   patch: <Req, Res>(path: string, body: Req) => Promise<Res>
   put: <Req, Res>(path: string, body: Req) => Promise<Res>
   delete: (path: string) => Promise<void>
@@ -12,7 +13,7 @@ export interface RestClientInterface {
 }
 
 // TODO:API_ORIGIN決まり次第ここに定義
-const API_ORIGIN: string = "https://hogehogehoge" || ""
+const API_ORIGIN: string = "http://localhost:8000" || ""
 
 export class RestClient implements RestClientInterface {
   constructor(private idToken?: string) {}
@@ -24,13 +25,19 @@ export class RestClient implements RestClientInterface {
       .then((res) => res.data)
   }
 
-  public async post<Req, Res>(
+  public async post<Req, Res>(path: string, body: Req): Promise<Res> {
+    return await axios
+      .post<Res>(path, body, this.requestConfig())
+      .catch(this.errorHandling)
+      .then((res) => res.data)
+  }
+
+  public async postForm<FormData, Res>(
     path: string,
-    body: Req,
-    isBinary = false,
+    formData: FormData,
   ): Promise<Res> {
     return await axios
-      .post<Res>(path, body, this.requestConfig(isBinary))
+      .post<Res>(path, formData, this.requestConfig(true))
       .catch(this.errorHandling)
       .then((res) => res.data)
   }
