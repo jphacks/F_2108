@@ -7,7 +7,7 @@ export default class AuthUseCase {
   /** サインイン */
   async signIn(dispatch: Dispatch<Action>) {
     const provider = new GoogleAuthProvider()
-    await signInWithPopup(auth, provider)
+    signInWithPopup(auth, provider)
       .then((result) => {
         const user = result.user
         dispatch({
@@ -25,8 +25,7 @@ export default class AuthUseCase {
   }
   // ログイン状態の検知
   async isLoggedIn() {
-    const isLoggedIn = auth.currentUser ? true : false
-    return isLoggedIn
+    return auth.currentUser != null
   }
 
   /**ログアウト */
