@@ -2,6 +2,8 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -43,6 +45,10 @@ export class File {
 
   @OneToMany(() => Stamp, (stamp) => stamp.file, { lazy: true })
   stamps: Promise<Stamp[]>
+
+  @ManyToMany(() => User, (user) => user.shared_files, { cascade: true })
+  @JoinTable()
+  shared_to: User[]
 
   fileType(currentUser: User): FileType {
     return this.author.id === currentUser.id ? "own" : "shared"

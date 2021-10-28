@@ -7,6 +7,7 @@ import {
   RawServerDefault,
 } from "fastify/types/utils"
 import { FastifyLoggerInstance } from "fastify/types/logger"
+import { IStorage } from "../storage/IStorage"
 
 declare module "fastify" {
   export interface FastifyInstance<
@@ -16,5 +17,6 @@ declare module "fastify" {
     Logger = FastifyLoggerInstance,
   > {
     currentUser(): User
+    storage(): IStorage
   }
 }

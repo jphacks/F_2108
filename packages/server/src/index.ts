@@ -7,24 +7,19 @@ import fastifyMultipart from "fastify-multipart"
 import { ResponseBody } from "./util/schema"
 import { stampHandler } from "./handler/stamp"
 import { commentHandler } from "./handler/comment"
-import * as admin from "firebase-admin"
+import { initializeApp } from "./util/auth"
+import { registerStorage } from "./storage/register"
 
 export let connection: Connection
 
+if (process.env.AUTH !== "false") {
+  initializeApp()
+}
+
 const server = Fastify()
 
+registerStorage(server)
 server.register(fastifyMultipart, { attachFieldsToBody: true })
-
-if (process.env.AUTH !== "false") {
-  admin.initializeApp({
-    credential: admin.credential.cert({
-      projectId: process.env.FIREBASE_ADMIN_PROJECT_ID,
-      clientEmail: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
-      // 改行文字を表す文字列を改行文字に変換
-      privateKey: process.env.FIREBASE_ADMIN_PRIVATE_KEY?.replace(/\\n/g, "\n"),
-    }),
-  })
-}
 
 server.get("/health", async (_, res) => res.send("ok"))
 server.register(fileHandler)

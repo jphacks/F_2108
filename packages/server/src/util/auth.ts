@@ -5,6 +5,7 @@ import { auth } from "firebase-admin"
 import { User } from "../entity/User"
 import { connection } from "../index"
 import DecodedIdToken = auth.DecodedIdToken
+import process from "process"
 
 export const registerFirebaseAuth = async (server: FastifyInstance) => {
   if (process.env.AUTH === "false") {
@@ -47,4 +48,13 @@ export const registerFirebaseAuth = async (server: FastifyInstance) => {
   })
 }
 
-// NOTE: This is dummy user for dev.
+export const initializeApp = () => {
+  admin.initializeApp({
+    credential: admin.credential.cert({
+      projectId: process.env.FIREBASE_ADMIN_PROJECT_ID,
+      clientEmail: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
+      // 改行文字を表す文字列を改行文字に変換
+      privateKey: process.env.FIREBASE_ADMIN_PRIVATE_KEY?.replace(/\\n/g, "\n"),
+    }),
+  })
+}
