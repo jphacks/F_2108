@@ -53,7 +53,7 @@ const pdf: NextPage = () => {
             </div>
           </div>
         )}
-      ></PDFViewer>
+      />
     </div>
   )
 }
