@@ -117,9 +117,8 @@ resource "aws_iam_role" "ecs" {
   }
 }
 
-resource "aws_iam_policy_attachment" "ecs-read-write-s3" {
-  name       = "${var.project}-ecs-read-write-s3"
-  roles      = [aws_iam_role.ecs.name]
+resource "aws_iam_role_policy_attachment" "ecs-read-write-s3" {
+  role       = aws_iam_role.ecs.name
   policy_arn = aws_iam_policy.read-write-s3.arn
 }
 

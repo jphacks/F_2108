@@ -3,7 +3,7 @@ resource "aws_lambda_function" "pdf-generator" {
   filename         = "index.zip"
   source_code_hash = filebase64sha256("../packages/pdf-generator/index.zip")
   role             = aws_iam_role.pdf-generator.arn
-  runtime          = "node12.x"
+  runtime          = "nodejs12.x"
   handler          = "index.handler"
 
   tags = {
@@ -32,9 +32,8 @@ resource "aws_iam_role" "pdf-generator" {
   }
 }
 
-resource "aws_iam_policy_attachment" "pdf-generator-read-write-s3" {
-  name       = "${var.project}-pdf-generator-read-write-s3"
-  roles      = [aws_iam_role.pdf-generator.name]
+resource "aws_iam_role_policy_attachment" "pdf-generator-read-write-s3" {
+  role       = aws_iam_role.pdf-generator.name
   policy_arn = aws_iam_policy.read-write-s3.arn
 }
 

@@ -28,6 +28,8 @@ resource "aws_s3_bucket" "main" {
 }
 
 resource "aws_iam_policy" "read-write-s3" {
+  name = "${var.project}-read-write-s3"
+
   policy = jsonencode({
     Version : "2012-10-17",
     Statement : [
@@ -44,4 +46,8 @@ resource "aws_iam_policy" "read-write-s3" {
       }
     ]
   })
+
+  tags = {
+    Project = var.project
+  }
 }
