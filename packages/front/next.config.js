@@ -1,4 +1,5 @@
 /** @type {import('next').NextConfig} */
+// eslint-disable-next-line
 module.exports = {
   reactStrictMode: true,
   webpack: (config) => {

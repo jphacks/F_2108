@@ -4,14 +4,17 @@ import { Comment, CommentDataType } from "../entity/Comment"
 import { MultipartFile, MultipartValue } from "fastify-multipart"
 import { File } from "../entity/File"
 import { Stamp } from "../entity/Stamp"
-import { connection, dummyUser } from "../index"
-import { LocalStorage } from "../storage/LocalStorage"
+import { connection } from "../index"
 import { buildCommentResponse } from "../util/responseBuilders"
 import createError from "fastify-error"
 import { ERR_INVALID_PAYLOAD } from "../util/errors"
 import { User } from "../entity/User"
+import { registerFirebaseAuth } from "../util/auth"
+import { IStorage } from "../storage/IStorage"
 
 export const commentHandler = async (server: FastifyInstance) => {
+  await registerFirebaseAuth(server)
+
   server.post<{
     Params: { fileId: string; stampId: number }
     Body: {
@@ -30,8 +33,9 @@ export const commentHandler = async (server: FastifyInstance) => {
     stamp.id = params.stampId
 
     const comment = await buildComment(
+      server.storage(),
       body.dataType.value,
-      dummyUser,
+      server.currentUser(),
       stamp,
       body.content,
       body.title?.value,
@@ -50,6 +54,7 @@ export const commentHandler = async (server: FastifyInstance) => {
 }
 
 export const buildComment = async (
+  storage: IStorage,
   dataType: CommentDataType,
   author: User,
   stamp: Stamp,
@@ -58,7 +63,7 @@ export const buildComment = async (
 ): Promise<Comment> => {
   const comment = new Comment()
   comment.data_type = dataType
-  comment.author = dummyUser
+  comment.author = author
   comment.stamp = stamp
 
   switch (dataType) {
@@ -81,7 +86,6 @@ export const buildComment = async (
       }
       const buffer = await audio.toBuffer()
 
-      const storage = new LocalStorage()
       const { url } = await storage.save("audio", filename, buffer)
       comment.content = url
 

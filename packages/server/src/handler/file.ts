@@ -1,7 +1,6 @@
 import { FastifyInstance } from "fastify"
 import { File } from "../entity/File"
-import { connection, dummyUser } from "../index"
-import { LocalStorage } from "../storage/LocalStorage"
+import { connection } from "../index"
 import { MultipartFile, MultipartValue } from "fastify-multipart"
 import { ResponseBody } from "../util/schema"
 import {
@@ -11,18 +10,33 @@ import {
 } from "../util/responseBuilders"
 import createError from "fastify-error"
 import { ERR_BAD_URL, ERR_INVALID_PAYLOAD } from "../util/errors"
+import { registerFirebaseAuth } from "../util/auth"
+import { User } from "../entity/User"
 
 export const fileHandler = async (server: FastifyInstance) => {
+  await registerFirebaseAuth(server)
+
   server.get<{ Reply: ResponseBody }>("/file", async (req, res) => {
     const repository = connection.getRepository(File)
 
-    // TODO: find only own and shared files
-    const files = await repository.find()
+    const currentUser = new User()
+    currentUser.id = server.currentUser().id
+
+    const files = await repository
+      .createQueryBuilder("file")
+      .innerJoinAndSelect("file.author", "author")
+      .innerJoinAndSelect("file.updated_by", "updated_by")
+      .leftJoin("file.shared_to", "shared_to")
+      .where("file.author.id = :authorId", { authorId: currentUser.id })
+      .orWhere("shared_to.id = :sharedToUserId", {
+        sharedToUserId: currentUser.id,
+      })
+      .getMany()
 
     res.send({
       result: "success",
       data: files.map((f) => ({
-        type: f.fileType(dummyUser),
+        type: f.fileType(server.currentUser()),
         file: buildFileResponse(f),
         updatedAt: f.updated_at,
         updatedBt: buildUserResponse(f.updated_by),
@@ -35,7 +49,8 @@ export const fileHandler = async (server: FastifyInstance) => {
     async (req, res) => {
       const fileId = req.params.fileId
 
-      const query = connection.getRepository(File).createQueryBuilder("file")
+      const repository = connection.getRepository(File)
+      const query = repository.createQueryBuilder("file")
 
       const file = await query
         .innerJoinAndSelect("file.author", "file_author")
@@ -56,6 +71,9 @@ export const fileHandler = async (server: FastifyInstance) => {
         throw new e()
       }
 
+      file.shared_to = [server.currentUser()]
+      await repository.save(file)
+
       const stamps = await file.stamps
       const stampsResponse = await Promise.all(
         stamps.map((s) => buildStampResponse(s)),
@@ -65,7 +83,7 @@ export const fileHandler = async (server: FastifyInstance) => {
         result: "success",
         data: {
           fileSnapshot: {
-            type: file.fileType(dummyUser),
+            type: file.fileType(server.currentUser()),
             file: buildFileResponse(file),
             updatedAt: file.updated_at,
             updatedBy: buildUserResponse(file.updated_by),
@@ -88,15 +106,14 @@ export const fileHandler = async (server: FastifyInstance) => {
     const buffer = await file.toBuffer()
     const filename = file.filename
 
-    const storage = new LocalStorage()
-    const { url } = await storage.save("file", filename, buffer)
+    const { url } = await server.storage().save("file", filename, buffer)
 
     const fileModel = new File()
     fileModel.name = req.body.name.value
     fileModel.url = url
     fileModel.thumbnail = "dummy-thumbnail-url" // TODO: create thumbnail and pass its url
-    fileModel.author = dummyUser
-    fileModel.updated_by = dummyUser
+    fileModel.author = server.currentUser()
+    fileModel.updated_by = server.currentUser()
 
     const repository = connection.getRepository(File)
     const result = await repository.save(fileModel)

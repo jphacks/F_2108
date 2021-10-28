@@ -4,23 +4,24 @@ import * as process from "process"
 import { ormconfig } from "./config/ormconfig"
 import { fileHandler } from "./handler/file"
 import fastifyMultipart from "fastify-multipart"
-import { User } from "./entity/User"
 import { ResponseBody } from "./util/schema"
 import { stampHandler } from "./handler/stamp"
 import { commentHandler } from "./handler/comment"
+import { initializeApp } from "./util/auth"
+import { registerStorage } from "./storage/register"
 
 export let connection: Connection
 
-// TODO: this is dummy user for local demo
-export const dummyUser = new User()
-dummyUser.id = "abc"
-dummyUser.name = "dummy user"
-dummyUser.icon_url = "/user/icon/dummy.png"
+if (process.env.AUTH !== "false") {
+  initializeApp()
+}
 
 const server = Fastify()
 
+registerStorage(server)
 server.register(fastifyMultipart, { attachFieldsToBody: true })
 
+server.get("/health", async (_, res) => res.send("ok"))
 server.register(fileHandler)
 server.register(stampHandler)
 server.register(commentHandler)
@@ -38,7 +39,7 @@ server.setErrorHandler<FastifyError, { Reply: ResponseBody }>((err, _, res) => {
 const start = async () => {
   try {
     connection = await createConnection(ormconfig)
-    const PORT = process.env.PORT || 3000
+    const PORT = process.env.APP_PORT || 3000
     await server.listen(PORT, "0.0.0.0")
     console.log(`listening localhost:${PORT}`)
   } catch (e) {

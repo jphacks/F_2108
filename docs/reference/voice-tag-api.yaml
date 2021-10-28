@@ -1,0 +1,686 @@
+openapi: 3.1.0
+info:
+  title: voice-tag-api
+  version: '1.0'
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  /login:
+    parameters: []
+    post:
+      summary: ログイン
+      operationId: post-login
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessResponse'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+      description: ログインを行う
+      tags:
+        - auth
+  /file:
+    post:
+      summary: ファイルアップロード
+      operationId: post-file
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: string
+                    enum:
+                      - success
+                  data:
+                    $ref: '#/components/schemas/FileDataSnapshot'
+                required:
+                  - result
+                  - data
+              examples:
+                example:
+                  value:
+                    result: success
+                    data:
+                      type: own
+                      file:
+                        id: string
+                        author:
+                          id: qwerty
+                          name: joen doe
+                          iconUrl: 'http://example.com/icon/qwerty.png'
+                        name: filename
+                        postedAt: '2019-08-24T14:15:22Z'
+                        url: 'http://example.com'
+                        thumbnail: 'http://example.com'
+                      updatedAt: '2019-08-24T14:15:22Z'
+                      updatedBy:
+                        id: qwerty
+                        name: joen doe
+                        iconUrl: 'http://example.com/icon/qwerty.png'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/ErrorResponse'
+      description: ファイル（PDF）のアップロード
+      parameters: []
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: アップロードするPDFファイル
+                name:
+                  type: string
+                  description: ファイル名
+              required:
+                - file
+                - name
+            examples:
+              example:
+                value:
+                  file: ファイル
+                  name: ファイル名
+        description: ''
+      tags:
+        - file
+    get:
+      summary: ファイル一覧
+      operationId: get-file
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: string
+                    enum:
+                      - success
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/FileDataSnapshot'
+                required:
+                  - result
+                  - data
+              examples:
+                example:
+                  value:
+                    result: success
+                    data:
+                      - type: own
+                        file:
+                          id: file_id
+                          author:
+                            id: qwerty
+                            name: joen doe
+                            iconUrl: 'http://example.com/icon/qwerty.png'
+                          name: filename
+                          postedAt: '2019-08-24T14:15:22Z'
+                          url: 'http://example.com'
+                          thumbnail: 'http://example.com'
+                        updatedAt: '2019-08-25T14:15:22Z'
+                        updatedBy:
+                          id: qwerty
+                          name: joen doe
+                          iconUrl: 'http://example.com/icon/qwerty.png'
+                      - type: shared
+                        file:
+                          id: file_id2
+                          author:
+                            id: qwerty
+                            name: joen doe
+                            iconUrl: 'http://example.com/icon/qwerty.png'
+                          name: filename
+                          postedAt: '2019-08-24T14:15:22Z'
+                          url: 'http://example.com'
+                          thumbnail: 'http://example.com'
+                        updatedAt: '2019-08-25T14:15:22Z'
+                        updatedBy:
+                          id: qwerty
+                          name: joen doe
+                          iconUrl: 'http://example.com/icon/qwerty.png'
+        '401':
+          $ref: '#/components/responses/ErrorResponse'
+      description: 自分がアクセスできるファイルのリストを取得する（つまり、自分がアップロードしたファイルおよび共有されたファイルのリストを取得する）
+      tags:
+        - file
+  '/file/{fileId}':
+    parameters:
+      - schema:
+          type: string
+        name: fileId
+        in: path
+        required: true
+        description: ファイルID
+    get:
+      summary: ファイル詳細
+      tags:
+        - file
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: string
+                    enum:
+                      - success
+                  data:
+                    type: object
+                    required:
+                      - fileSnapshot
+                      - stamps
+                    properties:
+                      fileSnapshot:
+                        $ref: '#/components/schemas/FileDataSnapshot'
+                      stamps:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Stamp'
+                required:
+                  - result
+                  - data
+              examples:
+                example:
+                  value:
+                    result: success
+                    data:
+                      fileSnapshot:
+                        type: own
+                        file:
+                          id: string
+                          author:
+                            id: qwerty
+                            name: joen doe
+                            iconUrl: 'http://example.com/icon/qwerty.png'
+                          name: filename
+                          postedAt: '2019-08-24T14:15:22Z'
+                          url: 'http://example.com'
+                          thumbnail: 'http://example.com'
+                        updatedAt: '2019-08-24T14:15:22Z'
+                        updatedBy:
+                          id: qwerty
+                          name: joen doe
+                          iconUrl: 'http://example.com/icon/qwerty.png'
+                      stamps:
+                        - id: 0
+                          author:
+                            id: qwerty
+                            name: joen doe
+                            iconUrl: 'http://example.com/icon/qwerty.png'
+                          comments:
+                            - id: 1
+                              dataType: audio
+                              content: 'http://example.com/audio'
+                              author:
+                                id: qwerty
+                                name: joen doe
+                                iconUrl: 'http://example.com/icon/qwerty.png'
+                              postedAt: '2019-08-24T14:15:22Z'
+                            - id: 2
+                              dataType: text
+                              content: コメント
+                              author:
+                                id: qwerty
+                                name: joen doe
+                                iconUrl: 'http://example.com/icon/qwerty.png'
+                              postedAt: '2019-08-25T14:15:22Z'
+                          position:
+                            page: 0
+                            x: 0.3
+                            'y': 0.45
+        '400':
+          description: Bad Request
+        '401':
+          $ref: '#/components/responses/ErrorResponse'
+      operationId: get-file-fileId
+      description: ファイルの詳細情報を取得する
+  '/file/{fileId}/stamp':
+    parameters:
+      - schema:
+          type: string
+        name: fileId
+        in: path
+        required: true
+    post:
+      summary: スタンプ投稿
+      operationId: post-file-fileId-stamp
+      description: スタンプと、スレッドの一つめのコメントを投稿する
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                page:
+                  type: integer
+                  description: スタンプを追加するページ
+                x:
+                  type: integer
+                  description: 該当ページの左上を原点としたx座標（0~1に正規化）
+                'y':
+                  type: integer
+                  description: 該当ページの左上を原点としたy座標（0~1に正規化）
+                dataType:
+                  $ref: '#/components/schemas/DataType'
+                content:
+                  type: string
+                  description: 文字列（テキスト）または音声ファイル（オーディオ）
+                title:
+                  type: string
+                  description: コメントのタイトル（音声データの場合のみ含む）
+              required:
+                - page
+                - x
+                - 'y'
+                - dataType
+                - content
+            examples:
+              example:
+                value:
+                  page: 1
+                  x: 0.2
+                  'y': 0.8
+                  dataType: audio
+                  content: string
+        description: ''
+      tags:
+        - file
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: string
+                    enum:
+                      - success
+                  data:
+                    $ref: '#/components/schemas/Stamp'
+                required:
+                  - result
+                  - data
+              examples:
+                example:
+                  value:
+                    result: success
+                    data:
+                      id: 0
+                      author:
+                        id: qwerty
+                        name: joen doe
+                        iconUrl: 'http://example.com/icon/qwerty.png'
+                      comments:
+                        - id: 1
+                          dataType: audio
+                          content: audio file binary or url to audio file
+                          author:
+                            id: qwerty
+                            name: joen doe
+                            iconUrl: 'http://example.com/icon/qwerty.png'
+                          postedAt: '2019-08-24T14:15:22Z'
+                          title: タイトル
+                      position:
+                        page: 0
+                        x: 0
+                        'y': 0
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/ErrorResponse'
+  '/file/{fileId}/stamp/{stampId}/comment':
+    parameters:
+      - schema:
+          type: string
+        name: fileId
+        in: path
+        required: true
+      - schema:
+          type: string
+        name: stampId
+        in: path
+        required: true
+    post:
+      summary: コメント投稿
+      operationId: post-file-fileId-stamp-stampId-comment
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: string
+                    enum:
+                      - success
+                  data:
+                    $ref: '#/components/schemas/Comment'
+                required:
+                  - result
+                  - data
+              examples:
+                example:
+                  value:
+                    result: success
+                    data:
+                      id: 1
+                      dataType: audio
+                      content: string
+                      author:
+                        id: qwerty
+                        name: joen doe
+                        iconUrl: 'http://example.com/icon/qwerty.png'
+                      postedAt: '2019-08-24T14:15:22Z'
+                      title: タイトル
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/ErrorResponse'
+      description: コメントを投稿する
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - dataType
+                - content
+              properties:
+                dataType:
+                  $ref: '#/components/schemas/DataType'
+                content:
+                  type: string
+                  description: 文字列（テキスト）または音声バイナリ（オーディオ）
+                title:
+                  type: string
+                  description: コメントのタイトル（音声データの場合のみ含む）
+            examples:
+              example:
+                value:
+                  dataType: audio
+                  content: string
+                  title: タイトル
+        description: ''
+      tags:
+        - file
+components:
+  schemas:
+    FileData:
+      title: FileData
+      type: object
+      description: ファイル
+      examples:
+        - id: string
+          author:
+            id: qwerty
+            name: joen doe
+            iconUrl: 'http://example.com/icon/qwerty.png'
+          name: filename
+          postedAt: '2019-08-24T14:15:22Z'
+          url: 'http://example.com'
+          thumbnail: 'http://example.com'
+      properties:
+        id:
+          type: string
+        author:
+          $ref: '#/components/schemas/User'
+        name:
+          type: string
+          description: ファイル名
+        postedAt:
+          type: string
+          format: date-time
+        url:
+          type: string
+          format: uri
+          description: pdfファイルへのurl
+        thumbnail:
+          type: string
+          format: uri
+          description: サムネイル画像のurl
+      required:
+        - id
+        - author
+        - name
+        - postedAt
+        - url
+        - thumbnail
+    User:
+      title: User
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+          description: displayName
+        iconUrl:
+          type: string
+          format: uri
+          description: アイコン画像のURL
+      required:
+        - id
+        - name
+        - iconUrl
+      examples:
+        - id: qwerty
+          name: joen doe
+          iconUrl: 'http://example.com/icon/qwerty.png'
+      description: ユーザー
+    FileDataSnapshot:
+      title: FileDataSnapshot
+      type: object
+      examples:
+        - type: own
+          file:
+            id: string
+            author:
+              id: qwerty
+              name: joen doe
+              iconUrl: 'http://example.com/icon/qwerty.png'
+            name: filename
+            postedAt: '2019-08-24T14:15:22Z'
+            url: 'http://example.com'
+            thumbnail: 'http://example.com'
+          updatedAt: '2019-08-24T14:15:22Z'
+          updatedBy:
+            id: qwerty
+            name: joen doe
+            iconUrl: 'http://example.com/icon/qwerty.png'
+      properties:
+        type:
+          type: string
+          enum:
+            - own
+            - shared
+          description: 自分がアップロードしたものか、共有されたものか
+        file:
+          $ref: '#/components/schemas/FileData'
+        updatedAt:
+          type: string
+          format: date-time
+          description: ''
+        updatedBy:
+          $ref: '#/components/schemas/User'
+      required:
+        - type
+        - file
+        - updatedAt
+      description: 特定のユーザーが所有するファイル
+    Stamp:
+      title: Stamp
+      type: object
+      examples:
+        - id: 0
+          author:
+            id: qwerty
+            name: joen doe
+            iconUrl: 'http://example.com/icon/qwerty.png'
+          comments:
+            - id: 1
+              dataType: audio
+              content: audio file binary or url to audio file
+              author:
+                id: qwerty
+                name: joen doe
+                iconUrl: 'http://example.com/icon/qwerty.png'
+              postedAt: '2019-08-24T14:15:22Z'
+            - id: 2
+              dataType: text
+              content: コメント
+              author:
+                id: qwerty
+                name: joen doe
+                iconUrl: 'http://example.com/icon/qwerty.png'
+              postedAt: '2019-08-25T14:15:22Z'
+          position:
+            page: 0
+            x: 0
+            'y': 0
+      description: スタンプ
+      properties:
+        id:
+          type: integer
+        author:
+          $ref: '#/components/schemas/User'
+        comments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Comment'
+        position:
+          $ref: '#/components/schemas/Position'
+      required:
+        - id
+        - author
+        - comments
+        - position
+    Comment:
+      title: Comment
+      type: object
+      examples:
+        - id: 1
+          dataType: audio
+          content: string
+          author:
+            id: qwerty
+            name: joen doe
+            iconUrl: 'http://example.com/icon/qwerty.png'
+          postedAt: '2019-08-24T14:15:22Z'
+          title: タイトル
+      description: スタンプに連なるコメント
+      properties:
+        id:
+          type: integer
+        dataType:
+          $ref: '#/components/schemas/DataType'
+        content:
+          type: string
+          description: 文字列（テキスト）または音声ファイル（バイナリ or URL）
+        author:
+          $ref: '#/components/schemas/User'
+        postedAt:
+          type: string
+          format: date-time
+        title:
+          type: string
+          description: コメントのタイトル（音声データの場合のみ含まれる）
+      required:
+        - id
+        - dataType
+        - content
+        - author
+        - postedAt
+    Position:
+      title: Position
+      type: object
+      description: スタンプの位置情報
+      properties:
+        page:
+          type: integer
+          description: ページ数
+        x:
+          description: 該当ページの左上を原点としたx座標（0~1に正規化）
+          type: number
+        'y':
+          description: 該当ページの左上を原点としたy座標（0~1に正規化）
+          type: number
+      required:
+        - page
+        - x
+        - 'y'
+      examples:
+        - page: 2
+          x: 0.64
+          'y': 0.23
+    DataType:
+      type: string
+      title: DataType
+      description: コメントのデータの種類（音声 or テキスト）
+      enum:
+        - audio
+        - text
+      examples:
+        - audio
+  securitySchemes:
+    idtoken:
+      type: http
+      scheme: bearer
+      description: GoogleログインのIDトークン
+  responses:
+    SuccessResponse:
+      description: 成功
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              result:
+                type: string
+                enum:
+                  - success
+    ErrorResponse:
+      description: 失敗
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              result:
+                type: string
+                enum:
+                  - error
+              error:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    description: 識別子
+                  message:
+                    type: string
+                    description: エラーメッセージ
+          examples:
+            example:
+              result: error
+              error:
+                code: ERROR_CODE_HERE
+                message: error message
+security:
+  - idtoken: []

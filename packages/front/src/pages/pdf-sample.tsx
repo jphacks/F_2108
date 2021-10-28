@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from "react"
 import dynamic from "next/dynamic"
-import type { PDFViewerProps } from "../components/PdfViewer"
+import type { PDFViewerProps } from "../components/components/PdfViewer"
 import type { NextPage } from "next"
 import { useRouter } from "next/router"
 import { useAuth } from "@hooks/useAuth"
 import { authUseCase } from "@useCase"
 
 const PDFViewer: React.ComponentType<PDFViewerProps> = dynamic(
-  () => import("../components/PdfViewer").then((module) => module.PDFViewer),
+  () =>
+    import("../components/components/PdfViewer").then(
+      (module) => module.PDFViewer,
+    ),
   {
     ssr: false,
   },

@@ -13,10 +13,18 @@
     "format": "prettier --check \"**/*.{js,ts,json}\" .",
     "fix": "run-p lint:fix format:fix",
     "lint:fix": "yarn lint --fix",
-    "format:fix": "yarn format --write"
+    "format:fix": "yarn format --write",
+    "typeorm": "yarn ts-node ./node_modules/.bin/typeorm",
+    "migrate:generate": "yarn typeorm migration:generate -f ./src/config/ormconfig.ts",
+    "migrate:run": "yarn typeorm migration:run -f ./src/config/ormconfig.ts",
+    "migrate:revert": "yarn typeorm migration:revert -f ./src/config/ormconfig.ts",
+    "migrate:show": "yarn typeorm migration:show -f ./src/config/ormconfig.ts",
+    "schema:sync": "yarn typeorm schema:sync -f ./src/config/ormconfig.ts",
+    "schema:drop": "yarn typeorm schema:drop -f ./src/config/ormconfig.ts"
   },
   "license": "MIT",
   "devDependencies": {
+    "@types/aws-sdk": "^2.7.0",
     "@types/busboy": "^0.3.1",
     "@types/node": "^16.11.4",
     "dotenv": "^10.0.0",
@@ -24,9 +32,12 @@
     "typescript": "^4.4.4"
   },
   "dependencies": {
+    "aws-sdk": "^2.1015.0",
     "fastify": "^3.22.1",
+    "fastify-bearer-auth": "^6.0.0",
     "fastify-error": "^0.3.1",
     "fastify-multipart": "^5.0.2",
+    "firebase-admin": "^10.0.0",
     "mysql2": "^2.3.2",
     "reflect-metadata": "^0.1.13",
     "typeorm": "^0.2.38"
