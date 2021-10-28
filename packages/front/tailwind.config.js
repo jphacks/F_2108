@@ -12,7 +12,7 @@ module.exports = {
       colors: {
         primary: "#F4E12F",
         black: "#333333",
-        bgBlack: "#858585",
+        bgBlack: "#b6b6b6",
       },
       boxShadow: {
         paper: "4px 8px 4px rgba(0, 0, 0, 0.1)",
