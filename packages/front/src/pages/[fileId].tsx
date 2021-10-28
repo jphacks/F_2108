@@ -1,5 +1,6 @@
 import React, { useState } from "react"
 import { NextPage } from "next"
+import Link from "next/link"
 import dynamic from "next/dynamic"
 import type { PDFViewerProps } from "@components/components/PdfViewer"
 import Stamp from "@components/atoms/Stamp"
@@ -88,45 +89,68 @@ const FileDetail: NextPage = () => {
           </div>
         )}
       />
+      {/* サイドバー */}
       <div className="fixed top-0 right-0 p-4 m-4 space-y-8 rounded bg-bgBlack/60">
-        <button
-          className="flex items-center justify-center transition bg-white rounded-full w-14 h-14 shadow-paper hover:bg-gray-100"
-          aria-label="シェア"
-        >
-          <Share />
-        </button>
-        <div className="flex flex-col items-center space-y-2 bg-white rounded-full shadow-paper">
-          <button
-            className="flex items-center justify-center transition bg-white rounded-full w-14 h-14 hover:bg-gray-100"
-            onClick={() => setSizeRate((prev) => prev + 1)}
-            disabled={12 <= sizeRate}
-            aria-label="拡大"
-          >
-            <Plus />
-          </button>
-          <button
-            className="flex items-center justify-center transition bg-white rounded-full w-14 h-14 hover:bg-gray-100"
-            onClick={() => setSizeRate((prev) => prev - 1)}
-            disabled={sizeRate <= 1}
-            aria-label="縮小"
-          >
-            <Minus />
-          </button>
-        </div>
+        <ShareButton onClick={() => console.log("share")} />
+        <SizeRateButton sizeRate={sizeRate} setSizeRate={setSizeRate} />
       </div>
+      {/* 戻るボタン */}
       <div className="fixed top-0 left-0 m-4 space-y-8 rounded">
-        <button
-          className="flex items-center justify-center px-4 py-2 text-white transition rounded-full hover:bg-gray-100 hover:text-black group"
-          aria-label="ダッシュボードへ戻る"
-        >
-          <ArrowLeft className="mr-2" />
-          <span className="opacity-0 pointer-events-none group-hover:opacity-100">
-            ダッシュボード
-          </span>
-        </button>
+        <BackButton />
       </div>
     </div>
   )
 }
 
 export default FileDetail
+
+const ShareButton: React.VFC<{ onClick: () => void }> = ({ onClick }) => (
+  <button
+    className="flex items-center justify-center transition bg-white rounded-full w-14 h-14 shadow-paper hover:bg-gray-100"
+    title="シェア"
+    aria-label="シェア"
+    onClick={onClick}
+  >
+    <Share />
+  </button>
+)
+
+const SizeRateButton: React.VFC<{
+  sizeRate: number
+  setSizeRate: React.Dispatch<React.SetStateAction<number>>
+}> = ({ sizeRate, setSizeRate }) => (
+  <div className="flex flex-col items-center space-y-2 bg-white rounded-full shadow-paper">
+    <button
+      className="flex items-center justify-center transition bg-white rounded-full w-14 h-14 hover:bg-gray-100"
+      onClick={() => setSizeRate((prev) => prev + 1)}
+      disabled={12 <= sizeRate}
+      title="拡大"
+      aria-label="拡大"
+    >
+      <Plus />
+    </button>
+    <button
+      className="flex items-center justify-center transition bg-white rounded-full w-14 h-14 hover:bg-gray-100"
+      onClick={() => setSizeRate((prev) => prev - 1)}
+      disabled={sizeRate <= 1}
+      title="縮小"
+      aria-label="縮小"
+    >
+      <Minus />
+    </button>
+  </div>
+)
+
+const BackButton: React.VFC = () => (
+  <Link href="/dashboard">
+    <a
+      className="flex items-center justify-center px-4 py-2 text-white transition rounded-full hover:bg-gray-100 hover:text-black group"
+      aria-label="ダッシュボードへ戻る"
+    >
+      <ArrowLeft className="mr-2" />
+      <span className="opacity-0 pointer-events-none group-hover:opacity-100">
+        ダッシュボード
+      </span>
+    </a>
+  </Link>
+)
