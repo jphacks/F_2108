@@ -17,6 +17,7 @@
     "autoprefixer": "^10.3.7",
     "axios": "^0.23.0",
     "konva": "^8.2.3",
+    "lodash.debounce": "^4.0.8",
     "next": "11.1.2",
     "postcss": "^8.3.11",
     "react": "17.0.2",
@@ -26,6 +27,7 @@
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "^11.1.2",
+    "@types/lodash.debounce": "^4.0.6",
     "@types/react": "17.0.31",
     "@types/react-pdf": "^5.0.8",
     "eslint": "^8.0.1",
