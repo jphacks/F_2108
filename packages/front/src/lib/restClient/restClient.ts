@@ -8,20 +8,23 @@ export interface RestClientInterface {
   patch: <Req, Res>(path: string, body: Req) => Promise<Res>
   put: <Req, Res>(path: string, body: Req) => Promise<Res>
   delete: (path: string) => Promise<void>
+  setIdToken: (idToken: string) => void
 }
 
 // TODO:API_ORIGIN決まり次第ここに定義
 const API_ORIGIN: string = "https://hogehogehoge" || ""
 
 export class RestClient implements RestClientInterface {
-  async get<Res>(path: string): Promise<Res> {
+  constructor(private idToken?: string) {}
+
+  public async get<Res>(path: string): Promise<Res> {
     return await axios
       .get<Res>(path, this.requestConfig())
       .catch(this.errorHandling)
       .then((res) => res.data)
   }
 
-  async post<Req, Res>(
+  public async post<Req, Res>(
     path: string,
     body: Req,
     isBinary = false,
@@ -32,33 +35,40 @@ export class RestClient implements RestClientInterface {
       .then((res) => res.data)
   }
 
-  async patch<Req, Res>(path: string, body: Req): Promise<Res> {
+  public async patch<Req, Res>(path: string, body: Req): Promise<Res> {
     return await axios
       .patch<Res>(path, body, this.requestConfig())
       .catch(this.errorHandling)
       .then((res) => res.data)
   }
 
-  async put<Req, Res>(path: string, body: Req): Promise<Res> {
+  public async put<Req, Res>(path: string, body: Req): Promise<Res> {
     return await axios
       .put<Res>(path, body, this.requestConfig())
       .catch(this.errorHandling)
       .then((res) => res.data)
   }
 
-  async delete(path: string): Promise<void> {
+  public async delete(path: string): Promise<void> {
     return await axios
       .delete<void>(path, this.requestConfig())
       .catch(this.errorHandling)
       .then((res) => res.data)
   }
 
+  public setIdToken(idToken?: string) {
+    this.idToken = idToken
+  }
+
   private requestConfig(isBinary = false): AxiosRequestConfig {
+    const authorization =
+      this.idToken != null ? { Authorization: `Bearer ${this.idToken}` } : null
     return {
       baseURL: API_ORIGIN,
       withCredentials: true,
       headers: {
         "Content-Type": isBinary ? "multipart/form-data" : "application/json",
+        ...authorization,
       },
     }
   }
@@ -87,6 +97,6 @@ export class RestClient implements RestClientInterface {
   }
 }
 
-export const getClient = (): RestClientInterface => {
-  return new RestClient()
+export const getClient = (idToken?: string): RestClientInterface => {
+  return new RestClient(idToken)
 }

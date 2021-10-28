@@ -7,11 +7,12 @@ import {
   StampRequestBody,
   StampResponse,
   UploadRequestBody,
-} from "@useCse/file/fileUseCase"
+} from "@useCase/file/fileUseCase"
 import { getClient } from "@lib/restClient/restClient"
 import { errorHandler } from "@lib/ErrorHandler"
+import { useAuth } from "./useAuth"
 
-type useFile = {
+type UseFile = {
   UploadFile: (body: UploadRequestBody) => Promise<FileDataSnapshot>
   fetchFileList: () => Promise<FileDataSnapshot[]>
   fetchFileDetail: (fileId: string) => Promise<GetDetailResponse>
@@ -23,8 +24,14 @@ type useFile = {
   ) => Promise<CommentResponse>
 }
 
-export const useFile = (): useFile => {
-  const fileUseCase = new FileUseCase(getClient())
+export const useFile = (): UseFile => {
+  const user = useAuth()
+  const apiClient = getClient()
+  const fileUseCase = new FileUseCase(apiClient)
+
+  user?.getIdToken().then((idToken) => {
+    apiClient.setIdToken(idToken)
+  })
 
   const UploadFile = async (body: UploadRequestBody) => {
     return await fileUseCase
