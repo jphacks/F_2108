@@ -14,13 +14,13 @@ const Index: React.VFC = () => {
   const [isOpenModal, setIsOpenModal] = useState(false)
   const user = useAuth()
   const router = useRouter()
-  const fileUsecase = useFile()
+  const fileUseCase = useFile()
 
   useEffect(() => {
     !user && router.push("/login")
   }, [user])
 
-  const { data: files } = useRequest(() => fileUsecase.fetchFileList(), [])
+  const { data: files } = useRequest(() => fileUseCase.fetchFileList(), [])
 
   //TODO:ここのsearchNameを使い配列をfilterする
   const [searchName, setSearchName] = useState<string>("")
