@@ -20,3 +20,14 @@ a {
   margin-left: auto;
   margin-right: auto;
 }
+
+.scrollbar-none {
+  height: 150px;
+  overflow-y: scroll;
+  -ms-overflow-style: none; /* IE, Edge 対応 */
+  scrollbar-width: none; /* Firefox 対応 */
+}
+.scrollbar-none::-webkit-scrollbar {
+  /* Chrome, Safari 対応 */
+  display: none;
+}

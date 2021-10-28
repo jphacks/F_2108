@@ -1,6 +1,10 @@
-import { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 import RecorderService from "../lib/js/RecordService"
 import axios from "axios"
+import dynamic from "next/dynamic"
+const AudioGraph = dynamic(() => import("@components/atoms/AudioGraph"), {
+  ssr: false,
+})
 
 interface Recording {
   ts: number
@@ -13,25 +17,37 @@ const audioPlay = () => {
   const [recorderService, setRecorderService] = useState<any>(null)
   const [recordings, setRecordings] = useState<Recording[]>([])
   const [recordingInProgress, setRecordingInProgress] = useState<boolean>()
+  const [volumes, setVolumes] = useState<number[]>([])
 
   useEffect(() => {
-    if (recorderService) {
-      window.addEventListener("keypress", handleKeypress)
+    // if (recorderService) {
+    //   window.addEventListener("keypress", handleKeypress)
+    //   return
+    // }
 
-      return
-    }
-
-    setRecorderService(new RecorderService())
-  }, [recorderService])
+    const _recorderService = new RecorderService((volume: number) => {
+      setVolumes((prev) => {
+        const newValue = [...prev, volume]
+        const maxValue = Math.max(...newValue)
+        if (0.25 < maxValue) {
+          return newValue.map((v) => v / maxValue)
+        } else {
+          return newValue
+        }
+      })
+    })
+    setRecorderService(_recorderService)
+  }, [])
 
   const handleRecording = (evt: { detail: { recording: Recording } }) => {
+    console.log(evt)
     onNewRecording(evt)
   }
 
-  const handleKeypress = () => {
-    window.removeEventListener("keypress", handleKeypress)
-    handleClickBtnRecording()
-  }
+  // const handleKeypress = () => {
+  //   window.removeEventListener("keypress", handleKeypress)
+  //   handleClickBtnRecording()
+  // }
 
   const handleClickBtnRecording = () => {
     if (recordingInProgress) {
@@ -66,8 +82,6 @@ const audioPlay = () => {
     setRecordings([...recordings, evt.detail.recording])
   }
 
-  console.log(recordings.map((r) => r.blobUrl))
-
   // Blob形式でサーバーにアップロードする
   // HACK:使っているライブラリでBlobを隠蔽し、Blob URLを返しているので、再変換する必要がある
   // https://github.com/kaliatech/web-audio-recording-tests
@@ -97,17 +111,17 @@ const audioPlay = () => {
 
           return (
             <li key={recording.ts}>
-              {console.log(recording.blobUrl)}
               <audio src={recording.blobUrl} controls />
             </li>
           )
         })}
       </ol>
+      <AudioGraph data={volumes} progress={1} width={300} height={100} />
       <footer>
         <button
           onClick={handleClickBtnRecording}
           data-recording-in-progress={String(recordingInProgress || false)}
-          className="btn-recording bg-red-500 text-white rounded-lg p-4 font-bold"
+          className="p-4 font-bold text-white bg-red-500 rounded-lg btn-recording"
         >
           {recordingInProgress ? "録音停止" : "録音開始"}
         </button>
