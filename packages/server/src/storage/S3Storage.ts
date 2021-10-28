@@ -5,11 +5,7 @@ import { ERR_INTERNAL_SERVER } from "../util/errors"
 
 export class S3Storage implements IStorage {
   constructor(
-    private readonly s3 = new S3({
-      accessKeyId: "AKIASURP2L2B66IBLZBZ",
-      secretAccessKey: "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",
-      region: process.env.AWS_REGION,
-    }),
+    private readonly s3 = new S3({ region: process.env.AWS_REGION }),
   ) {}
 
   async save(
