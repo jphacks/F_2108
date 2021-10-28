@@ -4,7 +4,8 @@ RUN mkdir -p /app/packages/server
 WORKDIR /app
 
 COPY package.json ./
-COPY packages/server/package*.json ./packages/server
+COPY yarn.lock ./
+COPY packages/server/package.json ./packages/server
 RUN yarn install
 
 COPY tsconfig.json ./
