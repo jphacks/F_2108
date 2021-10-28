@@ -30,7 +30,7 @@ const FileDetail: NextPage = () => {
         {
           id: "1",
           dataType: "audio",
-          content: "http://example.com/audio",
+          content: "/dog.wav",
           author: {
             id: "qwerty",
             name: "joen doe",
