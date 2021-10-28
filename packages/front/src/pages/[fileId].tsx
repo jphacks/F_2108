@@ -2,10 +2,10 @@ import React, { useState } from "react"
 import { NextPage } from "next"
 import dynamic from "next/dynamic"
 import type { PDFViewerProps } from "@components/components/PdfViewer"
-import IconPlayButton from "@components/organisms/IconPlayButton"
 import Stamp from "@components/atoms/Stamp"
 import { Stamp as StampModel } from "@domain/stamp"
 import { useWindowSize } from "@hooks/useWindowSize"
+import { Share, Plus, Minus, ArrowLeft } from "react-feather"
 const PDFViewer: React.ComponentType<PDFViewerProps> = dynamic(
   () =>
     import("../components/components/PdfViewer").then(
@@ -59,17 +59,18 @@ const FileDetail: NextPage = () => {
   ])
 
   const { width } = useWindowSize()
+  const [sizeRate, setSizeRate] = useState(6)
 
   return (
-    <div className="flex flex-col items-center w-full px-[10vw] py-8 bg-bgBlack/60">
+    <div className="flex flex-col items-center w-full px-[10vw] py-8 bg-bgBlack relative">
       <PDFViewer
-        src="/sample.pdf"
+        src="/sample2.pdf"
         stamps={stamps}
         onStampAdd={(page, x, y) => {
           console.log("add stamp")
           // setStamps((prev) => [...prev, { page, x, y, id: prev.length }])
         }}
-        width={width * 0.6}
+        width={width * (sizeRate / 10.0)}
         stampRender={(stamp) => (
           <div className="relative">
             <Stamp stamp={stamp} />
@@ -87,6 +88,43 @@ const FileDetail: NextPage = () => {
           </div>
         )}
       />
+      <div className="fixed top-0 right-0 p-4 m-4 space-y-8 rounded bg-bgBlack/60">
+        <button
+          className="flex items-center justify-center transition bg-white rounded-full w-14 h-14 shadow-paper hover:bg-gray-100"
+          aria-label="シェア"
+        >
+          <Share />
+        </button>
+        <div className="flex flex-col items-center space-y-2 bg-white rounded-full shadow-paper">
+          <button
+            className="flex items-center justify-center transition bg-white rounded-full w-14 h-14 hover:bg-gray-100"
+            onClick={() => setSizeRate((prev) => prev + 1)}
+            disabled={12 <= sizeRate}
+            aria-label="拡大"
+          >
+            <Plus />
+          </button>
+          <button
+            className="flex items-center justify-center transition bg-white rounded-full w-14 h-14 hover:bg-gray-100"
+            onClick={() => setSizeRate((prev) => prev - 1)}
+            disabled={sizeRate <= 1}
+            aria-label="縮小"
+          >
+            <Minus />
+          </button>
+        </div>
+      </div>
+      <div className="fixed top-0 left-0 m-4 space-y-8 rounded">
+        <button
+          className="flex items-center justify-center px-4 py-2 text-white transition rounded-full hover:bg-gray-100 hover:text-black group"
+          aria-label="ダッシュボードへ戻る"
+        >
+          <ArrowLeft className="mr-2" />
+          <span className="opacity-0 pointer-events-none group-hover:opacity-100">
+            ダッシュボード
+          </span>
+        </button>
+      </div>
     </div>
   )
 }
