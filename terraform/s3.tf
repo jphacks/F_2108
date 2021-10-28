@@ -26,3 +26,22 @@ resource "aws_s3_bucket" "main" {
     Project = var.project
   }
 }
+
+resource "aws_iam_policy" "read-write-s3" {
+  policy = jsonencode({
+    Version : "2012-10-17",
+    Statement : [
+      {
+        "Effect" : "Allow",
+        "Action" : [
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:PutObjectAcl"
+        ],
+        Resource : [
+          "arn:aws:s3:::${aws_s3_bucket.main.bucket}/*"
+        ]
+      }
+    ]
+  })
+}

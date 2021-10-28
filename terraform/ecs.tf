@@ -117,24 +117,10 @@ resource "aws_iam_role" "ecs" {
   }
 }
 
-resource "aws_iam_role_policy" "access-s3" {
-  role = aws_iam_role.ecs.id
-
-  policy = jsonencode({
-    Version : "2012-10-17",
-    Statement : [
-      {
-        "Effect" : "Allow",
-        "Action" : [
-          "s3:GetObject",
-          "s3:PutObject"
-        ],
-        Resource : [
-          "arn:aws:s3:::${aws_s3_bucket.main.bucket}/*"
-        ]
-      }
-    ]
-  })
+resource "aws_iam_policy_attachment" "ecs-read-write-s3" {
+  name       = "${var.project}-ecs-read-write-s3"
+  roles      = [aws_iam_role.ecs.name]
+  policy_arn = aws_iam_policy.read-write-s3.arn
 }
 
 data "aws_iam_role" "ecsTaskExecutionRole" {
