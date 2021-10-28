@@ -1,12 +1,13 @@
-import React, { Fragment, useEffect, useRef, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import axios from "axios"
-import { Stage, Layer, Rect } from "react-konva"
 import { analyzeAudioWave } from "@lib/audio/analyzeAudioWave"
-import AudioGraph from "@components/atoms/AudioGraph"
-import { Icon } from "@components/atoms/Icon"
 import { formatSec } from "@lib/formatTime"
 import IconPlayButton from "@components/organisms/IconPlayButton"
 import { AudioComment } from "@domain/comment"
+import dynamic from "next/dynamic"
+const AudioGraph = dynamic(() => import("@components/atoms/AudioGraph"), {
+  ssr: false,
+})
 
 /** サンプリング数 */
 const SAMPLING_COUNT = 60
@@ -28,7 +29,7 @@ const AudioIndicator: React.VFC<AudioWaveProps> = ({ comment, onPlayEnd }) => {
   // 再生中か
   const [isPlaying, setIsPlaying] = useState<boolean>(false)
   // 既に再生済みでないか
-  const notPlayedYet = useRef<boolean>(true)
+  const [notPlayedYet, setNotPlayedYet] = useState(true)
   // 現在再生中のミリ秒（リレンダリングのために利用）
   const [_, setProgressMs] = useState<number>(0)
   const timer = useRef<NodeJS.Timer | null>(null)
@@ -54,12 +55,13 @@ const AudioIndicator: React.VFC<AudioWaveProps> = ({ comment, onPlayEnd }) => {
     audio.current.addEventListener("ended", () => {
       if (timer.current != null) {
         clearInterval(timer.current)
-        setIsPlaying(false)
-        if (audio.current != null) {
-          audio.current.currentTime = 0.0
-          setProgressMs(0)
-          onPlayEnd?.()
-        }
+      }
+      setIsPlaying(false)
+      setNotPlayedYet(true)
+      if (audio.current != null) {
+        audio.current.currentTime = 0.0
+        setProgressMs(0)
+        onPlayEnd?.()
       }
     })
   }, [])
@@ -81,7 +83,7 @@ const AudioIndicator: React.VFC<AudioWaveProps> = ({ comment, onPlayEnd }) => {
     if (audio.current == null) {
       return
     }
-    notPlayedYet.current = false
+    setNotPlayedYet(false)
     setIsPlaying(true)
     audio.current.play()
     timer.current = setInterval(() => {
@@ -110,7 +112,7 @@ const AudioIndicator: React.VFC<AudioWaveProps> = ({ comment, onPlayEnd }) => {
     audio.current.currentTime =
       audio.current.duration * (selectedIndex / SAMPLING_COUNT)
     setProgressMs(audio.current.currentTime * 1000)
-    if (notPlayedYet.current) {
+    if (notPlayedYet) {
       play()
     }
   }
@@ -122,13 +124,14 @@ const AudioIndicator: React.VFC<AudioWaveProps> = ({ comment, onPlayEnd }) => {
       : audio.current.currentTime / audio.current.duration
 
   return (
-    <section className="px-4 pt-4 pb-2 text-white bg-black rounded-2xl">
+    <section className="text-white rounded-2xl">
       <div className="flex items-center space-x-4">
         <div className="flex-shrink-0">
           <IconPlayButton
             user={comment.author}
             size={54}
             state={isPlaying ? "playing" : "default"}
+            alwaysShowIcon={isPlaying || !notPlayedYet}
             onClick={() => playOrPause()}
           />
         </div>
@@ -156,7 +159,9 @@ const AudioIndicator: React.VFC<AudioWaveProps> = ({ comment, onPlayEnd }) => {
         </div>
       </div>
       <div className="text-xs text-right tabular-nums">
-        {audio.current != null && formatSec(audio.current.duration)}
+        {audio.current != null &&
+          Number.isInteger(audio.current.duration) &&
+          formatSec(audio.current.duration)}
       </div>
     </section>
   )
