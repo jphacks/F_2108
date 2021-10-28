@@ -23,16 +23,10 @@ services:
     build:
       context: ../../
       dockerfile: packages/server/Dockerfile
+    image: f-2108-app
     command: yarn dev:server
     environment:
-      PORT: $APP_PORT
-      NODE_ENV: $NODE_ENV
-      AUTH: $AUTH
       DB_HOST: db
-      DB_PORT: $DB_PORT
-      DB_USER: $DB_USER
-      DB_PASSWORD: $DB_PASSWORD
-      DB_NAME: $DB_NAME
     volumes:
       - .:/app/packages/server
     expose:
@@ -43,6 +37,7 @@ services:
   web:
     build:
       context: nginx
+    image: f-2108-nginx
     environment:
       APP_HOST: app
       APP_PORT: $APP_PORT
