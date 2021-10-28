@@ -13,7 +13,7 @@ import { errorHandler } from "@lib/ErrorHandler"
 import { useAuth } from "./useAuth"
 
 type UseFile = {
-  UploadFile: (body: UploadRequestBody) => Promise<FileDataSnapshot>
+  uploadFile: (body: UploadRequestBody) => Promise<FileDataSnapshot>
   fetchFileList: () => Promise<FileDataSnapshot[]>
   fetchFileDetail: (fileId: string) => Promise<GetDetailResponse>
   postStamp: (body: StampRequestBody, fileId: string) => Promise<StampResponse>
@@ -33,7 +33,7 @@ export const useFile = (): UseFile => {
     apiClient.setIdToken(idToken)
   })
 
-  const UploadFile = async (body: UploadRequestBody) => {
+  const uploadFile = async (body: UploadRequestBody) => {
     return await fileUseCase
       .upload(body)
       .catch((error: Error) => errorHandler({ error }))
@@ -68,7 +68,7 @@ export const useFile = (): UseFile => {
   }
 
   return {
-    UploadFile,
+    uploadFile,
     fetchFileList,
     fetchFileDetail,
     postStamp,
