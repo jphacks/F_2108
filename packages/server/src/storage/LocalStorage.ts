@@ -6,12 +6,12 @@ export class LocalStorage implements IStorage {
     type: "file" | "audio",
     filename: string,
     content: Buffer,
-  ): Promise<{ url: string }> {
+  ): Promise<{ fileUrl: string }> {
     const url = `/${type}/${filename}`
     const path = __dirname + url
 
     await writeFile(path, content)
 
-    return { url }
+    return { fileUrl: url }
   }
 }

@@ -86,8 +86,8 @@ export const buildComment = async (
       }
       const buffer = await audio.toBuffer()
 
-      const { url } = await storage.save("audio", filename, buffer)
-      comment.content = url
+      const { fileUrl } = await storage.save("audio", filename, buffer)
+      comment.content = fileUrl
 
       if (title) comment.title = title
 

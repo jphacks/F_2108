@@ -106,12 +106,15 @@ export const fileHandler = async (server: FastifyInstance) => {
     const buffer = await file.toBuffer()
     const filename = file.filename
 
-    const { url } = await server.storage().save("file", filename, buffer)
+    const { fileUrl, thumbnailUrl } = await server
+      .storage()
+      .save("file", filename, buffer)
 
     const fileModel = new File()
     fileModel.name = req.body.name.value
-    fileModel.url = url
-    fileModel.thumbnail = "dummy-thumbnail-url" // TODO: create thumbnail and pass its url
+    fileModel.url = fileUrl
+    fileModel.thumbnail =
+      thumbnailUrl ?? "Thumbnail is generated only in production mode."
     fileModel.author = req.currentUser
     fileModel.updated_by = req.currentUser
 

@@ -23,7 +23,6 @@ const Index: React.VFC = () => {
 
   const { data: files } = useRequest(() => fileUseCase.fetchFileList(), [])
 
-  //TODO:ここのsearchNameを使い配列をfilterする
   const [searchName, setSearchName] = useState<string>("")
 
   const openModal = () => {
@@ -33,6 +32,11 @@ const Index: React.VFC = () => {
   const handleLogout = () => {
     authUseCase.logout()
   }
+
+  // FIXME: 暫定で前方一致検索を実装
+  const sortedFiles = files.filter((file) =>
+    file.file.name.startsWith(searchName),
+  )
 
   return (
     <div className="h-screen bg-gray-200">
@@ -45,27 +49,36 @@ const Index: React.VFC = () => {
         }
         onClick={openModal}
       />
-      <header className="w-full text-gray-100 bg-black shadow body-font">
-        <div className="container flex flex-col flex-wrap items-center p-4 md:flex-row ">
-          <Image
-            src="/logo.png"
-            width={180}
-            height={80}
-            className="w-full object-fit"
-          />
-          <div className="flex ml-12 justify-first">
+      <header className="w-full h-[80px] text-gray-100 bg-black shadow body-font px-16 py-4">
+        <div className="container flex flex-col flex-wrap items-center h-full md:flex-row">
+          <div className="relative flex-1 flex-shrink-0">
+            <Image
+              src="/logo.png"
+              className="object-fit"
+              width={(50 * 289) / 100}
+              height={50}
+            />
+          </div>
+          <div className="flex-1 h-full">
             <SearchInput setter={setSearchName} value={searchName} />
           </div>
+          <div className="flex justify-end flex-1 flex-shrink-0 h-full">
+            <button
+              className="h-full px-4 ml-auto transition rounded-lg hover:bg-white/10 focus:bg-white/10"
+              onClick={handleLogout}
+            >
+              ログアウト
+            </button>
+          </div>
         </div>
-        <button onClick={handleLogout}>ログアウト</button>
       </header>
       <div className="mt-4 ml-20">
         <AddButton onClick={openModal} />
       </div>
-      <div className="mx-auto">
+      <div className="mx-auto mt-4">
         <ul className="grid w-2/3 gap-6 mx-auto sm:grid-cols-2 xl:grid-cols-3">
-          {files.map((file) => (
-            <li key={file.file.id} className="mx-auto">
+          {sortedFiles.map((file) => (
+            <li key={file.file.id}>
               <ListElement file={file} />
             </li>
           ))}

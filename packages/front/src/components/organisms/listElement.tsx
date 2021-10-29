@@ -1,7 +1,11 @@
-import { FileDataSnapshot } from "@domain/fileDataSnapshot"
+import React from "react"
 import Link from "next/link"
 import Image from "next/image"
-import React from "react"
+import { FileDataSnapshot } from "@domain/fileDataSnapshot"
+import { Play, Share } from "react-feather"
+import { formatTime } from "@lib/formatTime"
+import { Icon } from "@components/atoms/Icon"
+import { useAuth } from "@hooks/useAuth"
 
 export type ListElementProps = {
   file: FileDataSnapshot
@@ -18,39 +22,77 @@ export type ListElementProps = {
 
 export const ListElement: React.VFC<ListElementProps> = ({ file }) => {
   return (
-    <Link href={`/${file.file.id}`}>
-      <a>
-        <div className="max-w-sm bg-white border border-gray-200 rounded-lg shadow-md">
-          <a href="#">
-            <Image
-              src={file.file.thumbnail}
-              width={200}
-              height={100}
-              className="object-cover pointer-events-none"
-            />
-          </a>
-          <div className="p-5">
-            <div className="flex">
+    <div className="relative">
+      <Link href={`/${file.file.id}`}>
+        <a>
+          <div className="flex flex-col w-full overflow-hidden bg-white border border-gray-300 border-solid rounded-lg hover:border-gray-400 hover:bg-gray-100 group">
+            <div className="relative w-full h-[200px]">
               <Image
-                src="/play.png"
-                width={35}
-                height={10}
-                className="pointer-events-none"
+                src={file.file.thumbnail}
+                layout="fill"
+                className="object-cover pointer-events-none"
               />
-              <div className="flex items-center ml-2">
-                <p className="mt-2 mb-2 font-bold tracking-tight text-gray-900">
-                  {file.file.name}
-                </p>
+              {file.type === "shared" && (
+                <span className="absolute bottom-0 right-0 px-1 py-0.5 m-2 text-xs font-bold text-white bg-blue-400 rounded">
+                  共有されたファイル
+                </span>
+              )}
+            </div>
+            <div className="px-5 py-3">
+              <div className="flex items-center">
+                <div className="flex flex-col items-center justify-center p-2 bg-black rounded-full">
+                  <Play
+                    fill="white"
+                    stroke="white"
+                    className="translate-x-[1.5px]"
+                    size={8}
+                  />
+                </div>
+                <div className="flex items-center min-w-0 ml-2">
+                  <p
+                    className="mt-2 mb-2 font-bold leading-none tracking-tight text-gray-900 underline truncate transition text-decoration-transparent group-hover:text-decoration-auto"
+                    title={file.file.name}
+                  >
+                    {file.file.name}
+                  </p>
+                </div>
+              </div>
+              <div className="flex mt-1 ml-8">
+                <span className="inline-block mr-2">
+                  <Icon user={file.updatedBy ?? file.file.author} size={24} />
+                </span>
+                <LastUpdateInfo file={file} />
               </div>
             </div>
-            <p className="mt-3 mb-3 font-normal text-gray-700">
-              {file.updatedBy != null
-                ? `${file.updatedBy?.name} が ${file.updatedAt} に編集`
-                : `${file.file.author.name} が ${file.file.postedAt} に編集`}
-            </p>
           </div>
-        </div>
-      </a>
-    </Link>
+        </a>
+      </Link>
+      <div className="absolute top-0 right-0 m-4">
+        <button className="p-2 transition bg-white border border-gray-300 border-solid rounded-full hover:bg-gray-100 hover:border-gray-400">
+          <Share size={16} />
+        </button>
+      </div>
+    </div>
+  )
+}
+
+const LastUpdateInfo: React.VFC<{ file: FileDataSnapshot }> = ({ file }) => {
+  const currentUser = useAuth()
+  const userName =
+    (file.updatedBy ?? file.file.author).id === currentUser?.uid
+      ? "あなた"
+      : `${file.updatedBy?.name ?? file.file.author.name}さん`
+  const text =
+    file.updatedBy != null
+      ? `${userName}が ${formatTime(new Date(file.updatedAt))}に編集`
+      : `${userName}が ${formatTime(new Date(file.file.postedAt))}に作成`
+
+  return (
+    <p
+      className="text-sm font-normal leading-6 text-gray-500 truncate"
+      title={text}
+    >
+      {text}
+    </p>
   )
 }

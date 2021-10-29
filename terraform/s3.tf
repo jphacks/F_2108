@@ -26,3 +26,39 @@ resource "aws_s3_bucket" "main" {
     Project = var.project
   }
 }
+
+resource "aws_iam_policy" "read-write-s3" {
+  name = "${var.project}-read-write-s3"
+
+  policy = jsonencode({
+    Version : "2012-10-17",
+    Statement : [
+      {
+        "Effect" : "Allow",
+        "Action" : [
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:PutObjectAcl"
+        ],
+        Resource : [
+          "arn:aws:s3:::${aws_s3_bucket.main.bucket}/*"
+        ]
+      }
+    ]
+  })
+
+  tags = {
+    Project = var.project
+  }
+}
+
+resource "aws_s3_bucket_notification" "on-created" {
+  bucket = aws_s3_bucket.main.id
+
+  lambda_function {
+    lambda_function_arn = aws_lambda_function.pdf-generator.arn
+    events              = ["s3:ObjectCreated:*"]
+    filter_prefix       = "file/"
+    filter_suffix       = ".pdf"
+  }
+}
