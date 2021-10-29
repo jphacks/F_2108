@@ -20,16 +20,16 @@ export class RestClient implements RestClientInterface {
 
   public async get<Res>(path: string): Promise<Res> {
     return await axios
-      .get<Res>(path, this.requestConfig())
+      .get<{ data: Res }>(path, this.requestConfig())
       .catch(this.errorHandling)
-      .then((res) => res.data)
+      .then((res) => res.data.data)
   }
 
   public async post<Req, Res>(path: string, body: Req): Promise<Res> {
     return await axios
-      .post<Res>(path, body, this.requestConfig())
+      .post<{ data: Res }>(path, body, this.requestConfig())
       .catch(this.errorHandling)
-      .then((res) => res.data)
+      .then((res) => res.data.data)
   }
 
   public async postForm<FormData, Res>(
@@ -37,23 +37,23 @@ export class RestClient implements RestClientInterface {
     formData: FormData,
   ): Promise<Res> {
     return await axios
-      .post<Res>(path, formData, this.requestConfig(true))
+      .post<{ data: Res }>(path, formData, this.requestConfig(true))
       .catch(this.errorHandling)
-      .then((res) => res.data)
+      .then((res) => res.data.data)
   }
 
   public async patch<Req, Res>(path: string, body: Req): Promise<Res> {
     return await axios
-      .patch<Res>(path, body, this.requestConfig())
+      .patch<{ data: Res }>(path, body, this.requestConfig())
       .catch(this.errorHandling)
-      .then((res) => res.data)
+      .then((res) => res.data.data)
   }
 
   public async put<Req, Res>(path: string, body: Req): Promise<Res> {
     return await axios
-      .put<Res>(path, body, this.requestConfig())
+      .put<{ data: Res }>(path, body, this.requestConfig())
       .catch(this.errorHandling)
-      .then((res) => res.data)
+      .then((res) => res.data.data)
   }
 
   public async delete(path: string): Promise<void> {
