@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "ts-node-dev --require dotenv/config --transpile-only --rs ./src/index.ts",
     "build": "tsc -p .",
-    "start": "node --require dotenv/config ./dist/index.js",
+    "start": "node --require dotenv/config ./dist/src/app.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint --ext \".js,.ts\" --cache ./src",
     "type-check": "tsc -p . --noEmit",
@@ -14,10 +14,13 @@
     "fix": "run-p lint:fix format:fix",
     "lint:fix": "yarn lint --fix",
     "format:fix": "yarn format --write",
-    "migrate:generate": "yarn ts-node ./node_modules/.bin/typeorm migration:generate -f ./src/config/ormconfig.ts",
-    "migrate:run": "yarn ts-node ./node_modules/.bin/typeorm migration:run -f ./src/config/ormconfig.ts",
-    "migrate:revert": "yarn ts-node ./node_modules/.bin/typeorm migration:revert -f ./src/config/ormconfig.ts",
-    "migrate:show": "yarn ts-node ./node_modules/.bin/typeorm migration:show -f ./src/config/ormconfig.ts"
+    "typeorm": "yarn ts-node ./node_modules/.bin/typeorm",
+    "migrate:generate": "yarn typeorm migration:generate -f ./src/config/ormconfig.ts",
+    "migrate:run": "yarn typeorm migration:run -f ./src/config/ormconfig.ts",
+    "migrate:revert": "yarn typeorm migration:revert -f ./src/config/ormconfig.ts",
+    "migrate:show": "yarn typeorm migration:show -f ./src/config/ormconfig.ts",
+    "schema:sync": "yarn typeorm schema:sync -f ./src/config/ormconfig.ts",
+    "schema:drop": "yarn typeorm schema:drop -f ./src/config/ormconfig.ts"
   },
   "license": "MIT",
   "devDependencies": {
@@ -32,6 +35,7 @@
     "aws-sdk": "^2.1015.0",
     "fastify": "^3.22.1",
     "fastify-bearer-auth": "^6.0.0",
+    "fastify-cors": "^6.0.2",
     "fastify-error": "^0.3.1",
     "fastify-multipart": "^5.0.2",
     "firebase-admin": "^10.0.0",

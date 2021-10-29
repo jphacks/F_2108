@@ -9,6 +9,7 @@ import { stampHandler } from "./handler/stamp"
 import { commentHandler } from "./handler/comment"
 import { initializeApp } from "./util/auth"
 import { registerStorage } from "./storage/register"
+import cors from "fastify-cors"
 
 export let connection: Connection
 
@@ -18,6 +19,7 @@ if (process.env.AUTH !== "false") {
 
 const server = Fastify()
 
+server.register(cors)
 registerStorage(server)
 server.register(fastifyMultipart, { attachFieldsToBody: true })
 

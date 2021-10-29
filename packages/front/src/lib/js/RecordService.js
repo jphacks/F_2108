@@ -6,8 +6,13 @@ import EncoderMp3 from "./encoder-mp3-worker.js"
 import EncoderOgg from "./encoder-ogg-worker.js"
 
 export default class RecorderService {
-  constructor(baseUrl) {
+  /**
+   * @param {(volume: number) => void} [callback] リアルタイムに音量を返すコールバック
+   * @param {string} [baseUrl] URL
+   */
+  constructor(callback, baseUrl) {
     this.baseUrl = baseUrl
+    this.callback = callback
 
     window.AudioContext = window.AudioContext || window.webkitAudioContext
 
@@ -22,7 +27,7 @@ export default class RecorderService {
 
     this.config = {
       broadcastAudioProcessEvents: false,
-      createAnalyserNode: false,
+      createAnalyserNode: true,
       createDynamicsCompressorNode: false,
       forceScriptProcessor: false,
       manualEncoderId: "wav",
@@ -43,7 +48,12 @@ export default class RecorderService {
     return new Worker(URL.createObjectURL(blob))
   }
 
-  startRecording(timeslice) {
+  /**
+   *
+   * @param {number} [timeslice] タイムスライス
+   * @returns
+   */
+  async startRecording(timeslice) {
     if (this.state !== "inactive") {
       return
     }
@@ -54,7 +64,7 @@ export default class RecorderService {
       !navigator.mediaDevices ||
       !navigator.mediaDevices.getUserMedia
     ) {
-      alert("Missing support for navigator.mediaDevices.getUserMedia") // temp: helps when testing for strange issues on ios/safari
+      alert("マイク入力がサポートされていません") // temp: helps when testing for strange issues on ios/safari
       return
     }
 
@@ -67,7 +77,16 @@ export default class RecorderService {
     }
 
     if (this.config.createAnalyserNode) {
-      this.analyserNode = this.audioCtx.createAnalyser()
+      /** @type {AudioContext} audioCtx */
+      const audioCtx = this.audioCtx
+      this.analyserNode = audioCtx.createAnalyser()
+      if (this.callback != null) {
+        this.timer = setInterval(() => {
+          const volume = this._getByteFrequencyDataAverage()
+          // よくわからないけど多分範囲は128なので128で割る
+          this.callback(volume / 128.0)
+        }, 300)
+      }
     }
 
     // If not using MediaRecorder(i.e. safari and edge), then a script processor is required. It's optional
@@ -143,7 +162,7 @@ export default class RecorderService {
         this._startRecordingWithStream(stream, timeslice)
       })
       .catch((error) => {
-        alert("Error with getUserMedia: " + error.message) // temp: helps when testing for strange issues on ios/safari
+        alert("エラーが発生しました") // temp: helps when testing for strange issues on ios/safari
         console.log(error)
       })
   }
@@ -155,6 +174,22 @@ export default class RecorderService {
     }
   }
 
+  _getByteFrequencyDataAverage() {
+    if (this.analyserNode == null) {
+      return
+    }
+    const frequencies = new Uint8Array(this.analyserNode.frequencyBinCount)
+    // 配列に周波数ごとの音量を格納
+    this.analyserNode.getByteTimeDomainData(frequencies)
+    // 最大値。おそらく127が基準なので127引く
+    return Math.max(...frequencies) - 127
+  }
+
+  /**
+   *
+   * @param {MediaStream} stream ストリーム
+   * @param {number?} timeslice タイムスライス
+   */
   _startRecordingWithStream(stream, timeslice) {
     this.micAudioStream = stream
 
@@ -231,6 +266,7 @@ export default class RecorderService {
   }
 
   _onAudioProcess(e) {
+    console.log("_onAudioProcess")
     // console.log('onaudioprocess', e)
     // let inputBuffer = e.inputBuffer
     // let outputBuffer = e.outputBuffer
@@ -318,15 +354,19 @@ export default class RecorderService {
       //   this.encoderWorker.postMessage(['dump', this.audioCtx.sampleRate])
       // }, 100)
     }
+    if (this.timer != null) {
+      clearInterval(this.timer)
+    }
   }
 
   _onDataAvailable(evt) {
     // console.log('state', this.mediaRecorder.state)
-    // console.log('evt.data', evt.data)
+    console.log("evt.data", evt.data)
 
     this.chunks.push(evt.data)
     this.chunkType = evt.data.type
 
+    console.log(this.state)
     if (this.state !== "inactive") {
       return
     }
@@ -385,6 +425,7 @@ export default class RecorderService {
       this.audioCtx = null
     }
 
+    console.log("dispatch")
     this.em.dispatchEvent(
       new CustomEvent("recording", { detail: { recording: recording } }),
     )

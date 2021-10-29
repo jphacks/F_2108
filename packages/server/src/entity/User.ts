@@ -2,6 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToMany,
   OneToMany,
   PrimaryColumn,
   UpdateDateColumn,
@@ -44,4 +45,7 @@ export class User {
 
   @OneToMany(() => Comment, (comment) => comment.author)
   comments: Comment[]
+
+  @ManyToMany(() => File, (file) => file.shared_to)
+  shared_files: File[]
 }
