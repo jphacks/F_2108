@@ -2,15 +2,8 @@ import { useEffect, useState } from "react"
 import { Document, Page, pdfjs } from "react-pdf"
 import workerSrc from "./pdf-worker"
 import "react-pdf/dist/esm/Page/AnnotationLayer.css"
+import { Stamp } from "@domain/stamp"
 pdfjs.GlobalWorkerOptions.workerSrc = workerSrc
-
-// FIXME: Modelが未実装なので暫定。Modelが完成し次第修正（yuta-ike）
-export type Stamp = {
-  page: number
-  x: number
-  y: number
-  id: number
-}
 
 export type PDFViewerProps = {
   /** 表示するPDFのURL */
@@ -21,6 +14,7 @@ export type PDFViewerProps = {
   stampRender: (stamp: Stamp) => React.ReactNode
   /** ユーザーがスタンプ追加動作を行なった場合に呼ばれるコールバック */
   onStampAdd?: (page: number, x: number, y: number) => void
+  width: number
 }
 
 export const PDFViewer: React.VFC<PDFViewerProps> = ({
@@ -28,6 +22,7 @@ export const PDFViewer: React.VFC<PDFViewerProps> = ({
   stamps,
   onStampAdd,
   stampRender,
+  width,
 }) => {
   const [numPages, setNumPages] = useState<number>(0)
 
@@ -69,33 +64,54 @@ export const PDFViewer: React.VFC<PDFViewerProps> = ({
     <div className="relative flex">
       <Document
         file={src}
-        onLoadSuccess={({ numPages }) => {
-          setNumPages(numPages)
-        }}
+        onLoadSuccess={(documentProxy) => setNumPages(documentProxy.numPages)}
         externalLinkTarget="_blank"
+        className="space-y-4"
       >
         {Array.from({ length: numPages }, (_, index) => (
-          <div className="relative" key={`page_${index + 1}`}>
-            <Page
-              pageNumber={index + 1}
-              renderAnnotationLayer={true}
-              renderTextLayer={true}
-              className="react-pdf-page-div"
-            />
-            {stamps
-              .filter(({ page }) => page === index + 1)
-              .map(({ x, y, id }) => (
-                <div
-                  key={id}
-                  className="absolute z-10 transform -translate-x-1/2 -translate-y-1/2"
-                  style={{ top: y, left: x }}
-                >
-                  {stampRender({ x, y, page: index + 1, id })}
-                </div>
-              ))}
-          </div>
+          <PdfPage
+            key={`page_${index + 1}`}
+            pageNum={index + 1}
+            stamps={stamps.filter(
+              ({ position: { page } }) => page === index + 1,
+            )}
+            stampRender={stampRender}
+            width={width}
+          />
         ))}
       </Document>
+    </div>
+  )
+}
+
+const PdfPage: React.VFC<{
+  pageNum: number
+  stamps: Stamp[]
+  stampRender: PDFViewerProps["stampRender"]
+  width?: number
+}> = ({ pageNum, stamps, stampRender, width }) => {
+  return (
+    <div className="relative">
+      <Page
+        pageNumber={pageNum}
+        renderAnnotationLayer={true}
+        renderTextLayer={true}
+        className="react-pdf-page-div shadow-paper"
+        width={width}
+        onLoadSuccess={(page) => console.log("getViewport", page.getViewport())}
+      />
+      {stamps.map((stamp) => (
+        <div
+          key={stamp.id}
+          className="absolute z-10 transform -translate-x-1/2 -translate-y-1/2"
+          style={{
+            top: `${stamp.position.y * 100}%`,
+            left: `${stamp.position.x * 100}%`,
+          }}
+        >
+          {stampRender(stamp)}
+        </div>
+      ))}
     </div>
   )
 }
