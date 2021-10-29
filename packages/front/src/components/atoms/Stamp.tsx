@@ -82,7 +82,7 @@ const StampIcon: React.VFC<{ stamp: StampModel; open: boolean }> = ({
         (open ? "opacity-0" : "")
       }
     />
-    {0 < stamp.comments.length && (
+    {2 <= stamp.comments.length && (
       <span className="absolute flex items-center justify-center w-5 h-5 text-[9px] tracking-tighter font-bold leading-none text-black rounded-full tabular-nums bg-primary top-[-10%] right-[-10%]">
         +{stamp.comments.length}
       </span>

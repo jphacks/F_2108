@@ -7,6 +7,8 @@ import { AudioComment } from "@domain/comment"
 import dynamic from "next/dynamic"
 const AudioGraph = dynamic(() => import("@components/atoms/AudioGraph"), {
   ssr: false,
+  // TODO: loading表示
+  // loading
 })
 
 /** サンプリング数 */
@@ -147,7 +149,7 @@ const AudioIndicator: React.VFC<AudioWaveProps> = ({ comment, onPlayEnd }) => {
             )}
             {comment.title}
           </h1>
-          <div style={{ minHeight: CANVAS_HEIGHT }}>
+          <div style={{ minHeight: CANVAS_HEIGHT, minWidth: CANVAS_WIDTH }}>
             <AudioGraph
               data={data}
               progress={progress}
