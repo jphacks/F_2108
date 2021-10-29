@@ -5,7 +5,7 @@ resource "aws_lambda_function" "pdf-generator" {
   role             = aws_iam_role.pdf-generator.arn
   runtime          = "nodejs12.x"
   handler          = "index.handler"
-  memory_size      = 512
+  memory_size      = 1024
   timeout          = 10
 
   layers = [
