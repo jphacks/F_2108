@@ -8,7 +8,7 @@ import { Toast, ToastType } from "@components/components/toast"
  * props無し。独自にURLを取得してきてクリップボードにコピーするコンポーネント
  */
 
-const UrlShare: React.VFC<{}> = () => {
+const UrlShare: React.VFC = () => {
   const [toastMessage, setToastMessage] = useState<string>("")
   const [toastType, setToastType] = useState<ToastType>(ToastType.Notification)
   const [toastState, setToastState] = useState<boolean>(false)
@@ -62,7 +62,7 @@ const UrlShare: React.VFC<{}> = () => {
         isShow={toastState}
         isShowSetter={setToastState}
       />
-      <section className="w-1/3 bg-black rounded-2xl p-10 shadow-paper">
+      <section className="mx-auto w-1/3 bg-black rounded-2xl p-10 shadow-paper">
         <div className="text-center font-bold text-2xl text-white">
           共有リンクURL
         </div>
