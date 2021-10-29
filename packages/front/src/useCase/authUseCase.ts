@@ -1,4 +1,4 @@
-import { auth } from "../lib/auth"
+import { auth } from "../lib/firebase"
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth"
 import { Dispatch } from "react"
 import { Action } from "@reducers/authReducer"
