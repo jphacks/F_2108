@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react"
 import { useRouter } from "next/router"
-import { useNewLineString } from "@hooks/useNewLineString"
 import { Toast, ToastType } from "@components/components/toast"
 
 /**
@@ -14,7 +13,6 @@ const UrlShare: React.VFC = () => {
   const [toastState, setToastState] = useState<boolean>(false)
   const [url, setUrl] = useState<string>("")
   const router = useRouter()
-  const buttonText = useNewLineString("共有リンクを\nコピーする")
 
   /**
    * OS の Clipboard にテキストを書き込む
@@ -43,6 +41,20 @@ const UrlShare: React.VFC = () => {
     }
     document.body.removeChild(textarea)
     return Promise.resolve()
+  }
+
+  const handleNewLineString = (message: string | null): JSX.Element[] => {
+    if (!message) {
+      return []
+    }
+    const newLineString = message
+      .split(/(\n)/)
+      .map((str, index) => (
+        <React.Fragment key={index}>
+          {str.match(/\n/) ? <br /> : str}
+        </React.Fragment>
+      ))
+    return newLineString
   }
 
   //シェア用のURLを取得
@@ -85,7 +97,9 @@ const UrlShare: React.VFC = () => {
               "bg-primary flex rounded-lg my-0.7 mr-0.7 ml-auto h-10 items-center min-w-max px-3 py-2"
             }
           >
-            <span className="text-xs ml-0.5 font-bold">{buttonText}</span>
+            <span className="text-xs ml-0.5 font-bold">
+              {handleNewLineString("共有リンクを\nコピーする")}
+            </span>
           </button>
         </div>
       </section>
