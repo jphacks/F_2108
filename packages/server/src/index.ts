@@ -19,7 +19,9 @@ if (process.env.AUTH !== "false") {
 
 const server = Fastify()
 
-server.register(cors)
+server.register(cors, {
+  origin: ["http://localhost:3000", process.env.CORS_ORIGIN ?? ""],
+})
 registerStorage(server)
 server.register(fastifyMultipart, { attachFieldsToBody: true })
 
