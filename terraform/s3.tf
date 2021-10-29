@@ -51,3 +51,14 @@ resource "aws_iam_policy" "read-write-s3" {
     Project = var.project
   }
 }
+
+resource "aws_s3_bucket_notification" "on-created" {
+  bucket = aws_s3_bucket.main.id
+
+  lambda_function {
+    lambda_function_arn = aws_lambda_function.pdf-generator.arn
+    events              = ["s3:ObjectCreated:*"]
+    filter_prefix       = "file/"
+    filter_suffix       = ".pdf"
+  }
+}

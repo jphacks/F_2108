@@ -5,6 +5,8 @@ resource "aws_lambda_function" "pdf-generator" {
   role             = aws_iam_role.pdf-generator.arn
   runtime          = "nodejs12.x"
   handler          = "index.handler"
+  memory_size      = 512
+  timeout          = 10
 
   tags = {
     Project = var.project
@@ -37,7 +39,7 @@ resource "aws_iam_role_policy_attachment" "pdf-generator-read-write-s3" {
   policy_arn = aws_iam_policy.read-write-s3.arn
 }
 
-resource "aws_lambda_permission" "cloudwatch_logs_app" {
+resource "aws_lambda_permission" "s3" {
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.pdf-generator.function_name
   principal     = "s3.${var.region}.amazonaws.com"
