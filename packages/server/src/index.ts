@@ -9,6 +9,7 @@ import { stampHandler } from "./handler/stamp"
 import { commentHandler } from "./handler/comment"
 import { initializeApp } from "./util/auth"
 import { registerStorage } from "./storage/register"
+import cors from "fastify-cors"
 
 export let connection: Connection
 
@@ -18,8 +19,17 @@ if (process.env.AUTH !== "false") {
 
 const server = Fastify()
 
-registerStorage(server)
+server.register(cors, {
+  origin: ["http://localhost:3000", process.env.CORS_ORIGIN ?? ""],
+  credentials: true,
+})
 server.register(fastifyMultipart, { attachFieldsToBody: true })
+
+registerStorage(server)
+
+// This is dummy, but necessary.
+// Please read https://www.fastify.io/docs/latest/Decorators/
+server.decorateRequest("currentUser", null)
 
 server.get("/health", async (_, res) => res.send("ok"))
 server.register(fileHandler)

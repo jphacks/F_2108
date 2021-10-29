@@ -20,7 +20,7 @@ export const fileHandler = async (server: FastifyInstance) => {
     const repository = connection.getRepository(File)
 
     const currentUser = new User()
-    currentUser.id = server.currentUser().id
+    currentUser.id = req.currentUser.id
 
     const files = await repository
       .createQueryBuilder("file")
@@ -36,7 +36,7 @@ export const fileHandler = async (server: FastifyInstance) => {
     res.send({
       result: "success",
       data: files.map((f) => ({
-        type: f.fileType(server.currentUser()),
+        type: f.fileType(req.currentUser),
         file: buildFileResponse(f),
         updatedAt: f.updated_at,
         updatedBt: buildUserResponse(f.updated_by),
@@ -71,7 +71,7 @@ export const fileHandler = async (server: FastifyInstance) => {
         throw new e()
       }
 
-      file.shared_to = [server.currentUser()]
+      file.shared_to = [req.currentUser]
       await repository.save(file)
 
       const stamps = await file.stamps
@@ -83,7 +83,7 @@ export const fileHandler = async (server: FastifyInstance) => {
         result: "success",
         data: {
           fileSnapshot: {
-            type: file.fileType(server.currentUser()),
+            type: file.fileType(req.currentUser),
             file: buildFileResponse(file),
             updatedAt: file.updated_at,
             updatedBy: buildUserResponse(file.updated_by),
@@ -112,8 +112,8 @@ export const fileHandler = async (server: FastifyInstance) => {
     fileModel.name = req.body.name.value
     fileModel.url = url
     fileModel.thumbnail = "dummy-thumbnail-url" // TODO: create thumbnail and pass its url
-    fileModel.author = server.currentUser()
-    fileModel.updated_by = server.currentUser()
+    fileModel.author = req.currentUser
+    fileModel.updated_by = req.currentUser
 
     const repository = connection.getRepository(File)
     const result = await repository.save(fileModel)
