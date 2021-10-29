@@ -8,7 +8,7 @@ import {
   buildCommentResponse,
   buildStampResponse,
 } from "../util/responseBuilders"
-import { MultipartFile, MultipartValue } from "fastify-multipart"
+import { MultipartValue } from "fastify-multipart"
 import { buildComment } from "./comment"
 import { registerFirebaseAuth } from "../util/auth"
 
@@ -22,7 +22,7 @@ export const stampHandler = async (server: FastifyInstance) => {
       x: MultipartValue<number>
       y: MultipartValue<number>
       dataType: MultipartValue<CommentDataType>
-      content: MultipartValue<string> | MultipartFile
+      content: MultipartValue<string>
       title?: MultipartValue<string>
     }
     Reply: ResponseBody

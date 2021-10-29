@@ -1,7 +1,7 @@
 import { FastifyInstance } from "fastify"
 import { ResponseBody } from "../util/schema"
 import { Comment, CommentDataType } from "../entity/Comment"
-import { MultipartFile, MultipartValue } from "fastify-multipart"
+import { MultipartValue } from "fastify-multipart"
 import { File } from "../entity/File"
 import { Stamp } from "../entity/Stamp"
 import { connection } from "../index"
@@ -19,7 +19,7 @@ export const commentHandler = async (server: FastifyInstance) => {
     Params: { fileId: string; stampId: number }
     Body: {
       dataType: MultipartValue<CommentDataType>
-      content: MultipartValue<string> | MultipartFile
+      content: MultipartValue<string>
       title?: MultipartValue<string>
     }
     Reply: ResponseBody
@@ -58,7 +58,7 @@ export const buildComment = async (
   dataType: CommentDataType,
   author: User,
   stamp: Stamp,
-  content: MultipartValue<string> | MultipartFile,
+  content: MultipartValue<string>,
   title?: string,
 ): Promise<Comment> => {
   const comment = new Comment()
@@ -69,25 +69,27 @@ export const buildComment = async (
   switch (dataType) {
     // save text file
     case CommentDataType.TEXT:
-      comment.content = (content as MultipartValue<string>).value
+      // comment.content = (content as MultipartValue<string>).value
+      comment.content = content.value
       break
 
     // save audio file
     case CommentDataType.AUDIO: {
-      const audio = content as MultipartFile
-      const filename = audio.filename
-      if (!filename) {
-        const e = createError(
-          ERR_INVALID_PAYLOAD,
-          "`content` must be sent.",
-          400,
-        )
-        throw new e()
-      }
-      const buffer = await audio.toBuffer()
-
-      const { fileUrl } = await storage.save("audio", filename, buffer)
-      comment.content = fileUrl
+      // const audio = content as MultipartFile
+      // const filename = audio.filename
+      // if (!filename) {
+      //   const e = createError(
+      //     ERR_INVALID_PAYLOAD,
+      //     "`content` must be sent.",
+      //     400,
+      //   )
+      //   throw new e()
+      // }
+      // const buffer = await audio.toBuffer()
+      //
+      // const { fileUrl } = await storage.save("audio", filename, buffer)
+      // comment.content = fileUrl
+      comment.content = content.value
 
       if (title) comment.title = title
 
