@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from "react"
 import { useRouter } from "next/router"
 import { Toast, ToastType } from "@components/components/toast"
+import { FileData } from "@domain/fileData"
+
+export type UrlShareProps = {
+  file: FileData
+}
 
 /**
  * URLシェアコンポーネント
- * props無し。独自にURLを取得してきてクリップボードにコピーするコンポーネント
  */
 
-const UrlShare: React.VFC = () => {
+const UrlShare: React.VFC<UrlShareProps> = ({ file }) => {
   const [toastMessage, setToastMessage] = useState<string>("")
   const [toastType, setToastType] = useState<ToastType>(ToastType.Notification)
   const [toastState, setToastState] = useState<boolean>(false)
@@ -59,11 +63,11 @@ const UrlShare: React.VFC = () => {
 
   //シェア用のURLを取得
   const getShareUrl = (): string => {
-    return location.protocol + "//" + location.host + router.pathname
+    return location.protocol + "//" + location.host + "/" + file.id
   }
 
   useEffect(() => {
-    setUrl(getShareUrl)
+    setUrl(getShareUrl())
   }, [router])
 
   return (
@@ -74,17 +78,15 @@ const UrlShare: React.VFC = () => {
         isShow={toastState}
         isShowSetter={setToastState}
       />
-      <section className="mx-auto w-1/3 bg-black rounded-2xl p-10 shadow-paper">
-        <div className="text-center font-bold text-2xl text-white">
+      <section className="w-full p-10 mx-auto bg-black rounded-2xl shadow-paper">
+        <div className="text-2xl font-bold text-center text-white">
           共有リンクURL
         </div>
-        <div className="text-center text-base mt-2 text-white">
+        <div className="mt-2 text-base text-center text-white">
           このURLを知っている人は誰でも閲覧できます
         </div>
-        <div className="flex bg-white border rounded-lg items-center p-2 mt-4">
-          <p className="overflow-ellipsis overflow-hidden whitespace-nowrap text-gray-400">
-            {url}
-          </p>
+        <div className="flex items-center py-2 pr-2 mt-4 bg-white border rounded-lg">
+          <input className="w-full px-2 text-gray-400" disabled value={url} />
           <button
             onClick={() => {
               copyToClipboard(url).then(() => {
