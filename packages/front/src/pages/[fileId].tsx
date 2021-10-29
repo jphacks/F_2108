@@ -7,6 +7,9 @@ import Stamp from "@components/atoms/Stamp"
 import { Stamp as StampModel } from "@domain/stamp"
 import { useWindowSize } from "@hooks/useWindowSize"
 import { Share, Plus, Minus, ArrowLeft } from "react-feather"
+import { useRequest } from "@hooks/useRequest"
+import { useFile } from "@hooks/useFile"
+import { useRouter } from "next/router"
 const PDFViewer: React.ComponentType<PDFViewerProps> = dynamic(
   () =>
     import("../components/components/PdfViewer").then(
@@ -14,68 +17,48 @@ const PDFViewer: React.ComponentType<PDFViewerProps> = dynamic(
     ),
   {
     ssr: false,
+    // TODO: loading表示
+    // loading,
   },
 )
 
 const FileDetail: NextPage = () => {
-  const [stamps, setStamps] = useState<StampModel[]>([
-    {
-      id: "0",
-      author: {
-        id: "qwerty",
-        name: "joen doe",
-        iconUrl: "/icons/icon01.png",
-      },
-      comments: [
-        {
-          id: "1",
-          dataType: "audio",
-          content: "/dog.wav",
-          author: {
-            id: "qwerty",
-            name: "joen doe",
-            iconUrl: "/icons/icon03.png",
-          },
-          postedAt: "2019-08-24T14:15:22Z",
-          title: "タイトル",
-        },
-        {
-          id: "2",
-          dataType: "text",
-          content: "コメント",
-          author: {
-            id: "qwerty",
-            name: "joen doe",
-            iconUrl: "/icons/icon02.png",
-          },
-          postedAt: "2019-08-25T14:15:22Z",
-        },
-      ],
-      position: {
-        page: 1,
-        x: 0.3,
-        y: 0.45,
-      },
-    },
-  ])
+  const router = useRouter()
+  const fileId = router.query.fildId as string
+  const fileUseCase = useFile()
 
+  const { data: file } = useRequest(
+    () => fileUseCase.fetchFileDetail(fileId),
+    null,
+    () => router.push("/404"),
+  )
   const { width } = useWindowSize()
   const [sizeRate, setSizeRate] = useState(6)
+
+  const handleAddStamp = (page: number, x: number, y: number) => {
+    console.log("add stamp")
+  }
+
+  const handleAddComment = () => {
+    console.log("add comment")
+  }
+
+  // NOTE: Popoverを開いたときに他のスタンプに邪魔されないように、y座標が大きいスタンプから順にレンダリングする
+  const sortedStamps = (file?.stamps ?? []).sort((a, b) =>
+    a.position.y < b.position.y ? 1 : a.position.y === b.position.y ? 0 : -1,
+  )
 
   return (
     <div className="flex flex-col items-center w-full px-[10vw] py-8 bg-bgBlack relative">
       <PDFViewer
         src="/sample2.pdf"
-        stamps={stamps}
-        onStampAdd={(page, x, y) => {
-          console.log("add stamp")
-          // setStamps((prev) => [...prev, { page, x, y, id: prev.length }])
-        }}
+        stamps={sortedStamps}
+        onStampAdd={handleAddStamp}
         width={width * (sizeRate / 10.0)}
         stampRender={(stamp) => (
           <div className="relative">
             <Stamp stamp={stamp} />
-            <div className="absolute w-40 text-sm bg-white border border-gray-400 rounded shadow-md left-full top-full hover:opacity-30">
+            <div className="absolute z-10 w-40 text-sm bg-white border border-gray-400 rounded shadow-md opacity-100 left-full top-full hover:opacity-30">
               <div className="text-center">
                 <span className="inline-block pointer-events-none">
                   (x, y) = ({stamp.position.x}, {stamp.position.y})
