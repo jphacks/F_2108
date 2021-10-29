@@ -19,7 +19,7 @@ export const FileUploader: NextPage = () => {
 
   // ローカルからPDFを追加する
   const imageHandler = (event: ChangeEvent<HTMLInputElement>) => {
-    // event.preventDefault()
+    event.preventDefault()
     if (event.target.files == null) {
       return
     }
@@ -28,15 +28,10 @@ export const FileUploader: NextPage = () => {
       return
     }
     setPdf(file)
-    // const reader = new FileReader()
-    // reader.readAsDataURL(file as Blob)
-    // reader.onload = () => {
-    //   setPdf(reader.result as string)
-    // }
   }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    // e.preventDefault()
+    e.preventDefault()
     if (pdf == null) {
       return
     }
@@ -49,9 +44,6 @@ export const FileUploader: NextPage = () => {
     router.push(`/${res.file.id}`)
   }
 
-  // TODO:アップロード素材
-  console.log(pdf)
-  console.log(fileName)
   return (
     <>
       <div className="relative flex items-center justify-center sm:px-6">
