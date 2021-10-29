@@ -7,12 +7,14 @@ import {
   StampRequestBody,
   StampResponse,
   UploadRequestBody,
-} from "@useCse/file/fileUseCase"
+} from "@useCase/file/fileUseCase"
 import { getClient } from "@lib/restClient/restClient"
 import { errorHandler } from "@lib/ErrorHandler"
+import { useAuth } from "./useAuth"
+import { MockFileUseCase } from "@mocks/useCase/file/mockFileUseCase"
 
-type useFile = {
-  UploadFile: (body: UploadRequestBody) => Promise<FileDataSnapshot>
+type UseFile = {
+  uploadFile: (body: UploadRequestBody) => Promise<FileDataSnapshot>
   fetchFileList: () => Promise<FileDataSnapshot[]>
   fetchFileDetail: (fileId: string) => Promise<GetDetailResponse>
   postStamp: (body: StampRequestBody, fileId: string) => Promise<StampResponse>
@@ -23,10 +25,22 @@ type useFile = {
   ) => Promise<CommentResponse>
 }
 
-export const useFile = (): useFile => {
-  const fileUseCase = new FileUseCase(getClient())
+/** モックを利用するか */
+const USE_MOCK = false
 
-  const UploadFile = async (body: UploadRequestBody) => {
+export const useFile = (): UseFile => {
+  const user = useAuth()
+  const apiClient = getClient()
+  const fileUseCase =
+    USE_MOCK && process.env.NODE_ENV === "development"
+      ? new MockFileUseCase()
+      : new FileUseCase(apiClient)
+
+  user?.getIdToken().then((idToken) => {
+    apiClient.setIdToken(idToken)
+  })
+
+  const uploadFile = async (body: UploadRequestBody) => {
     return await fileUseCase
       .upload(body)
       .catch((error: Error) => errorHandler({ error }))
@@ -61,7 +75,7 @@ export const useFile = (): useFile => {
   }
 
   return {
-    UploadFile,
+    uploadFile,
     fetchFileList,
     fetchFileDetail,
     postStamp,

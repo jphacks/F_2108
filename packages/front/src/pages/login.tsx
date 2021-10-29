@@ -13,13 +13,13 @@ const Login: FC = () => {
   const user = useAuth()
 
   useEffect(() => {
-    user && router.push("/pdf-sample")
+    user && router.push("/dashboard")
   }, [user])
 
   const logIn = async () => {
     try {
       await authUseCase.signIn(dispatch)
-      router.push("/pdf-sample")
+      router.push("/dashboard")
     } catch (err) {
       console.log(err)
     }
@@ -29,7 +29,7 @@ const Login: FC = () => {
     <div>
       <button
         onClick={logIn}
-        className="bg-blue-50 hover:bg-gray-200 border-2 border-opacity-25 border-gray-400 text-black text-center py-2 px-4 rounded"
+        className="px-4 py-2 text-center text-black border-2 border-gray-400 border-opacity-25 rounded bg-blue-50 hover:bg-gray-200"
       >
         googleアカウントでログイン
       </button>
