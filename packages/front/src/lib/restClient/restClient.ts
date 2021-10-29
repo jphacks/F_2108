@@ -4,7 +4,7 @@ import { NetworkError } from "@lib/exception/NetworkError"
 
 export interface RestClientInterface {
   get: <Res>(path: string) => Promise<Res>
-  post: <Req, Res>(path: string, body: Req) => Promise<Res>
+  post: <Req, Res>(path: string, body: Req, isBinary?: boolean) => Promise<Res>
   patch: <Req, Res>(path: string, body: Req) => Promise<Res>
   put: <Req, Res>(path: string, body: Req) => Promise<Res>
   delete: (path: string) => Promise<void>
@@ -16,45 +16,49 @@ const API_ORIGIN: string = "https://hogehogehoge" || ""
 export class RestClient implements RestClientInterface {
   async get<Res>(path: string): Promise<Res> {
     return await axios
-      .get<Res>(path, this.requestConfig)
+      .get<Res>(path, this.requestConfig())
       .catch(this.errorHandling)
       .then((res) => res.data)
   }
 
-  async post<Req, Res>(path: string, body: Req): Promise<Res> {
+  async post<Req, Res>(
+    path: string,
+    body: Req,
+    isBinary = false,
+  ): Promise<Res> {
     return await axios
-      .post<Res>(path, body, this.requestConfig)
+      .post<Res>(path, body, this.requestConfig(isBinary))
       .catch(this.errorHandling)
       .then((res) => res.data)
   }
 
   async patch<Req, Res>(path: string, body: Req): Promise<Res> {
     return await axios
-      .patch<Res>(path, body, this.requestConfig)
+      .patch<Res>(path, body, this.requestConfig())
       .catch(this.errorHandling)
       .then((res) => res.data)
   }
 
   async put<Req, Res>(path: string, body: Req): Promise<Res> {
     return await axios
-      .put<Res>(path, body, this.requestConfig)
+      .put<Res>(path, body, this.requestConfig())
       .catch(this.errorHandling)
       .then((res) => res.data)
   }
 
   async delete(path: string): Promise<void> {
     return await axios
-      .delete<void>(path, this.requestConfig)
+      .delete<void>(path, this.requestConfig())
       .catch(this.errorHandling)
       .then((res) => res.data)
   }
 
-  private get requestConfig(): AxiosRequestConfig {
+  private requestConfig(isBinary = false): AxiosRequestConfig {
     return {
       baseURL: API_ORIGIN,
       withCredentials: true,
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type": isBinary ? "multipart/form-data" : "application/json",
       },
     }
   }

@@ -40,6 +40,7 @@ export const stampHandler = async (server: FastifyInstance) => {
     stamp.file = file
 
     const comment = await buildComment(
+      server.storage(),
       body.dataType.value,
       server.currentUser(),
       stamp,

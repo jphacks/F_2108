@@ -13,7 +13,7 @@ export type AudioComment = {
 
 export type TextComment = {
   id: string
-  dataType: "audio"
+  dataType: "text"
   content: string
   author: User
   postedAt: string

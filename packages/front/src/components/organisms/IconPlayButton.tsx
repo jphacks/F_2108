@@ -6,6 +6,7 @@ export type IconPlayButtonProps = {
   user: User
   size: number
   state: "playing" | "default"
+  alwaysShowIcon: boolean
   onClick?: () => void
 }
 
@@ -13,6 +14,7 @@ const IconPlayButton: React.VFC<IconPlayButtonProps> = ({
   user,
   size,
   state,
+  alwaysShowIcon,
   onClick,
 }) => {
   return (
@@ -22,7 +24,7 @@ const IconPlayButton: React.VFC<IconPlayButtonProps> = ({
         aria-label={state === "playing" ? "一時停止" : "再生"}
         className={
           "absolute inset-0 flex items-center justify-center text-xl font-bold rounded-full bg-black/30 transition " +
-          (state === "playing" ? "" : "group-hover:opacity-100 opacity-0")
+          (alwaysShowIcon ? "" : "group-hover:opacity-100 opacity-0")
         }
       >
         {state === "playing" ? "| |" : "▶︎"}
