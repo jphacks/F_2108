@@ -11,7 +11,7 @@ export const formatTime = (date: Date) => {
   const base = new Date().getTime() / (1000.0 * 60)
   const diff = base - target
   if (diff < 10) {
-    return `${diff}分前`
+    return `${Math.floor(diff)}分前`
   } else if (diff < 60) {
     return `${Math.floor(diff / 10)}0分前`
   } else if (diff < 60 * 24) {
