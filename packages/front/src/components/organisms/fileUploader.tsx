@@ -36,7 +36,7 @@ export const FileUploader: NextPage = () => {
   }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    // e.preventDefault()
+    e.preventDefault()
     if (pdf == null) {
       return
     }
@@ -46,7 +46,7 @@ export const FileUploader: NextPage = () => {
       name: fileName,
     })
 
-    router.push(`/${res.file.id}`)
+    // router.push(`/${res.file.id}`)
   }
 
   // TODO:アップロード素材

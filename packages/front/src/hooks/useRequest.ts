@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react"
+import { useAuth } from "./useAuth"
 
 export const useRequest = <Response>(
   fetch: (...args: unknown[]) => Promise<Response>,
@@ -8,9 +9,13 @@ export const useRequest = <Response>(
   const [data, setData] = useState<Response>(initData)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<unknown>(null)
+  const user = useAuth()
 
   useEffect(() => {
     ;(async () => {
+      if (user == null) {
+        return
+      }
       try {
         setIsLoading(true)
         const res = await fetch()
@@ -22,7 +27,7 @@ export const useRequest = <Response>(
         setIsLoading(false)
       }
     })()
-  }, [])
+  }, [user])
 
   const returnValue = useMemo(
     () => ({

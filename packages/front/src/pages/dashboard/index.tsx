@@ -9,6 +9,7 @@ import { useAuth } from "@hooks/useAuth"
 import { useRouter } from "next/router"
 import { useRequest } from "@hooks/useRequest"
 import { useFile } from "@hooks/useFile"
+import { authUseCase } from "@useCase"
 
 const Index: React.VFC = () => {
   const [isOpenModal, setIsOpenModal] = useState(false)
@@ -29,8 +30,12 @@ const Index: React.VFC = () => {
     setIsOpenModal(!isOpenModal)
   }
 
+  const handleLogout = () => {
+    authUseCase.logout()
+  }
+
   return (
-    <body className="h-screen bg-gray-200">
+    <div className="h-screen bg-gray-200">
       <Modal
         isOpen={isOpenModal}
         body={
@@ -52,6 +57,7 @@ const Index: React.VFC = () => {
             <SearchInput setter={setSearchName} value={searchName} />
           </div>
         </div>
+        <button onClick={handleLogout}>ログアウト</button>
       </header>
       <div className="mt-4 ml-20">
         <AddButton onClick={openModal} />
@@ -65,7 +71,7 @@ const Index: React.VFC = () => {
           ))}
         </ul>
       </div>
-    </body>
+    </div>
   )
 }
 export default Index
