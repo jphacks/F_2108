@@ -57,15 +57,14 @@ const Index: React.VFC = () => {
             <SearchInput setter={setSearchName} value={searchName} />
           </div>
         </div>
-        <button onClick={handleLogout}>ログアウト</button>
       </header>
       <div className="mt-4 ml-20">
         <AddButton onClick={openModal} />
       </div>
-      <div className="mx-auto">
+      <div className="mx-auto mt-4">
         <ul className="grid w-2/3 gap-6 mx-auto sm:grid-cols-2 xl:grid-cols-3">
           {files.map((file) => (
-            <li key={file.file.id} className="mx-auto">
+            <li key={file.file.id}>
               <ListElement file={file} />
             </li>
           ))}
