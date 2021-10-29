@@ -1,3 +1,5 @@
+// eslint-disable-next-line @typescript-eslint/no-var-requires, no-undef
+const plugin = require("tailwindcss/plugin")
 /** @type {import('@types/tailwindcss/tailwind-config').TailwindConfig} */
 // eslint-disable-next-line no-undef
 module.exports = {
@@ -24,5 +26,25 @@ module.exports = {
   variants: {
     extend: {},
   },
-  plugins: [],
+  plugins: [
+    plugin(function ({ addUtilities }) {
+      const newUtilities = {
+        ".skew-10deg": {
+          transform: "skewY(-10deg)",
+        },
+        ".skew-15deg": {
+          transform: "skewY(-15deg)",
+        },
+        ".text-decoration-transparent": {
+          "text-decoration-color": "transparent",
+        },
+
+        ".text-decoration-auto": {
+          "text-decoration-color": "currentColor",
+        },
+      }
+
+      addUtilities(newUtilities)
+    }),
+  ],
 }
