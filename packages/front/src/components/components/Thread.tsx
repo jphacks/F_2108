@@ -10,6 +10,11 @@ const AudioGraph = dynamic(() => import("@components/atoms/AudioGraph"), {
 
 type Thread = {
   comments: Comment[]
+  onAddComment: (
+    comment:
+      | { dataType: "audio"; content: File; title: string }
+      | { dataType: "text"; content: string },
+  ) => void
   className?: string
 }
 
@@ -20,7 +25,7 @@ type Recording = {
   size: number
 }
 
-const Thread: React.VFC<Thread> = ({ comments, className }) => {
+const Thread: React.VFC<Thread> = ({ comments, onAddComment, className }) => {
   const [inputMode, setInputMode] = useState<
     "audio" | "text" | "audio-title" | null
   >(null)
@@ -105,6 +110,11 @@ const Thread: React.VFC<Thread> = ({ comments, className }) => {
   }
 
   const submitAudio = async () => {
+    onAddComment({
+      content: null as unknown as File,
+      dataType: "audio",
+      title: audioTitle,
+    })
     // TODO: submit audio comment
     setInputMode(null)
   }
@@ -146,8 +156,8 @@ const Thread: React.VFC<Thread> = ({ comments, className }) => {
       <div className="flex flex-col items-start px-6 pb-2 space-y-4 overflow-y-scroll">
         {comments.map((comment) =>
           comment.dataType === "audio" ? (
-            <div className="first:mt-8 last:mb-8">
-              <AudioComment key={comment.id} comment={comment} />
+            <div key={comment.id} className="first:mt-8 last:mb-8">
+              <AudioComment comment={comment} />
             </div>
           ) : (
             <div key={comment.id} className="ml-14 first:mt-8 last:mb-8">
@@ -276,6 +286,7 @@ const Thread: React.VFC<Thread> = ({ comments, className }) => {
           </div>
         </div>
         <div className="flex items-center justify-center flex-1">
+          {/* {!(inputMode === null && comments.length === 0) && ( */}
           <button
             onClick={() => {
               if (inputMode === null) {
@@ -285,9 +296,13 @@ const Thread: React.VFC<Thread> = ({ comments, className }) => {
                 // 送信
                 setInputMode(null)
                 submitAudio()
-              } else {
+              } else if (inputMode === "text") {
                 // 送信
+                onAddComment({ dataType: "text", content: text })
                 setInputMode(null)
+              } else {
+                // unreachable
+                return
               }
             }}
             className={
@@ -318,6 +333,7 @@ const Thread: React.VFC<Thread> = ({ comments, className }) => {
               </span>
             )}
           </button>
+          {/* )} */}
         </div>
       </section>
     </section>

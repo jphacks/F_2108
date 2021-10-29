@@ -3,6 +3,7 @@ import { FileDataSnapshot } from "@domain/fileDataSnapshot"
 import { Stamp } from "@domain/stamp"
 import { User } from "@domain/user"
 import { Position } from "@domain/position"
+import { Comment } from "@domain/comment"
 
 export type UploadRequestBody = {
   file: Blob
@@ -50,13 +51,20 @@ export type StampResponse = {
 }
 
 export type CommentResponse = {
-  title: string
   id: string
-  dataType: string
   content: string
   author: User
   postedAt: string
-}
+} & (
+  | {
+      dataType: "text"
+      title?: undefined
+    }
+  | {
+      dataType: "audio"
+      title: string
+    }
+)
 
 export type FileUseCaseInterface = {
   upload: (body: UploadRequestBody) => Promise<FileDataSnapshot>
@@ -99,10 +107,10 @@ export class FileUseCase implements FileUseCaseInterface {
   ): Promise<StampResponse> {
     const form = new FormData()
     form.append("file", body.page)
-    form.append("file", body.x)
-    form.append("file", body.y)
-    form.append("file", body.dataType)
-    if ("title" in body) form.append("file", body.title)
+    form.append("x", body.x)
+    form.append("y", body.y)
+    form.append("dataType", body.dataType)
+    if ("title" in body) form.append("title", body.title)
 
     return await this.restClient.postForm<StampResponse>(
       `/file/${fileId}`,
