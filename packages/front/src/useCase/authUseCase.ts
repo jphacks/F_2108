@@ -29,9 +29,8 @@ export default class AuthUseCase {
   }
 
   /**ログアウト */
-  logout() {
-    auth.signOut().then(() => {
-      window.location.reload()
-    })
+  async logout() {
+    await auth.signOut()
+    window.location.reload()
   }
 }
