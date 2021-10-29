@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-undef
-const IMAGE_SRC_DOMAIN = process.env.NEXT_PUBLIC_IMAGE_SRC_DOMAIN
+const IMAGE_SRC_DOMAIN = process.env.IMAGE_SRC_DOMAIN
 /** @type {import('next').NextConfig} */
 // eslint-disable-next-line
 module.exports = {
