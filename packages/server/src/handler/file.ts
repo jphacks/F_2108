@@ -95,26 +95,28 @@ export const fileHandler = async (server: FastifyInstance) => {
   )
 
   server.post<{
-    Body: { name: MultipartValue<string>; file: MultipartFile }
+    Body: { name: MultipartValue<string>; file: MultipartValue<string> }
     Reply: ResponseBody
   }>("/file", async (req, res) => {
-    const file = req.body.file
-    if (!file.filename) {
-      const e = createError(ERR_INVALID_PAYLOAD, "`file` should be sent.", 400)
-      throw new e()
-    }
-    const buffer = await file.toBuffer()
-    const filename = file.filename
-
-    const { fileUrl, thumbnailUrl } = await server
-      .storage()
-      .save("file", filename, buffer)
+    // const file = req.body.file
+    // if (!file.filename) {
+    //   const e = createError(ERR_INVALID_PAYLOAD, "`file` should be sent.", 400)
+    //   throw new e()
+    // }
+    // const buffer = await file.toBuffer()
+    // const filename = file.filename
+    //
+    // const { fileUrl, thumbnailUrl } = await server
+    //   .storage()
+    //   .save("file", filename, buffer)
 
     const fileModel = new File()
     fileModel.name = req.body.name.value
-    fileModel.url = fileUrl
-    fileModel.thumbnail =
-      thumbnailUrl ?? "Thumbnail is generated only in production mode."
+    // fileModel.url = fileUrl
+    fileModel.url = req.body.file.value
+    // fileModel.thumbnail =
+    //   thumbnailUrl ?? "Thumbnail is generated only in production mode."
+    fileModel.thumbnail = "Thumbnail is generated only when use s3."
     fileModel.author = req.currentUser
     fileModel.updated_by = req.currentUser
 
