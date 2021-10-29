@@ -4,9 +4,10 @@ import { Stamp } from "@domain/stamp"
 import { User } from "@domain/user"
 import { Position } from "@domain/position"
 import { Comment } from "@domain/comment"
+import { StorageClientInterface } from "@lib/storageClient/storageClient"
 
 export type UploadRequestBody = {
-  file: Blob
+  file: File
   name: string
 }
 
@@ -79,12 +80,20 @@ export type FileUseCaseInterface = {
 }
 
 export class FileUseCase implements FileUseCaseInterface {
-  constructor(private readonly restClient: RestClientInterface) {}
+  constructor(
+    private readonly restClient: RestClientInterface,
+    private readonly storageClient: StorageClientInterface,
+  ) {}
 
   public async upload(body: UploadRequestBody): Promise<FileDataSnapshot> {
     try {
+      const path = await this.storageClient.upload(
+        body.file,
+        `file/${body.name}`,
+        "application/pdf",
+      )
       const form = new FormData()
-      form.append("file", body.file)
+      form.append("file", path)
       form.append("name", body.name)
       return await this.restClient.postForm<FileDataSnapshot>(`/file`, form)
     } catch (e) {
