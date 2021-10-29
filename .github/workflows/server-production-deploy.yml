@@ -1,12 +1,9 @@
-#
-name: Deploy to Amazon ECS
+name: Deploy Server to Amazon ECS
 
 on:
   push:
     branches:
       - main
-    paths:
-      - packages/server
 
 defaults:
   run:
