@@ -21,6 +21,7 @@ const server = Fastify()
 
 server.register(cors, {
   origin: ["http://localhost:3000", process.env.CORS_ORIGIN ?? ""],
+  credentials: true,
 })
 registerStorage(server)
 server.register(fastifyMultipart, { attachFieldsToBody: true })
