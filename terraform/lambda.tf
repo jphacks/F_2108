@@ -1,7 +1,7 @@
 resource "aws_lambda_function" "pdf-generator" {
   function_name    = "${var.project}-pdf-generator"
   filename         = "index.zip"
-  source_code_hash = filebase64sha256("../packages/pdf-generator/index.zip")
+  source_code_hash = filebase64sha256("index.zip")
   role             = aws_iam_role.pdf-generator.arn
   runtime          = "nodejs12.x"
   handler          = "index.handler"
