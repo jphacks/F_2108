@@ -139,7 +139,7 @@ const Thread: React.VFC<Thread> = ({ comments, className }) => {
   return (
     <section
       className={
-        "bg-black rounded-2xl w-[420px] pb-4 flex flex-col items-center max-h-[540px] " +
+        "bg-black rounded-2xl w-[420px] pb-4 flex flex-col items-center shadow-paper " +
         className
       }
     >
@@ -255,7 +255,7 @@ const Thread: React.VFC<Thread> = ({ comments, className }) => {
           <div
             className={
               "w-14 h-14 p-[3px] bg-white rounded-full transition transform " +
-              (inputMode === "audio" ? "bg-transparent" : "") +
+              (inputMode === "audio" ? "bg-transparent " : "") +
               (inputMode === "audio" || inputMode == null
                 ? ""
                 : "translate-y-8 opacity-0")
@@ -264,10 +264,10 @@ const Thread: React.VFC<Thread> = ({ comments, className }) => {
             <button
               aria-label="録音"
               className={
-                "w-full h-full bg-red-500 border-[3px] border-black border-solid rounded-full bg-record-button transition-all " +
+                "w-full h-full bg-red-500 border-[3px] border-black border-solid bg-record-button transition-all " +
                 (inputMode === "audio"
                   ? "rounded w-8 h-8 border-transparent "
-                  : "")
+                  : "rounded-full ")
               }
               onClick={handleClickBtnRecording}
               disabled={inputMode === "text"}

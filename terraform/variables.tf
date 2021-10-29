@@ -43,6 +43,10 @@ variable "firebase" {
   }
 }
 
+variable "cors_origin" {
+  type = string
+}
+
 variable "public_cidr" {
   type = map(string)
   default = {
