@@ -50,13 +50,20 @@ export type StampResponse = {
 }
 
 export type CommentResponse = {
-  title: string
   id: string
-  dataType: string
-  content: string
   author: User
   postedAt: string
-}
+} & (
+  | {
+      dataType: "text"
+      content: string
+    }
+  | {
+      dataType: "audio"
+      content: string
+      title: string
+    }
+)
 
 export type FileUseCaseInterface = {
   upload: (body: UploadRequestBody) => Promise<FileDataSnapshot>

@@ -289,7 +289,7 @@ export class MockFileUseCase implements FileUseCaseInterface {
       throw new Error()
     }
     if (body.dataType === "text") {
-      const comment = {
+      const comment: Comment = {
         id: `${stamp.comments.length + 1}`,
         author: dummyUsers[0],
         postedAt: new Date().toISOString(),
