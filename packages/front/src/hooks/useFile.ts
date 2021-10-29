@@ -11,6 +11,7 @@ import {
 import { getClient } from "@lib/restClient/restClient"
 import { errorHandler } from "@lib/ErrorHandler"
 import { useAuth } from "./useAuth"
+import { getStorageClient } from "@lib/storageClient/storageClient"
 
 type UseFile = {
   uploadFile: (body: UploadRequestBody) => Promise<FileDataSnapshot>
@@ -27,7 +28,8 @@ type UseFile = {
 export const useFile = (): UseFile => {
   const user = useAuth()
   const apiClient = getClient()
-  const fileUseCase = new FileUseCase(apiClient)
+  const storageClient = getStorageClient()
+  const fileUseCase = new FileUseCase(apiClient, storageClient)
 
   user?.getIdToken().then((idToken) => {
     apiClient.setIdToken(idToken)
