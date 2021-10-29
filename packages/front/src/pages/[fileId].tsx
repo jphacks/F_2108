@@ -22,15 +22,20 @@ const PDFViewer: React.ComponentType<PDFViewerProps> = dynamic(
   },
 )
 
-const FileDetail: NextPage = () => {
+type FileDetailQuery = {
+  fileId: string
+}
+
+const FileDetail: NextPage<Record<string, never>, FileDetailQuery> = () => {
   const router = useRouter()
-  const fileId = router.query.fildId as string
+  const fileId = router.query.fileId as string
   const fileUseCase = useFile()
 
   const { data: file } = useRequest(
     () => fileUseCase.fetchFileDetail(fileId),
     null,
     () => router.push("/404"),
+    fileId != null,
   )
   const { width } = useWindowSize()
   const [sizeRate, setSizeRate] = useState(6)

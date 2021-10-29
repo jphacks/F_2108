@@ -5,6 +5,7 @@ export const useRequest = <Response>(
   fetch: (...args: unknown[]) => Promise<Response>,
   initData: Response | (() => Response),
   onError?: (error: unknown) => void,
+  enabled?: boolean,
 ) => {
   const [data, setData] = useState<Response>(initData)
   const [isLoading, setIsLoading] = useState(false)
@@ -13,7 +14,7 @@ export const useRequest = <Response>(
 
   useEffect(() => {
     ;(async () => {
-      if (user == null) {
+      if (user == null || !enabled) {
         return
       }
       try {
@@ -27,7 +28,7 @@ export const useRequest = <Response>(
         setIsLoading(false)
       }
     })()
-  }, [user])
+  }, [user, enabled])
 
   const returnValue = useMemo(
     () => ({
