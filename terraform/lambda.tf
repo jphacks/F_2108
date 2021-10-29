@@ -8,6 +8,8 @@ resource "aws_lambda_function" "pdf-generator" {
   memory_size      = 512
   timeout          = 10
 
+  layers = [aws_lambda_layer_version.imagemagick.arn]
+
   tags = {
     Project = var.project
   }
@@ -44,4 +46,9 @@ resource "aws_lambda_permission" "s3" {
   function_name = aws_lambda_function.pdf-generator.function_name
   principal     = "s3.${var.region}.amazonaws.com"
   source_arn    = aws_s3_bucket.main.arn
+}
+
+resource "aws_lambda_layer_version" "imagemagick" {
+  layer_name = "${var.project}-imagemagick"
+  filename   = "imagemagick-layer.zip"
 }
