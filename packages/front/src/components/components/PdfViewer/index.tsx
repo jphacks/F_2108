@@ -98,7 +98,6 @@ const PdfPage: React.VFC<{
         renderTextLayer={true}
         className="react-pdf-page-div shadow-paper"
         width={width}
-        onLoadSuccess={(page) => console.log("getViewport", page.getViewport())}
       />
       {stamps.map((stamp) => (
         <div

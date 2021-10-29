@@ -121,7 +121,12 @@ const AudioIndicator: React.VFC<AudioWaveProps> = ({ comment, onPlayEnd }) => {
 
   // 現在の再生位置（0~1で正規化）
   const progress =
-    audio.current == null
+    audio.current == null ||
+    audio.current.duration == null ||
+    audio.current.currentTime == null ||
+    audio.current.duration === 0 ||
+    Number.isNaN(audio.current.duration) ||
+    Number.isNaN(audio.current.currentTime)
       ? 0
       : audio.current.currentTime / audio.current.duration
 
