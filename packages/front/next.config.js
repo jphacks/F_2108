@@ -6,7 +6,10 @@ module.exports = {
   reactStrictMode: true,
   images: {
     // eslint-disable-next-line no-undef
-    domains: IMAGE_SRC_DOMAIN != null ? [IMAGE_SRC_DOMAIN] : undefined,
+    domains: [
+      ...(IMAGE_SRC_DOMAIN != null ? [IMAGE_SRC_DOMAIN] : []),
+      "lh3.googleusercontent.com",
+    ],
   },
   webpack: (config) => {
     // load worker files as a urls with `file-loader`
