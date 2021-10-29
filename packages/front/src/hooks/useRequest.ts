@@ -5,7 +5,7 @@ export const useRequest = <Response>(
   fetch: (...args: unknown[]) => Promise<Response>,
   initData: Response | (() => Response),
   onError?: (error: unknown) => void,
-  enabled?: boolean,
+  enabled = true,
 ) => {
   const [data, setData] = useState<Response>(initData)
   const [isLoading, setIsLoading] = useState(false)
