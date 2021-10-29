@@ -106,11 +106,11 @@ export const fileHandler = async (server: FastifyInstance) => {
     const buffer = await file.toBuffer()
     const filename = file.filename
 
-    const { url } = await server.storage().save("file", filename, buffer)
+    const { fileUrl } = await server.storage().save("file", filename, buffer)
 
     const fileModel = new File()
     fileModel.name = req.body.name.value
-    fileModel.url = url
+    fileModel.url = fileUrl
     fileModel.thumbnail = "dummy-thumbnail-url" // TODO: create thumbnail and pass its url
     fileModel.author = req.currentUser
     fileModel.updated_by = req.currentUser

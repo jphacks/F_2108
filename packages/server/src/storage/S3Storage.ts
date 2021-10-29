@@ -12,7 +12,7 @@ export class S3Storage implements IStorage {
     type: "file" | "audio",
     filename: string,
     content: Buffer,
-  ): Promise<{ url: string }> {
+  ): Promise<{ fileUrl: string; thumbnailUrl: string }> {
     const key = `${type}/${filename}`
     const param: S3.Types.PutObjectRequest = {
       Bucket: process.env.AWS_BUCKET_NAME ?? "",
@@ -25,7 +25,7 @@ export class S3Storage implements IStorage {
       const result = await this.s3.upload(param).promise()
       const url = result.Location
 
-      return { url }
+      return { fileUrl: url, thumbnailUrl: "" }
     } catch (e) {
       const err = createError(
         ERR_INTERNAL_SERVER,
