@@ -13,7 +13,7 @@ export interface RestClientInterface {
 }
 
 // TODO:API_ORIGIN決まり次第ここに定義
-const API_ORIGIN: string = "http://localhost:8000" || ""
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || ""
 
 export class RestClient implements RestClientInterface {
   constructor(private idToken?: string) {}
@@ -71,7 +71,7 @@ export class RestClient implements RestClientInterface {
     const authorization =
       this.idToken != null ? { Authorization: `Bearer ${this.idToken}` } : null
     return {
-      baseURL: API_ORIGIN,
+      baseURL: API_BASE_URL,
       withCredentials: true,
       headers: {
         "Content-Type": isBinary ? "multipart/form-data" : "application/json",
