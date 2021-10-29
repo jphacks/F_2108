@@ -8,7 +8,10 @@ resource "aws_lambda_function" "pdf-generator" {
   memory_size      = 512
   timeout          = 10
 
-  layers = [aws_lambda_layer_version.imagemagick.arn]
+  layers = [
+    aws_lambda_layer_version.imagemagick.arn,
+    aws_lambda_layer_version.ghostscript.arn
+  ]
 
   tags = {
     Project = var.project
@@ -50,5 +53,10 @@ resource "aws_lambda_permission" "s3" {
 
 resource "aws_lambda_layer_version" "imagemagick" {
   layer_name = "${var.project}-imagemagick"
-  filename   = "imagemagick-layer.zip"
+  filename   = "lambda-layers/imagemagick-layer.zip"
+}
+
+resource "aws_lambda_layer_version" "ghostscript" {
+  layer_name = "${var.project}-ghostscript"
+  filename   = "lambda-layers/ghostscript-layer.zip"
 }
