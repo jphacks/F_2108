@@ -9,7 +9,7 @@ export type StampProps = {
   stamp: StampModel
   onAddComment: (
     comment:
-      | { dataType: "audio"; content: File; title: string }
+      | { dataType: "audio"; content: Blob; title: string }
       | { dataType: "text"; content: string },
   ) => void
   isTemporary?: boolean

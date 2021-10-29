@@ -5,6 +5,7 @@ import { User } from "@domain/user"
 import { Position } from "@domain/position"
 import { Comment } from "@domain/comment"
 import { StorageClientInterface } from "@lib/storageClient/storageClient"
+import { v4 as uuid } from "uuid"
 
 export type UploadRequestBody = {
   file: File
@@ -18,7 +19,7 @@ export type StampRequestBody = {
 } & (
   | {
       dataType: "audio"
-      content: File
+      content: Blob
       title: string
     }
   | {
@@ -30,7 +31,7 @@ export type StampRequestBody = {
 export type CommentRequestBody =
   | {
       dataType: "audio"
-      content: File
+      content: Blob
       title: string
     }
   | {
@@ -102,28 +103,67 @@ export class FileUseCase implements FileUseCaseInterface {
   }
 
   public async getList(): Promise<FileDataSnapshot[]> {
-    return await this.restClient.get<FileDataSnapshot[]>(`/file`)
+    const res = await this.restClient.get<FileDataSnapshot[]>(`/file`)
+    return res.map((file) => ({
+      ...file,
+      // @ts-ignore
+      updatedBy: file.updatedBy ?? file.updatedBt,
+    }))
   }
 
   public async getDetail(fileId: string): Promise<GetDetailResponse> {
-    return await this.restClient.get<GetDetailResponse>(`/file/${fileId}`)
+    const res = await this.restClient.get<GetDetailResponse>(`/file/${fileId}`)
+    return {
+      ...res,
+      // @ts-ignore
+      stamps: res.stamps.map((stamp) => ({
+        ...stamp,
+        id: `${stamp.id}`,
+        comments: stamp.comments.map((comment) => ({
+          ...comment,
+          // @ts-ignore
+          dataType: comment.dataType ?? comment.dateType,
+          id: `${comment.id}`,
+        })),
+      })),
+    }
   }
 
   public async stamp(
     body: StampRequestBody,
     fileId: string,
   ): Promise<StampResponse> {
+    const content =
+      body.dataType === "audio"
+        ? await this.storageClient.upload(
+            body.content,
+            `audio/${uuid()}`,
+            "audio/wav",
+          )
+        : body.content
     const form = new FormData()
-    form.append("file", body.page)
+    form.append("page", body.page)
     form.append("x", body.x)
     form.append("y", body.y)
     form.append("dataType", body.dataType)
+    form.append("content", content)
     if ("title" in body) form.append("title", body.title)
 
-    return await this.restClient.postForm<StampResponse>(
-      `/file/${fileId}`,
+    const res = await this.restClient.postForm<StampResponse>(
+      `/file/${fileId}/stamp`,
       form,
     )
+    return {
+      ...res,
+      id: `${res.id}`,
+      // @ts-ignore
+      comments: res.comments.map((comment) => ({
+        ...comment,
+        id: `${comment.id}`,
+        // @ts-ignore
+        dataType: comment.dataType ?? comment.dateType,
+      })),
+    }
   }
 
   public async comment(
@@ -131,13 +171,23 @@ export class FileUseCase implements FileUseCaseInterface {
     fileId: string,
     stampId: string,
   ): Promise<CommentResponse> {
+    const content =
+      body.dataType === "audio"
+        ? await this.storageClient.upload(
+            body.content,
+            `audio/${uuid()}`,
+            "audio/wav",
+          )
+        : body.content
     const form = new FormData()
     form.append("dataType", body.dataType)
-    form.append("content", body.content)
+    form.append("content", content)
     if ("title" in body) form.append("file", body.title)
-    return await this.restClient.postForm<CommentResponse>(
+    const res = await this.restClient.postForm<CommentResponse>(
       `/file/${fileId}/stamp/${stampId}/comment`,
       form,
     )
+    // @ts-ignore
+    return { ...res, id: `${res.id}`, dataType: res.dataType ?? res.dateType }
   }
 }

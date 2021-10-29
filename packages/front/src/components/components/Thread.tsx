@@ -12,7 +12,7 @@ type Thread = {
   comments: Comment[]
   onAddComment: (
     comment:
-      | { dataType: "audio"; content: File; title: string }
+      | { dataType: "audio"; content: Blob; title: string }
       | { dataType: "text"; content: string },
   ) => void
   className?: string
@@ -21,6 +21,7 @@ type Thread = {
 type Recording = {
   ts: number
   blobUrl: string
+  blob: Blob
   mimeType: string
   size: number
 }
@@ -38,6 +39,7 @@ const Thread: React.VFC<Thread> = ({ comments, onAddComment, className }) => {
   const audioTitleRef = useRef<HTMLInputElement | null>(null)
   const [text, setText] = useState("")
   const [audioTitle, setAudioTitle] = useState("")
+  const [audioBlob, setAudioBlob] = useState<Blob | null>(null)
 
   useEffect(() => {
     const _recorderService = new RecorderService((volume: number) => {
@@ -48,9 +50,7 @@ const Thread: React.VFC<Thread> = ({ comments, onAddComment, className }) => {
 
   const handleRecording = useCallback(
     async (evt: { detail: { recording: Recording } }) => {
-      console.log("evt", evt)
-      // submit
-      console.log(evt.detail.recording.blobUrl)
+      setAudioBlob(evt.detail.recording.blob)
       if (recorderService != null) {
         recorderService.em.removeEventListener(
           "recording",
@@ -110,12 +110,14 @@ const Thread: React.VFC<Thread> = ({ comments, onAddComment, className }) => {
   }
 
   const submitAudio = async () => {
+    if (audioBlob == null) {
+      return
+    }
     onAddComment({
-      content: null as unknown as File,
+      content: audioBlob,
       dataType: "audio",
       title: audioTitle,
     })
-    // TODO: submit audio comment
     setInputMode(null)
   }
 
@@ -239,6 +241,9 @@ const Thread: React.VFC<Thread> = ({ comments, onAddComment, className }) => {
           </div>
         ) : null}
       </div>
+      {comments.length === 0 && (
+        <div className="text-white">音声を入力して伝えよう</div>
+      )}
       <section className="relative flex items-center justify-between w-full mt-4">
         <div className="flex items-center justify-center flex-1 text-sm">
           <button
@@ -286,54 +291,54 @@ const Thread: React.VFC<Thread> = ({ comments, onAddComment, className }) => {
           </div>
         </div>
         <div className="flex items-center justify-center flex-1">
-          {/* {!(inputMode === null && comments.length === 0) && ( */}
-          <button
-            onClick={() => {
-              if (inputMode === null) {
-                // テキスト
-                setInputMode("text")
-              } else if (inputMode === "audio-title") {
-                // 送信
-                setInputMode(null)
-                submitAudio()
-              } else if (inputMode === "text") {
-                // 送信
-                onAddComment({ dataType: "text", content: text })
-                setInputMode(null)
-              } else {
-                // unreachable
-                return
+          {!(inputMode === null && comments.length === 0) && (
+            <button
+              onClick={() => {
+                if (inputMode === null) {
+                  // テキスト
+                  setInputMode("text")
+                } else if (inputMode === "audio-title") {
+                  // 送信
+                  submitAudio()
+                  setInputMode(null)
+                } else if (inputMode === "text") {
+                  // 送信
+                  onAddComment({ dataType: "text", content: text })
+                  setInputMode(null)
+                } else {
+                  // unreachable
+                  return
+                }
+              }}
+              className={
+                "mr-2 select-none text-white/70 transition group " +
+                (inputMode === "text" ? "" : "") +
+                (inputMode === "audio" ? "opacity-0" : "")
               }
-            }}
-            className={
-              "mr-2 select-none text-white/70 transition group " +
-              (inputMode === "text" ? "" : "") +
-              (inputMode === "audio" ? "opacity-0" : "")
-            }
-            disabled={
-              inputMode === "audio" ||
-              (inputMode === "text" && text === "") ||
-              (inputMode === "audio-title" && audioTitle === "")
-            }
-          >
-            {inputMode === null ? (
-              <>
-                <span className="inline-block mr-2 text-xl">Aa</span>
-                <span className="inline-block text-xs">テキスト</span>
-              </>
-            ) : inputMode === "audio" ? (
-              <span className="inline-block text-sm">次へ</span>
-            ) : inputMode === "audio-title" ? (
-              <span className="inline-block text-sm group-disabled:text-primary/50 text-primary">
-                送信
-              </span>
-            ) : (
-              <span className="inline-block text-sm group-disabled:text-primary/50 text-primary">
-                送信
-              </span>
-            )}
-          </button>
-          {/* )} */}
+              disabled={
+                inputMode === "audio" ||
+                (inputMode === "text" && text === "") ||
+                (inputMode === "audio-title" && audioTitle === "")
+              }
+            >
+              {inputMode === null ? (
+                <>
+                  <span className="inline-block mr-2 text-xl">Aa</span>
+                  <span className="inline-block text-xs">テキスト</span>
+                </>
+              ) : inputMode === "audio" ? (
+                <span className="inline-block text-sm">次へ</span>
+              ) : inputMode === "audio-title" ? (
+                <span className="inline-block text-sm group-disabled:text-primary/50 text-primary">
+                  送信
+                </span>
+              ) : (
+                <span className="inline-block text-sm group-disabled:text-primary/50 text-primary">
+                  送信
+                </span>
+              )}
+            </button>
+          )}
         </div>
       </section>
     </section>

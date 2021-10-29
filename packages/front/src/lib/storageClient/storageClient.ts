@@ -3,7 +3,7 @@ import { storage } from "@lib/firebase"
 
 export interface StorageClientInterface {
   upload: (
-    file: File,
+    file: Blob,
     fileName: string,
     contentType: "application/pdf" | "audio/wav",
   ) => Promise<string>
@@ -11,7 +11,7 @@ export interface StorageClientInterface {
 
 export class StorageClient implements StorageClientInterface {
   public async upload(
-    file: File,
+    file: Blob,
     path: string,
     contentType: "application/pdf" | "audio/wav",
   ) {
