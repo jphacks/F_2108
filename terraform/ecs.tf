@@ -10,10 +10,10 @@ resource "aws_ecs_service" "main" {
   name                               = var.project
   cluster                            = aws_ecs_cluster.main.arn
   task_definition                    = aws_ecs_task_definition.main.arn
-  desired_count                      = 2
+  desired_count                      = 1
   launch_type                        = "FARGATE"
-  deployment_maximum_percent         = 100
-  deployment_minimum_healthy_percent = 50
+  deployment_maximum_percent         = 200
+  deployment_minimum_healthy_percent = 100
   force_new_deployment               = true
   wait_for_steady_state              = true
 
