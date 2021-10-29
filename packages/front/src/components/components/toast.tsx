@@ -10,7 +10,7 @@ type Props = {
   type: ToastType
   text: string
   isShow: boolean
-  isShowSetter: Function
+  isShowSetter: (bool: boolean) => void
 }
 
 /**
