@@ -12,6 +12,7 @@ import { getClient } from "@lib/restClient/restClient"
 import { errorHandler } from "@lib/ErrorHandler"
 import { useAuth } from "./useAuth"
 import { getStorageClient } from "@lib/storageClient/storageClient"
+import { MockFileUseCase } from "@mocks/useCase/file/mockFileUseCase"
 
 type UseFile = {
   uploadFile: (body: UploadRequestBody) => Promise<FileDataSnapshot>
@@ -25,11 +26,17 @@ type UseFile = {
   ) => Promise<CommentResponse>
 }
 
+/** モックを利用するか */
+const USE_MOCK = false
+
 export const useFile = (): UseFile => {
   const user = useAuth()
   const apiClient = getClient()
   const storageClient = getStorageClient()
-  const fileUseCase = new FileUseCase(apiClient, storageClient)
+  const fileUseCase =
+    USE_MOCK && process.env.NODE_ENV === "development"
+      ? new MockFileUseCase()
+      : new FileUseCase(apiClient, storageClient)
 
   user?.getIdToken().then((idToken) => {
     apiClient.setIdToken(idToken)

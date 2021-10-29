@@ -53,13 +53,12 @@ export type StampResponse = {
 
 export type CommentResponse = {
   id: string
-  content: string
   author: User
   postedAt: string
+  content: string
 } & (
   | {
       dataType: "text"
-      title?: undefined
     }
   | {
       dataType: "audio"

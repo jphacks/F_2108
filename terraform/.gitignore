@@ -1,2 +1,5 @@
 .terraform/
 *.tfvars
+
+# lambda source code
+*.zip
