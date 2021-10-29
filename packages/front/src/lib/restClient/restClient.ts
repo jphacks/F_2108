@@ -72,7 +72,6 @@ export class RestClient implements RestClientInterface {
       this.idToken != null ? { Authorization: `Bearer ${this.idToken}` } : null
     return {
       baseURL: API_BASE_URL,
-      withCredentials: true,
       headers: {
         "Content-Type": isBinary ? "multipart/form-data" : "application/json",
         ...authorization,
