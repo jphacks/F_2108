@@ -45,7 +45,8 @@ resource "aws_iam_policy" "deploy" {
           "iam:PassRole"
         ],
         "Resource" : [
-          data.aws_iam_role.ecsTaskExecutionRole.arn
+          data.aws_iam_role.ecsTaskExecutionRole.arn,
+          aws_iam_role.ecs.arn
         ]
       },
       {
