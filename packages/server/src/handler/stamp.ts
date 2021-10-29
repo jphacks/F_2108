@@ -36,13 +36,13 @@ export const stampHandler = async (server: FastifyInstance) => {
     stamp.position_page = body.page.value
     stamp.position_x = body.x.value
     stamp.position_y = body.y.value
-    stamp.author = server.currentUser()
+    stamp.author = req.currentUser
     stamp.file = file
 
     const comment = await buildComment(
       server.storage(),
       body.dataType.value,
-      server.currentUser(),
+      req.currentUser,
       stamp,
       body.content,
       body.title?.value,

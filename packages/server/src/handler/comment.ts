@@ -35,7 +35,7 @@ export const commentHandler = async (server: FastifyInstance) => {
     const comment = await buildComment(
       server.storage(),
       body.dataType.value,
-      server.currentUser(),
+      req.currentUser,
       stamp,
       body.content,
       body.title?.value,
