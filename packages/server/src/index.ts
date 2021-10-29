@@ -23,8 +23,13 @@ server.register(cors, {
   origin: ["http://localhost:3000", process.env.CORS_ORIGIN ?? ""],
   credentials: true,
 })
-registerStorage(server)
 server.register(fastifyMultipart, { attachFieldsToBody: true })
+
+registerStorage(server)
+
+// This is dummy, but necessary.
+// Please read https://www.fastify.io/docs/latest/Decorators/
+server.decorateRequest("currentUser", null)
 
 server.get("/health", async (_, res) => res.send("ok"))
 server.register(fileHandler)
