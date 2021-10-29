@@ -8,6 +8,7 @@ import {
 } from "fastify/types/utils"
 import { FastifyLoggerInstance } from "fastify/types/logger"
 import { IStorage } from "../storage/IStorage"
+import { RouteGenericInterface } from "fastify/types/route"
 
 declare module "fastify" {
   export interface FastifyInstance<
@@ -16,7 +17,14 @@ declare module "fastify" {
     RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
     Logger = FastifyLoggerInstance,
   > {
-    currentUser(): User
     storage(): IStorage
+  }
+
+  export interface FastifyRequest<
+    RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
+    RawServer extends RawServerBase = RawServerDefault,
+    RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  > {
+    currentUser: User
   }
 }

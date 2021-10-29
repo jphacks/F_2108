@@ -15,13 +15,16 @@ export const registerFirebaseAuth = async (server: FastifyInstance) => {
     dummyUser.icon_url =
       User.ICON_URL_PREFIX + User.ADMIN_ICON_URL_PREFIX + "/dummy_user.png"
 
-    server.decorate("currentUser", () => dummyUser)
+    server.addHook("onRequest", async (req) => {
+      req.currentUser = dummyUser
+    })
+
     return
   }
 
   await server.register(fastifyBearerAuth, {
     keys: new Set<string>(), // this is ignored
-    auth: async (key) => {
+    auth: async (key, req) => {
       let decoded: DecodedIdToken
       try {
         decoded = await admin.auth().verifyIdToken(key)
@@ -41,7 +44,7 @@ export const registerFirebaseAuth = async (server: FastifyInstance) => {
       const repository = connection.getRepository(User)
       await repository.save(user)
 
-      server.decorate("currentUser", () => user)
+      req.currentUser = user
 
       return true
     },
