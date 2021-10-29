@@ -35,13 +35,12 @@ export const FileUploader: NextPage = () => {
     if (pdf == null) {
       return
     }
-    console.log("upload")
     const res = await fileUseCase.uploadFile({
       file: pdf,
       name: fileName,
     })
 
-    // router.push(`/${res.file.id}`)
+    router.push(`/${res.file.id}`)
   }
 
   return (
