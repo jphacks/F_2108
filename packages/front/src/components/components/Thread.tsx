@@ -10,17 +10,23 @@ const AudioGraph = dynamic(() => import("@components/atoms/AudioGraph"), {
 
 type Thread = {
   comments: Comment[]
+  onAddComment: (
+    comment:
+      | { dataType: "audio"; content: Blob; title: string }
+      | { dataType: "text"; content: string },
+  ) => void
   className?: string
 }
 
 type Recording = {
   ts: number
   blobUrl: string
+  blob: Blob
   mimeType: string
   size: number
 }
 
-const Thread: React.VFC<Thread> = ({ comments, className }) => {
+const Thread: React.VFC<Thread> = ({ comments, onAddComment, className }) => {
   const [inputMode, setInputMode] = useState<
     "audio" | "text" | "audio-title" | null
   >(null)
@@ -33,6 +39,7 @@ const Thread: React.VFC<Thread> = ({ comments, className }) => {
   const audioTitleRef = useRef<HTMLInputElement | null>(null)
   const [text, setText] = useState("")
   const [audioTitle, setAudioTitle] = useState("")
+  const [audioBlob, setAudioBlob] = useState<Blob | null>(null)
 
   useEffect(() => {
     const _recorderService = new RecorderService((volume: number) => {
@@ -43,9 +50,7 @@ const Thread: React.VFC<Thread> = ({ comments, className }) => {
 
   const handleRecording = useCallback(
     async (evt: { detail: { recording: Recording } }) => {
-      console.log("evt", evt)
-      // submit
-      console.log(evt.detail.recording.blobUrl)
+      setAudioBlob(evt.detail.recording.blob)
       if (recorderService != null) {
         recorderService.em.removeEventListener(
           "recording",
@@ -105,7 +110,14 @@ const Thread: React.VFC<Thread> = ({ comments, className }) => {
   }
 
   const submitAudio = async () => {
-    // TODO: submit audio comment
+    if (audioBlob == null) {
+      return
+    }
+    onAddComment({
+      content: audioBlob,
+      dataType: "audio",
+      title: audioTitle,
+    })
     setInputMode(null)
   }
 
@@ -146,8 +158,8 @@ const Thread: React.VFC<Thread> = ({ comments, className }) => {
       <div className="flex flex-col items-start px-6 pb-2 space-y-4 overflow-y-scroll">
         {comments.map((comment) =>
           comment.dataType === "audio" ? (
-            <div className="first:mt-8 last:mb-8">
-              <AudioComment key={comment.id} comment={comment} />
+            <div key={comment.id} className="first:mt-8 last:mb-8">
+              <AudioComment comment={comment} />
             </div>
           ) : (
             <div key={comment.id} className="ml-14 first:mt-8 last:mb-8">
@@ -229,6 +241,9 @@ const Thread: React.VFC<Thread> = ({ comments, className }) => {
           </div>
         ) : null}
       </div>
+      {comments.length === 0 && (
+        <div className="text-white">音声を入力して伝えよう</div>
+      )}
       <section className="relative flex items-center justify-between w-full mt-4">
         <div className="flex items-center justify-center flex-1 text-sm">
           <button
@@ -276,48 +291,54 @@ const Thread: React.VFC<Thread> = ({ comments, className }) => {
           </div>
         </div>
         <div className="flex items-center justify-center flex-1">
-          <button
-            onClick={() => {
-              if (inputMode === null) {
-                // テキスト
-                setInputMode("text")
-              } else if (inputMode === "audio-title") {
-                // 送信
-                setInputMode(null)
-                submitAudio()
-              } else {
-                // 送信
-                setInputMode(null)
+          {!(inputMode === null && comments.length === 0) && (
+            <button
+              onClick={() => {
+                if (inputMode === null) {
+                  // テキスト
+                  setInputMode("text")
+                } else if (inputMode === "audio-title") {
+                  // 送信
+                  submitAudio()
+                  setInputMode(null)
+                } else if (inputMode === "text") {
+                  // 送信
+                  onAddComment({ dataType: "text", content: text })
+                  setInputMode(null)
+                } else {
+                  // unreachable
+                  return
+                }
+              }}
+              className={
+                "mr-2 select-none text-white/70 transition group " +
+                (inputMode === "text" ? "" : "") +
+                (inputMode === "audio" ? "opacity-0" : "")
               }
-            }}
-            className={
-              "mr-2 select-none text-white/70 transition group " +
-              (inputMode === "text" ? "" : "") +
-              (inputMode === "audio" ? "opacity-0" : "")
-            }
-            disabled={
-              inputMode === "audio" ||
-              (inputMode === "text" && text === "") ||
-              (inputMode === "audio-title" && audioTitle === "")
-            }
-          >
-            {inputMode === null ? (
-              <>
-                <span className="inline-block mr-2 text-xl">Aa</span>
-                <span className="inline-block text-xs">テキスト</span>
-              </>
-            ) : inputMode === "audio" ? (
-              <span className="inline-block text-sm">次へ</span>
-            ) : inputMode === "audio-title" ? (
-              <span className="inline-block text-sm group-disabled:text-primary/50 text-primary">
-                送信
-              </span>
-            ) : (
-              <span className="inline-block text-sm group-disabled:text-primary/50 text-primary">
-                送信
-              </span>
-            )}
-          </button>
+              disabled={
+                inputMode === "audio" ||
+                (inputMode === "text" && text === "") ||
+                (inputMode === "audio-title" && audioTitle === "")
+              }
+            >
+              {inputMode === null ? (
+                <>
+                  <span className="inline-block mr-2 text-xl">Aa</span>
+                  <span className="inline-block text-xs">テキスト</span>
+                </>
+              ) : inputMode === "audio" ? (
+                <span className="inline-block text-sm">次へ</span>
+              ) : inputMode === "audio-title" ? (
+                <span className="inline-block text-sm group-disabled:text-primary/50 text-primary">
+                  送信
+                </span>
+              ) : (
+                <span className="inline-block text-sm group-disabled:text-primary/50 text-primary">
+                  送信
+                </span>
+              )}
+            </button>
+          )}
         </div>
       </section>
     </section>

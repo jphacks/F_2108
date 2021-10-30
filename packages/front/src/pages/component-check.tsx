@@ -17,6 +17,7 @@ const ComponentCheck: NextPage = () => {
       />
       <div className="flex flex-col items-start">
         <Thread
+          onAddComment={() => console.log("add")}
           comments={[
             {
               id: "1",
