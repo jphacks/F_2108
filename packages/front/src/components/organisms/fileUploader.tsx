@@ -43,6 +43,28 @@ export const FileUploader: NextPage = () => {
     router.push(`/${res.file.id}`)
   }
 
+  const fileUi = (
+    <div className="flex items-center">
+      <div className="container mx-auto p-9 bg-white max-w-sm rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition duration-300">
+        <div className="flex justify-between items-center">
+          <div className="pr-2">
+            <h1 className="mt-5 text-2xl font-semibold text-gray-500">
+              {pdf?.name}
+            </h1>
+            <p className="mt-2 text-gray-500">{pdf?.size} bytes</p>
+          </div>
+          <div>
+            <button
+              className="text-white text-md font-semibold bg-red-400 py-2 px-2 rounded-lg shadow-md hover:shadow-lg transition duration-500 transform-gpu hover:scale-110"
+              onClick={() => setPdf(null)}
+            >
+              remove
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
   return (
     <>
       <div className="relative flex items-center justify-center sm:px-6">
@@ -69,14 +91,18 @@ export const FileUploader: NextPage = () => {
               <div className="flex items-center justify-center w-full">
                 <label className="flex flex-col w-full p-10 text-center border-4 border-dashed rounded-lg h-60 group">
                   <div className="flex flex-col items-center justify-center w-full h-full text-center ">
-                    <p className="text-gray-500 pointer-none ">
-                      <span className="text-sm">Drag and drop</span> files here{" "}
-                      <br /> or{" "}
-                      <div className="text-blue-600 hover:underline">
-                        select a file
-                      </div>{" "}
-                      from your computer
-                    </p>
+                    {pdf ? (
+                      <> {fileUi}</>
+                    ) : (
+                      <p className="text-gray-500 pointer-none ">
+                        <span className="text-sm">Drag and drop</span> files
+                        here <br /> or{" "}
+                        <div className="text-blue-600 hover:underline">
+                          select a file
+                        </div>{" "}
+                        from your computer
+                      </p>
+                    )}
                   </div>
                   <input
                     type="file"
