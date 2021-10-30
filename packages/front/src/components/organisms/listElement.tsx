@@ -3,7 +3,7 @@ import Link from "next/link"
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import Image from "next/image"
 import { FileDataSnapshot } from "@domain/fileDataSnapshot"
-import { Play, Share } from "react-feather"
+import { Play, Share, File } from "react-feather"
 import { formatTime } from "@lib/formatTime"
 import { Icon } from "@components/atoms/Icon"
 import { useAuth } from "@hooks/useAuth"
@@ -32,10 +32,13 @@ export const ListElement: React.VFC<ListElementProps> = ({ file }) => {
             <div className="flex flex-col w-full overflow-hidden bg-white border border-gray-300 border-solid rounded-lg hover:border-gray-400 hover:bg-gray-100 group">
               <div className="relative w-full h-[200px]">
                 {/* <Image
-                src={file.file.thumbnail}
-                layout="fill"
-                className="object-cover pointer-events-none"
-              /> */}
+                  src={file.file.thumbnail}
+                  layout="fill"
+                  className="object-cover pointer-events-none"
+                /> */}
+                <div className="flex items-center justify-center w-full h-full bg-gray-50">
+                  <File size={48} />
+                </div>
                 {file.type === "shared" && (
                   <span className="absolute bottom-0 right-0 px-1 py-0.5 m-2 text-xs font-bold text-white bg-blue-400 rounded">
                     共有されたファイル
