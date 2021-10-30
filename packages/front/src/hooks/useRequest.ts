@@ -6,6 +6,7 @@ export const useRequest = <Response>(
   initData: Response | (() => Response),
   onError?: (error: unknown) => void,
   enabled = true,
+  requireAuth = true,
 ) => {
   const [data, setData] = useState<Response>(initData)
   const [isLoading, setIsLoading] = useState(false)
@@ -14,7 +15,7 @@ export const useRequest = <Response>(
 
   useEffect(() => {
     ;(async () => {
-      if (user == null || !enabled) {
+      if ((requireAuth && user == null) || !enabled) {
         return
       }
       try {
