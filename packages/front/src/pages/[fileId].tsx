@@ -12,6 +12,7 @@ import { useFile } from "@hooks/useFile"
 import { useRouter } from "next/router"
 import { useAuth } from "@hooks/useAuth"
 import { UrlShareModal } from "@components/organisms/urlShareModal"
+
 const PDFViewer: React.ComponentType<PDFViewerProps> = dynamic(
   () =>
     import("../components/components/PdfViewer").then(
@@ -20,7 +21,7 @@ const PDFViewer: React.ComponentType<PDFViewerProps> = dynamic(
   {
     ssr: false,
     // TODO: loading表示
-    // loading,
+    loading: () => <p>テストLoading</p> ,
   },
 )
 
