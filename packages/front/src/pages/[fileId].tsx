@@ -123,7 +123,26 @@ const FileDetail: NextPage<Record<string, never>, FileDetailQuery> = () => {
         },
         fileId,
       )
-      setStamps((prev) => [...prev, res])
+      setStamps((prev) => [
+        ...prev,
+        {
+          ...res,
+          position: {
+            page:
+              typeof res.position.page === "string"
+                ? parseInt(res.position.page)
+                : res.position.page,
+            x:
+              typeof res.position.x === "string"
+                ? parseFloat(res.position.x)
+                : res.position.x,
+            y:
+              typeof res.position.y === "string"
+                ? parseFloat(res.position.y)
+                : res.position.y,
+          },
+        },
+      ])
     } else {
       const res = await fileUseCase.postStamp(
         {
@@ -143,6 +162,8 @@ const FileDetail: NextPage<Record<string, never>, FileDetailQuery> = () => {
   const sortedStamps = stamps.sort((a, b) =>
     a.position.y < b.position.y ? 1 : a.position.y === b.position.y ? 0 : -1,
   )
+
+  console.log(stamps)
 
   const handleDeleteTemporary = (stamp: StampModel) => {
     setStamps((prev) => prev.filter(({ id }) => id !== stamp.id))
