@@ -2,7 +2,7 @@
 デモ動画：https://drive.google.com/file/d/1UXv9dv-x4fHQktSrwWDFD8oFag37dqoD/view?usp=sharing
 
 ![image](https://user-images.githubusercontent.com/38308823/139521809-9698edc9-16e3-411c-bb2f-54a44ba91a27.png)
-<img src="https://user-images.githubusercontent.com/38308823/139538321-d6a0fc2c-bc8a-46cc-bf71-cf691b29bc09.png" width="420px"/> <img src="https://user-images.githubusercontent.com/38308823/139521840-21272e96-1632-413a-8f2c-b7f6b2ae6abc.png" width="420px"/>
+<img src="https://user-images.githubusercontent.com/38308823/139538321-d6a0fc2c-bc8a-46cc-bf71-cf691b29bc09.png" width="400px"/> <img src="https://user-images.githubusercontent.com/38308823/139521840-21272e96-1632-413a-8f2c-b7f6b2ae6abc.png" width="400px"/>
 
 
 ## 製品概要
