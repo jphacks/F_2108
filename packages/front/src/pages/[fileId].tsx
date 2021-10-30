@@ -20,8 +20,6 @@ const PDFViewer: React.ComponentType<PDFViewerProps> = dynamic(
     ),
   {
     ssr: false,
-    // TODO: loading表示
-    loading: () => <p>テストLoading</p> ,
   },
 )
 
