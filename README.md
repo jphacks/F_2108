@@ -1,8 +1,7 @@
 # Voice Tag
-
-[![IMAGE ALT TEXT HERE](https://jphacks.com/wp-content/uploads/2021/07/JPHACKS2021_ogp.jpg)](https://www.youtube.com/watch?v=LUPQFB4QyVo)
-
 動画：https://drive.google.com/file/d/1UXv9dv-x4fHQktSrwWDFD8oFag37dqoD/view?usp=sharing
+
+![image](https://user-images.githubusercontent.com/38308823/139521809-9698edc9-16e3-411c-bb2f-54a44ba91a27.png)
 
 ## 製品概要
 ### 背景(製品開発のきっかけ、課題等）
