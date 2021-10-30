@@ -2,6 +2,7 @@
 動画：https://drive.google.com/file/d/1UXv9dv-x4fHQktSrwWDFD8oFag37dqoD/view?usp=sharing
 
 ![image](https://user-images.githubusercontent.com/38308823/139521809-9698edc9-16e3-411c-bb2f-54a44ba91a27.png)
+<img src="https://user-images.githubusercontent.com/38308823/139521840-21272e96-1632-413a-8f2c-b7f6b2ae6abc.png" width="400px"/>
 
 ## 製品概要
 ### 背景(製品開発のきっかけ、課題等）
