@@ -145,6 +145,16 @@ const Thread: React.VFC<Thread> = ({ comments, onAddComment, className }) => {
     }
   }, [volumes])
 
+  const sortedComment = useMemo(() => {
+    const array = [...comments]
+    array.sort((a, b) => {
+      const aTime = new Date(a.postedAt).getTime()
+      const bTime = new Date(b.postedAt).getTime()
+      return aTime > bTime ? 1 : aTime === bTime ? 0 : -1
+    })
+    return array
+  }, [comments])
+
   return (
     <section
       className={
@@ -153,7 +163,7 @@ const Thread: React.VFC<Thread> = ({ comments, onAddComment, className }) => {
       }
     >
       <div className="flex flex-col items-start px-6 pb-2 space-y-4 overflow-y-scroll">
-        {comments.map((comment) =>
+        {sortedComment.map((comment) =>
           comment.dataType === "audio" ? (
             <div key={comment.id} className="first:mt-8 last:mb-8">
               <AudioComment comment={comment} />
@@ -238,7 +248,7 @@ const Thread: React.VFC<Thread> = ({ comments, onAddComment, className }) => {
           </div>
         ) : null}
       </div>
-      {comments.length === 0 && (
+      {sortedComment.length === 0 && (
         <div className="text-white">音声を入力して伝えよう</div>
       )}
       <section className="relative flex items-center justify-between w-full mt-4">
@@ -288,7 +298,7 @@ const Thread: React.VFC<Thread> = ({ comments, onAddComment, className }) => {
           </div>
         </div>
         <div className="flex items-center justify-center flex-1">
-          {!(inputMode === null && comments.length === 0) && (
+          {!(inputMode === null && sortedComment.length === 0) && (
             <button
               onClick={() => {
                 if (inputMode === null) {
