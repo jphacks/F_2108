@@ -89,7 +89,7 @@ export class FileUseCase implements FileUseCaseInterface {
     try {
       const path = await this.storageClient.upload(
         body.file,
-        `file/${body.name}`,
+        `file/${uuid()}_${body.name}`,
         "application/pdf",
       )
       const form = new FormData()
