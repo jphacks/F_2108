@@ -55,6 +55,7 @@ export const fileHandler = async (server: FastifyInstance) => {
       const file = await query
         .innerJoinAndSelect("file.author", "file_author")
         .innerJoinAndSelect("file.updated_by", "file_updated_by")
+        .leftJoinAndSelect("file.shared_to", "shared_to")
         .leftJoinAndSelect("file.stamps", "stamp")
         .leftJoinAndSelect("stamp.author", "stamp_author")
         .leftJoinAndSelect("stamp.comments", "comment")
@@ -71,7 +72,13 @@ export const fileHandler = async (server: FastifyInstance) => {
         throw new e()
       }
 
-      file.shared_to = [req.currentUser]
+      const ownFile = file.author.id === req.currentUser.id
+      const alreadyShared = file.shared_to
+        .map((s) => s.id)
+        .includes(req.currentUser.id)
+      if (!(ownFile || alreadyShared)) {
+        file.shared_to.push(req.currentUser)
+      }
       await repository.save(file)
 
       const stamps = await file.stamps
