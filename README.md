@@ -36,6 +36,7 @@ PDFをアップロードして、PDF上に音声を付箋の形で貼れるこ�
 ### 注力したこと（こだわり等）
 * 録音・音声の再生などの使いやすいUIとアニメーション
 * CI/CDの設定
+* サムネイル画像の自動生成
 
 ## 開発技術
 ### 活用した技術
@@ -46,7 +47,7 @@ PDFをアップロードして、PDF上に音声を付箋の形で貼れるこ�
 #### フレームワーク・ライブラリ・モジュール
 * フロント：React / Next.js / TypeScript / Konva.js
 * バックエンド：Fastify / TypeScript / TypeORM
-* その他：AWS / Vercel / Firebae Auth / Firebase storage
+* その他：AWS / Vercel / Firebae Auth
 
 
 #### デバイス
