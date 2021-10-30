@@ -16,7 +16,15 @@ export interface RestClientInterface {
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || ""
 
 export class RestClient implements RestClientInterface {
-  constructor(private idToken?: string) {}
+  static instance: RestClient | null
+  private constructor(private idToken?: string) {}
+
+  static getInstance(idToken?: string) {
+    if (RestClient.instance == null) {
+      RestClient.instance = new RestClient(idToken)
+    }
+    return RestClient.instance
+  }
 
   public async get<Res>(path: string): Promise<Res> {
     return await axios
@@ -104,5 +112,5 @@ export class RestClient implements RestClientInterface {
 }
 
 export const getClient = (idToken?: string): RestClientInterface => {
-  return new RestClient(idToken)
+  return RestClient.getInstance(idToken)
 }
