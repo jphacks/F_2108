@@ -9,12 +9,11 @@ resource "aws_ecs_cluster" "main" {
 resource "aws_ecs_service" "main" {
   name                               = var.project
   cluster                            = aws_ecs_cluster.main.arn
-  task_definition                    = aws_ecs_task_definition.main.arn
-  desired_count                      = 2
+  task_definition                    = "${aws_ecs_task_definition.main.arn}:${max(aws_ecs_task_definition.main.revision, data.aws_ecs_task_definition.main.revision)}"
+  desired_count                      = 1
   launch_type                        = "FARGATE"
-  deployment_maximum_percent         = 100
-  deployment_minimum_healthy_percent = 50
-  force_new_deployment               = true
+  deployment_maximum_percent         = 200
+  deployment_minimum_healthy_percent = 100
   wait_for_steady_state              = true
 
   network_configuration {
@@ -34,6 +33,10 @@ resource "aws_ecs_service" "main" {
   tags = {
     Project = var.project
   }
+}
+
+data "aws_ecs_task_definition" "main" {
+  task_definition = aws_ecs_task_definition.main.family
 }
 
 resource "aws_ecs_task_definition" "main" {
