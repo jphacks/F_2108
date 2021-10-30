@@ -138,7 +138,8 @@ const AudioIndicator: React.VFC<AudioWaveProps> = ({ comment, onPlayEnd }) => {
             user={comment.author}
             size={54}
             state={isPlaying ? "playing" : "default"}
-            alwaysShowIcon={isPlaying || !notPlayedYet}
+            // alwaysShowIcon={isPlaying || !notPlayedYet}
+            alwaysShowIcon
             onClick={() => playOrPause()}
           />
         </div>
