@@ -9,7 +9,7 @@ resource "aws_ecs_cluster" "main" {
 resource "aws_ecs_service" "main" {
   name                               = var.project
   cluster                            = aws_ecs_cluster.main.arn
-  task_definition                    = "${aws_ecs_task_definition.main.arn}:${max(aws_ecs_task_definition.main.revision, data.aws_ecs_task_definition.main.revision)}"
+  task_definition                    = "${aws_ecs_task_definition.main.family}:${max(aws_ecs_task_definition.main.revision, data.aws_ecs_task_definition.main.revision)}"
   desired_count                      = 1
   launch_type                        = "FARGATE"
   deployment_maximum_percent         = 200
