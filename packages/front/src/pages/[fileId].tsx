@@ -277,9 +277,7 @@ const LoginButton: React.VFC = () => (
       aria-label="ログインする"
     >
       <ArrowLeft className="mr-2" />
-      <span className="opacity-100 pointer-events-none">
-        ログインする
-      </span>
+      <span className="opacity-100 pointer-events-none">ログインする</span>
     </a>
   </Link>
 )
