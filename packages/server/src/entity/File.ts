@@ -16,6 +16,8 @@ type FileType = "own" | "shared"
 
 @Entity()
 export class File {
+  static DEFAULT_THUMBNAIL_URL = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/thumbnail/admin/default.png`
+
   @PrimaryGeneratedColumn("uuid")
   id: string
 

@@ -116,7 +116,7 @@ export const fileHandler = async (server: FastifyInstance) => {
     fileModel.url = req.body.file.value
     // fileModel.thumbnail =
     //   thumbnailUrl ?? "Thumbnail is generated only in production mode."
-    fileModel.thumbnail = "Thumbnail is generated only when use s3."
+    fileModel.thumbnail = File.DEFAULT_THUMBNAIL_URL
     fileModel.author = req.currentUser
     fileModel.updated_by = req.currentUser
 
