@@ -72,13 +72,9 @@ export const FileUploader: NextPage = () => {
                     <p className="text-gray-500 pointer-none ">
                       <span className="text-sm">Drag and drop</span> files here{" "}
                       <br /> or{" "}
-                      <a
-                        href=""
-                        id=""
-                        className="text-blue-600 hover:underline"
-                      >
+                      <div className="text-blue-600 hover:underline">
                         select a file
-                      </a>{" "}
+                      </div>{" "}
                       from your computer
                     </p>
                   </div>
