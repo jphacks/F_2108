@@ -10,6 +10,7 @@ import { commentHandler } from "./handler/comment"
 import { initializeApp } from "./util/auth"
 import { registerStorage } from "./storage/register"
 import cors from "fastify-cors"
+import { fileDetailHandler } from "./handler/fileDetail"
 
 export let connection: Connection
 
@@ -33,6 +34,7 @@ server.decorateRequest("currentUser", null)
 
 server.get("/health", async (_, res) => res.send("ok"))
 server.register(fileHandler)
+server.register(fileDetailHandler)
 server.register(stampHandler)
 server.register(commentHandler)
 
