@@ -65,13 +65,10 @@ const Thread: React.VFC<Thread> = ({ comments, onAddComment, className }) => {
     if (recorderService == null) {
       return
     }
-    console.log("recordingInProgress", recordingInProgress)
     if (recordingInProgress) {
       stopRecording()
-      console.log("stop recording")
       // recorderService.em.removeEventListener("recording", console.log)
     } else {
-      console.log("startRecording")
       // recorderService.em.addEventListener("recording", console.log)
       recorderService.em.addEventListener("recording", handleRecording as any)
       startRecording()
