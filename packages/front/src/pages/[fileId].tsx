@@ -200,6 +200,11 @@ const FileDetail: NextPage<Record<string, never>, FileDetailQuery> = () => {
         <div className="fixed top-0 left-0 m-4 space-y-8 rounded">
           <BackButton />
         </div>
+        {user === null && (
+          <div className="fixed top-20 left-0 m-4 space-y-8 rounded">
+            <LoginButton />
+          </div>
+        )}
       </div>
       {file != null && (
         <UrlShareModal
@@ -260,6 +265,20 @@ const BackButton: React.VFC = () => (
       <ArrowLeft className="mr-2" />
       <span className="opacity-0 pointer-events-none group-hover:opacity-100">
         ダッシュボード
+      </span>
+    </a>
+  </Link>
+)
+
+const LoginButton: React.VFC = () => (
+  <Link href="/login">
+    <a
+      className="flex items-center justify-center px-4 py-2 text-white transition rounded-full bg-gray-100 text-black group"
+      aria-label="ログインする"
+    >
+      <ArrowLeft className="mr-2" />
+      <span className="opacity-100 pointer-events-none">
+        ログインする
       </span>
     </a>
   </Link>
