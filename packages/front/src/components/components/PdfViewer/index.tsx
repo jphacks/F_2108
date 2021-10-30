@@ -44,7 +44,11 @@ export const PDFViewer: React.VFC<PDFViewerProps> = ({
         const clientRect = element.getBoundingClientRect()
         const x = window.pageXOffset + clientRect.left
         const y = window.pageYOffset + clientRect.top
-        onStampAdd(index + 1, e.pageX - x, e.pageY - y)
+        onStampAdd(
+          index + 1,
+          (e.pageX - x) / clientRect.width,
+          (e.pageY - y) / clientRect.height,
+        )
       }
       element.addEventListener("dblclick", listener)
       listeners[index] = listener
@@ -98,7 +102,6 @@ const PdfPage: React.VFC<{
         renderTextLayer={true}
         className="react-pdf-page-div shadow-paper"
         width={width}
-        onLoadSuccess={(page) => console.log("getViewport", page.getViewport())}
       />
       {stamps.map((stamp) => (
         <div

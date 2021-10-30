@@ -20,13 +20,13 @@ const Login: FC = () => {
   const { width, height } = useWindowSize()
 
   useEffect(() => {
-    user && router.push("/pdf-sample")
+    user && router.push("/dashboard")
   }, [user])
 
   const logIn = async () => {
     try {
       await authUseCase.signIn(dispatch)
-      router.push("/pdf-sample")
+      router.push("/dashboard")
     } catch (err) {
       console.log(err)
     }
@@ -34,41 +34,41 @@ const Login: FC = () => {
 
   return (
     <>
-      <div className="fixed -top-52 -left-40 z-0">
+      <div className="fixed z-0 -top-52 -left-40">
         <Image
           src="/ellipse.svg"
           width={width * 0.4}
           height={width * 0.35}
-          className="object-fit w-full z-0"
+          className="z-0 w-full object-fit"
         />
       </div>
-      <div className="fixed -bottom-52 -left-40 z-0 transform rotate-90">
+      <div className="fixed z-0 transform rotate-90 -bottom-52 -left-40">
         <Image
           src="/ellipse.svg"
           width={width * 0.4}
           height={width * 0.35}
-          className="object-fit w-full z-0"
+          className="z-0 w-full object-fit"
         />
       </div>
-      <div className="fixed top-1/4 -right-44 z-0 transform rotate-90">
+      <div className="fixed z-0 transform rotate-90 top-1/4 -right-44">
         <Image
           src="/ellipse.svg"
           width={width * 0.4}
           height={width * 0.35}
-          className="object-fit w-full z-0"
+          className="z-0 w-full object-fit"
         />
       </div>
-      <div className="relative h-screen flex-col px-10">
-        <div className="h-2/5 z-10">
-          <h1 className="text-4xl pt-24 pl-28 font-monob text-gray-600 font-medium">
+      <div className="relative flex-col h-screen px-10">
+        <div className="z-10 h-2/5">
+          <h1 className="pt-24 text-4xl font-medium text-gray-600 pl-28 font-monob">
             あなたの音声を付箋に。
           </h1>
-          <div className="relative pl-72 z-10">
+          <div className="relative z-10 pl-72">
             <Image
               src="/logo_black.png"
               width={400}
               height={160}
-              className="object-fit w-full"
+              className="w-full object-fit"
             />
           </div>
         </div>
@@ -77,19 +77,19 @@ const Login: FC = () => {
             src="/discussion.png"
             width={width * 0.7}
             height={height * 0.6}
-            className="object-fit w-full"
+            className="w-full object-fit"
           />
         </div>
         <button
           onClick={logIn}
-          className="absolute bg-white hover:bg-gray-200 border-2 border-opacity-15 border-blue-400 text-blue-500 text-center py-2 pr-8 pl-3 rounded-full top-1/2 right-32"
+          className="absolute py-2 pl-3 pr-8 text-center text-blue-500 bg-white border-2 border-blue-400 rounded-full hover:bg-gray-200 border-opacity-15 top-1/2 right-32"
         >
           <div className="flex items-center">
             <Image
               src="/icons/g-logo.png"
               width={30}
               height={30}
-              className="object-fit w-full"
+              className="w-full object-fit"
             />
             <p className="pl-2">Googleアカウントでログイン</p>
           </div>

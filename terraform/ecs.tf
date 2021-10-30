@@ -10,10 +10,12 @@ resource "aws_ecs_service" "main" {
   name                               = var.project
   cluster                            = aws_ecs_cluster.main.arn
   task_definition                    = aws_ecs_task_definition.main.arn
-  desired_count                      = 1
+  desired_count                      = 2
   launch_type                        = "FARGATE"
   deployment_maximum_percent         = 100
-  deployment_minimum_healthy_percent = 0
+  deployment_minimum_healthy_percent = 50
+  force_new_deployment               = true
+  wait_for_steady_state              = true
 
   network_configuration {
     subnets          = [aws_subnet.public_a.id, aws_subnet.public_c.id]
@@ -38,8 +40,8 @@ resource "aws_ecs_task_definition" "main" {
   family                   = var.project
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
-  cpu                      = 256
-  memory                   = 512
+  cpu                      = 1024
+  memory                   = 2048
   execution_role_arn       = data.aws_iam_role.ecsTaskExecutionRole.arn
 
   container_definitions = jsonencode([
@@ -120,24 +122,9 @@ resource "aws_iam_role" "ecs" {
   }
 }
 
-resource "aws_iam_role_policy" "access-s3" {
-  role = aws_iam_role.ecs.id
-
-  policy = jsonencode({
-    Version : "2012-10-17",
-    Statement : [
-      {
-        "Effect" : "Allow",
-        "Action" : [
-          "s3:GetObject",
-          "s3:PutObject"
-        ],
-        Resource : [
-          "arn:aws:s3:::${aws_s3_bucket.main.bucket}/*"
-        ]
-      }
-    ]
-  })
+resource "aws_iam_role_policy_attachment" "ecs-read-write-s3" {
+  role       = aws_iam_role.ecs.name
+  policy_arn = aws_iam_policy.read-write-s3.arn
 }
 
 data "aws_iam_role" "ecsTaskExecutionRole" {

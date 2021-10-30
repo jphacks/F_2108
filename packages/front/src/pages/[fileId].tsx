@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { NextPage } from "next"
 import Link from "next/link"
 import dynamic from "next/dynamic"
@@ -7,6 +7,11 @@ import Stamp from "@components/atoms/Stamp"
 import { Stamp as StampModel } from "@domain/stamp"
 import { useWindowSize } from "@hooks/useWindowSize"
 import { Share, Plus, Minus, ArrowLeft } from "react-feather"
+import { useRequest } from "@hooks/useRequest"
+import { useFile } from "@hooks/useFile"
+import { useRouter } from "next/router"
+import { useAuth } from "@hooks/useAuth"
+import { UrlShareModal } from "@components/organisms/urlShareModal"
 const PDFViewer: React.ComponentType<PDFViewerProps> = dynamic(
   () =>
     import("../components/components/PdfViewer").then(
@@ -14,91 +19,196 @@ const PDFViewer: React.ComponentType<PDFViewerProps> = dynamic(
     ),
   {
     ssr: false,
+    // TODO: loading表示
+    // loading,
   },
 )
 
-const FileDetail: NextPage = () => {
-  const [stamps, setStamps] = useState<StampModel[]>([
-    {
-      id: "0",
-      author: {
-        id: "qwerty",
-        name: "joen doe",
-        iconUrl: "/icons/icon01.png",
-      },
-      comments: [
-        {
-          id: "1",
-          dataType: "audio",
-          content: "/dog.wav",
-          author: {
-            id: "qwerty",
-            name: "joen doe",
-            iconUrl: "/icons/icon03.png",
-          },
-          postedAt: "2019-08-24T14:15:22Z",
-          title: "タイトル",
-        },
-        {
-          id: "2",
-          dataType: "text",
-          content: "コメント",
-          author: {
-            id: "qwerty",
-            name: "joen doe",
-            iconUrl: "/icons/icon02.png",
-          },
-          postedAt: "2019-08-25T14:15:22Z",
-        },
-      ],
-      position: {
-        page: 1,
-        x: 0.3,
-        y: 0.45,
-      },
-    },
-  ])
+type FileDetailQuery = {
+  fileId: string
+}
 
+const FileDetail: NextPage<Record<string, never>, FileDetailQuery> = () => {
+  const router = useRouter()
+  const fileId = router.query.fileId as string
+  const fileUseCase = useFile()
+  const user = useAuth()
+  const [openShareModal, setOpenShareModal] = useState(false)
+
+  const { data: file } = useRequest(
+    () => fileUseCase.fetchFileDetail(fileId),
+    null,
+    () => router.push("/404"),
+    fileId != null,
+  )
   const { width } = useWindowSize()
   const [sizeRate, setSizeRate] = useState(6)
+  const [stamps, setStamps] = useState<StampModel[]>(file?.stamps ?? [])
+
+  useEffect(() => {
+    setStamps(file?.stamps ?? [])
+  }, [file])
+
+  const handleAddStamp = (page: number, x: number, y: number) => {
+    if (user == null) {
+      return
+    }
+    setStamps((prev) => [
+      ...prev.filter((stamp) => !stamp.id.startsWith("temporary_")),
+      {
+        id: "temporary_" + new Date().getTime(),
+        author: {
+          id: user.uid,
+          iconUrl: user.photoURL ?? "",
+          name: user.displayName ?? "",
+        },
+        comments: [],
+        position: {
+          page,
+          x,
+          y,
+        },
+      },
+    ])
+  }
+
+  const handleSendComment = async (
+    stampId: string,
+    comment:
+      | { dataType: "audio"; content: Blob; title: string }
+      | { dataType: "text"; content: string },
+  ) => {
+    const body =
+      comment.dataType === "audio"
+        ? {
+            dataType: comment.dataType,
+            content: comment.content,
+            title: comment.title as string,
+          }
+        : {
+            dataType: comment.dataType,
+            content: comment.content,
+          }
+    const res = await fileUseCase.postComment(body, fileId, stampId)
+    setStamps((prev) =>
+      prev.map((stamp) => {
+        if (stamp.id === stampId) {
+          return {
+            ...stamp,
+            comments: [...stamp.comments, res],
+          }
+        } else {
+          return stamp
+        }
+      }),
+    )
+  }
+
+  const handleSendCommentAndStamp = async (
+    stamp: StampModel,
+    comment:
+      | { dataType: "audio"; content: Blob; title: string }
+      | { dataType: "text"; content: string },
+  ) => {
+    if (comment.dataType === "audio") {
+      const res = await fileUseCase.postStamp(
+        {
+          dataType: "audio",
+          content: comment.content,
+          title: comment.title,
+          page: `${stamp.position.page}`,
+          x: `${stamp.position.x}`,
+          y: `${stamp.position.y}`,
+        },
+        fileId,
+      )
+      setStamps((prev) => [...prev, res])
+    } else {
+      const res = await fileUseCase.postStamp(
+        {
+          dataType: "text",
+          content: comment.content,
+          page: `${stamp.position.page}`,
+          x: `${stamp.position.x}`,
+          y: `${stamp.position.y}`,
+        },
+        fileId,
+      )
+      setStamps((prev) => [...prev, res])
+    }
+  }
+
+  // NOTE: Popoverを開いたときに他のスタンプに邪魔されないように、y座標が大きいスタンプから順にレンダリングする
+  const sortedStamps = stamps.sort((a, b) =>
+    a.position.y < b.position.y ? 1 : a.position.y === b.position.y ? 0 : -1,
+  )
+
+  const handleDeleteTemporary = (stamp: StampModel) => {
+    setStamps((prev) => prev.filter(({ id }) => id !== stamp.id))
+  }
 
   return (
-    <div className="flex flex-col items-center w-full px-[10vw] py-8 bg-bgBlack relative">
-      <PDFViewer
-        src="/sample2.pdf"
-        stamps={stamps}
-        onStampAdd={(page, x, y) => {
-          console.log("add stamp")
-          // setStamps((prev) => [...prev, { page, x, y, id: prev.length }])
-        }}
-        width={width * (sizeRate / 10.0)}
-        stampRender={(stamp) => (
-          <div className="relative">
-            <Stamp stamp={stamp} />
-            <div className="absolute w-40 text-sm bg-white border border-gray-400 rounded shadow-md left-full top-full hover:opacity-30">
-              <div className="text-center">
-                <span className="inline-block pointer-events-none">
-                  (x, y) = ({stamp.position.x}, {stamp.position.y})
-                </span>
-                <br />
-                <span className="inline-block pointer-events-none">
-                  page = {stamp.position.page}
-                </span>
+    <>
+      <div className="flex flex-col items-center w-full px-[10vw] py-8 bg-bgBlack relative">
+        <PDFViewer
+          src={file?.fileSnapshot.file.url ?? ""}
+          stamps={sortedStamps}
+          onStampAdd={handleAddStamp}
+          width={width * (sizeRate / 10.0)}
+          stampRender={(stamp) => {
+            const isTemporary = stamp.id.startsWith("temporary_")
+            return (
+              <div className="relative" key={stamp.id}>
+                <Stamp
+                  stamp={stamp}
+                  onAddComment={(comment) => {
+                    if (isTemporary) {
+                      handleSendCommentAndStamp(stamp, comment)
+                    } else {
+                      handleSendComment(stamp.id, comment)
+                    }
+                  }}
+                  isTemporary={isTemporary}
+                  onClose={() => {
+                    if (isTemporary) {
+                      handleDeleteTemporary(stamp)
+                    }
+                  }}
+                />
+                {/* デバッグ（座標確認用） */}
+                {/* <div className="absolute z-10 w-40 text-sm bg-white border border-gray-400 rounded shadow-md opacity-100 left-full top-full hover:opacity-30">
+                <div className="text-center">
+                  <span className="inline-block pointer-events-none">
+                    (x, y) = ({stamp.position.x}, {stamp.position.y})
+                  </span>
+                  <br />
+                  <span className="inline-block pointer-events-none">
+                    page = {stamp.position.page}
+                  </span>
+                </div>
+              </div> */}
               </div>
-            </div>
-          </div>
-        )}
-      />
-      {/* サイドバー */}
-      <div className="fixed top-0 right-0 p-4 m-4 space-y-8 rounded bg-bgBlack/60">
-        <ShareButton onClick={() => console.log("share")} />
-        <SizeRateButton sizeRate={sizeRate} setSizeRate={setSizeRate} />
+            )
+          }}
+        />
+        {/* サイドバー */}
+        <div className="fixed top-0 right-0 p-4 m-4 space-y-8 rounded bg-bgBlack/60">
+          <ShareButton onClick={() => setOpenShareModal(true)} />
+          <SizeRateButton sizeRate={sizeRate} setSizeRate={setSizeRate} />
+        </div>
+        {/* 戻るボタン */}
+        <div className="fixed top-0 left-0 m-4 space-y-8 rounded">
+          <BackButton />
+        </div>
       </div>
-      {/* 戻るボタン */}
-      <div className="fixed top-0 left-0 m-4 space-y-8 rounded">
-        <BackButton />
-      </div>
-    </div>
+      {file != null && (
+        <UrlShareModal
+          open={openShareModal}
+          onClose={() => setOpenShareModal(false)}
+          file={file?.fileSnapshot.file}
+        />
+      )}
+    </>
   )
 }
 

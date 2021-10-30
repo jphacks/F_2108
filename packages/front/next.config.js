@@ -1,7 +1,16 @@
+// eslint-disable-next-line no-undef
+const IMAGE_SRC_DOMAIN = process.env.IMAGE_SRC_DOMAIN
 /** @type {import('next').NextConfig} */
 // eslint-disable-next-line
 module.exports = {
   reactStrictMode: true,
+  images: {
+    // eslint-disable-next-line no-undef
+    domains: [
+      ...(IMAGE_SRC_DOMAIN != null ? [IMAGE_SRC_DOMAIN] : []),
+      "lh3.googleusercontent.com",
+    ],
+  },
   webpack: (config) => {
     // load worker files as a urls with `file-loader`
     config.module.rules.unshift({

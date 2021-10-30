@@ -4,6 +4,7 @@ export interface IStorage {
     filename: string,
     content: Buffer,
   ): Promise<{
-    url: string
+    fileUrl: string
+    thumbnailUrl?: string
   }>
 }
