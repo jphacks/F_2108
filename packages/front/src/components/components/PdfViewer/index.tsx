@@ -3,6 +3,7 @@ import { Document, Page, pdfjs } from "react-pdf"
 import workerSrc from "./pdf-worker"
 import "react-pdf/dist/esm/Page/AnnotationLayer.css"
 import { Stamp } from "@domain/stamp"
+import ReactLoading from "react-loading"
 pdfjs.GlobalWorkerOptions.workerSrc = workerSrc
 
 export type PDFViewerProps = {
@@ -71,6 +72,26 @@ export const PDFViewer: React.VFC<PDFViewerProps> = ({
         onLoadSuccess={(documentProxy) => setNumPages(documentProxy.numPages)}
         externalLinkTarget="_blank"
         className="space-y-4"
+        loading={
+          <div className="h-screen flex items-center">
+            <ReactLoading
+              type="bubbles"
+              color="#ffffff"
+              height={300}
+              width={300}
+            />
+          </div>
+        }
+        noData={
+          <div className="h-screen flex items-center">
+            <ReactLoading
+              type="bubbles"
+              color="#ffffff"
+              height={300}
+              width={300}
+            />
+          </div>
+        }
       >
         {Array.from({ length: numPages }, (_, index) => (
           <PdfPage
