@@ -2,6 +2,8 @@
 
 [![IMAGE ALT TEXT HERE](https://jphacks.com/wp-content/uploads/2021/07/JPHACKS2021_ogp.jpg)](https://www.youtube.com/watch?v=LUPQFB4QyVo)
 
+動画：https://drive.google.com/file/d/1UXv9dv-x4fHQktSrwWDFD8oFag37dqoD/view?usp=sharing
+
 ## 製品概要
 ### 背景(製品開発のきっかけ、課題等）
 新型コロナウイルスの感染拡大に伴い、リモートワークやリモートでの授業が一般化した今、より快適なコミュニケーションを促進したいと考えました。
@@ -31,8 +33,10 @@ PDF上で自分の音声を付箋に残し共有するアプリで、チーム�
 * 
 
 #### フレームワーク・ライブラリ・モジュール
-* React / 
-* 
+* フロント：React / Next.js / TypeScript / Konva.js
+* バックエンド：Fastify / TypeScript / TypeORM
+* その他：AWS / Vercel / Firebae Auth / Firebase storage
+
 
 #### デバイス
 * 
