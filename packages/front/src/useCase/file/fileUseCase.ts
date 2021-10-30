@@ -89,7 +89,7 @@ export class FileUseCase implements FileUseCaseInterface {
     try {
       const path = await this.storageClient.upload(
         body.file,
-        `file/${body.name}`,
+        `file/${uuid()}_${body.name}`,
         "application/pdf",
       )
       const form = new FormData()
@@ -182,7 +182,7 @@ export class FileUseCase implements FileUseCaseInterface {
     const form = new FormData()
     form.append("dataType", body.dataType)
     form.append("content", content)
-    if ("title" in body) form.append("file", body.title)
+    if ("title" in body) form.append("title", body.title)
     const res = await this.restClient.postForm<CommentResponse>(
       `/file/${fileId}/stamp/${stampId}/comment`,
       form,

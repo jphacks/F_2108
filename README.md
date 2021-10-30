@@ -52,6 +52,9 @@ packages/
   └─ server/ サーバーサイド
 ```
 
+## 開発
+各パッケージのREADMEを参照ください
+
 ## npm scripts
 yarnを利用します。npmを利用するとエラーが出ます。
 

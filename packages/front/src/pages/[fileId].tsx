@@ -39,6 +39,7 @@ const FileDetail: NextPage<Record<string, never>, FileDetailQuery> = () => {
     null,
     () => router.push("/404"),
     fileId != null,
+    false,
   )
   const { width } = useWindowSize()
   const [sizeRate, setSizeRate] = useState(6)
