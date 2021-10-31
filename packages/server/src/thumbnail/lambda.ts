@@ -3,9 +3,7 @@ import { ThumbnailGenerator } from "./ThumbnailGenerator"
 
 export class LambdaThumbnailGenerator implements ThumbnailGenerator {
   constructor(
-    private readonly lambda = new Lambda({
-      region: process.env.AWS_REGION,
-    }),
+    private readonly lambda = new Lambda({ region: process.env.AWS_REGION }),
   ) {}
 
   generate(fileId: string, url: string) {
@@ -13,12 +11,15 @@ export class LambdaThumbnailGenerator implements ThumbnailGenerator {
       url,
       fileId,
     }
-    const params: Lambda.Types.InvocationRequest = {
+    const params: Lambda.InvokeAsyncRequest = {
       FunctionName: process.env.AWS_LAMBDA_FUNCTION_NAME ?? "",
-      InvocationType: "Event",
-      Payload: JSON.stringify(args),
+      InvokeArgs: JSON.stringify(args),
     }
 
-    this.lambda.invoke(params)
+    this.lambda.invokeAsync(params, (err, data) => {
+      if (err) {
+        console.error(err, err.stack)
+      }
+    })
   }
 }
