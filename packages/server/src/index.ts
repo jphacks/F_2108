@@ -10,6 +10,7 @@ import { commentHandler } from "./handler/comment"
 import { initializeApp } from "./util/auth"
 import { registerStorage } from "./storage/register"
 import cors from "fastify-cors"
+import { registerThumbnailGenerator } from "./thumbnail/register"
 
 export let connection: Connection
 
@@ -26,6 +27,7 @@ server.register(cors, {
 server.register(fastifyMultipart, { attachFieldsToBody: true })
 
 registerStorage(server)
+registerThumbnailGenerator(server)
 
 // This is dummy, but necessary.
 // Please read https://www.fastify.io/docs/latest/Decorators/
