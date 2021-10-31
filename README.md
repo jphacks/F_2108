@@ -83,6 +83,7 @@ Voice Tagでは、アップロードしたPDF資料に音声データを追加�
   * https://github.com/jphacks/F_2108/blob/main/packages/front/src/components/atoms/Stamp.tsx
 * サムネイルの自動生成
   * https://github.com/jphacks/F_2108_1 （別レポジトリ）
+* その他全てのコードはハッカソン期間中に書いています
 
 ---
 # 開発
