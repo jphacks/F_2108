@@ -135,14 +135,16 @@ export const fileHandler = async (server: FastifyInstance) => {
       result: "success",
       data: {
         type: "own",
-        file: buildFileResponse(fileModel),
+        file: buildFileResponse(result),
         updatedAt: result.updated_at,
         updatedBy: buildUserResponse(result.updated_by),
       },
     })
 
-    server.thumbnailGenerator().generate(result.id, req.body.file.value)
-    fileModel.thumbnail = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/thumbnail/${fileModel.id}`
-    await repository.save(fileModel)
+    if (process.env.NODE_ENV === "production") {
+      server.thumbnailGenerator().generate(result.id, req.body.file.value)
+      fileModel.thumbnail = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/thumbnail/${fileModel.id}`
+      await repository.save(fileModel)
+    }
   })
 }
