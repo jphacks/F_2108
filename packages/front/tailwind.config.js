@@ -1,5 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires, no-undef
 const plugin = require("tailwindcss/plugin")
+// eslint-disable-next-line @typescript-eslint/no-var-requires, no-undef
+const defaultTheme = require("tailwindcss/defaultTheme")
 /** @type {import('@types/tailwindcss/tailwind-config').TailwindConfig} */
 // eslint-disable-next-line no-undef
 module.exports = {
@@ -22,6 +24,9 @@ module.exports = {
       },
       animation: {
         "ping-slow": "ping 2s cubic-bezier(0, 0, 0.2, 1) infinite",
+      },
+      fontFamily: {
+        sans: ["Zen Maru Gothic", ...defaultTheme.fontFamily.sans],
       },
     },
   },
