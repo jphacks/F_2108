@@ -12,6 +12,7 @@ import createError from "fastify-error"
 import { ERR_BAD_URL, ERR_INVALID_PAYLOAD } from "../util/errors"
 import { registerFirebaseAuth } from "../util/auth"
 import { User } from "../entity/User"
+import { ThumbnailGenerator } from "../thumbnail/ThumbnailGenerator"
 
 export const fileHandler = async (server: FastifyInstance) => {
   await registerFirebaseAuth(server)
@@ -134,10 +135,16 @@ export const fileHandler = async (server: FastifyInstance) => {
       result: "success",
       data: {
         type: "own",
-        file: buildFileResponse(fileModel),
+        file: buildFileResponse(result),
         updatedAt: result.updated_at,
         updatedBy: buildUserResponse(result.updated_by),
       },
     })
+
+    if (process.env.NODE_ENV === "production") {
+      server.thumbnailGenerator().generate(result.id, req.body.file.value)
+      fileModel.thumbnail = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/thumbnail/${fileModel.id}`
+      await repository.save(fileModel)
+    }
   })
 }

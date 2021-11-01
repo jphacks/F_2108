@@ -6,12 +6,18 @@ resource "aws_lambda_function" "pdf-generator" {
   runtime          = "nodejs12.x"
   handler          = "index.handler"
   memory_size      = 1024
-  timeout          = 10
+  timeout          = 20
 
   layers = [
     aws_lambda_layer_version.imagemagick.arn,
     aws_lambda_layer_version.ghostscript.arn
   ]
+
+  environment {
+    variables = {
+      BUCKET = aws_s3_bucket.main.bucket
+    }
+  }
 
   tags = {
     Project = var.project
