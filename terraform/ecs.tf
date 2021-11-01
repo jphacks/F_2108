@@ -64,6 +64,7 @@ resource "aws_ecs_task_definition" "main" {
         { name : "FIREBASE_ADMIN_PRIVATE_KEY", value : var.firebase.private_key },
         { name : "AWS_REGION", value : var.region },
         { name : "AWS_BUCKET_NAME", value : aws_s3_bucket.main.bucket },
+        { name : "AWS_LAMBDA_FUNCTION_NAME", value : aws_lambda_function.pdf-generator.function_name },
         { name : "CORS_ORIGIN", value : var.cors_origin }
       ]
       logConfiguration = {
