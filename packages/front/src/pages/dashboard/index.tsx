@@ -1,7 +1,7 @@
 import { ListElement } from "@components/organisms/listElement"
 import { AddButton } from "@components/organisms/addButton"
 import { Modal } from "@components/organisms/modal"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { FileUploader } from "@components/organisms/fileUploader"
 import Image from "next/image"
 import { SearchInput } from "@components/organisms/searchInput"
@@ -33,10 +33,15 @@ const Index: React.VFC = () => {
     authUseCase.logout()
   }
 
-  // FIXME: 暫定で前方一致検索を実装
-  const sortedFiles = files.filter((file) =>
-    file.file.name.startsWith(searchName),
-  )
+  const sortedFiles = useMemo(() => {
+    const _files = files.filter((file) => file.file.name.startsWith(searchName))
+    _files.sort((a, b) => {
+      const aTime = new Date(a.updatedAt).getTime()
+      const bTime = new Date(b.updatedAt).getTime()
+      return aTime < bTime ? 1 : aTime === bTime ? 0 : -1
+    })
+    return _files
+  }, [files])
 
   return (
     <div className="h-screen bg-gray-200">
