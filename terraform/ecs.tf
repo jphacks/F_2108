@@ -63,7 +63,7 @@ resource "aws_ecs_task_definition" "main" {
         { name : "FIREBASE_ADMIN_CLIENT_EMAIL", value : var.firebase.client_email },
         { name : "FIREBASE_ADMIN_PRIVATE_KEY", value : var.firebase.private_key },
         { name : "AWS_REGION", value : var.region },
-        { name : "AWS_BUCKET_NAME", value : aws_s3_bucket.main.bucket_domain_name },
+        { name : "AWS_BUCKET_NAME", value : aws_s3_bucket.main.bucket },
         { name : "CORS_ORIGIN", value : var.cors_origin }
       ]
       logConfiguration = {
