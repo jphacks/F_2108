@@ -119,7 +119,6 @@ export class FileUseCase implements FileUseCaseInterface {
         id: `${stamp.id}`,
         comments: stamp.comments.map((comment) => ({
           ...comment,
-          dataType: comment.dataType,
           id: `${comment.id}`,
         })),
       })),
@@ -156,7 +155,6 @@ export class FileUseCase implements FileUseCaseInterface {
       comments: res.comments.map((comment) => ({
         ...comment,
         id: `${comment.id}`,
-        dataType: comment.dataType,
       })),
     }
   }
