@@ -170,7 +170,7 @@ const FileDetail: NextPage<Record<string, never>, FileDetailQuery> = () => {
 
   return (
     <>
-      <div className="flex flex-col items-center w-full px-[10vw] py-8 bg-bgBlack relative">
+      <div className="flex flex-col items-center w-full px-[10vw] py-8 bg-bgBlack relative min-h-screen">
         <PDFViewer
           src={file?.fileSnapshot.file.url ?? ""}
           stamps={sortedStamps}
@@ -222,7 +222,7 @@ const FileDetail: NextPage<Record<string, never>, FileDetailQuery> = () => {
           <BackButton />
         </div>
         {user === null && (
-          <div className="fixed top-20 left-0 m-4 space-y-8 rounded">
+          <div className="fixed left-0 m-4 space-y-8 rounded top-20">
             <LoginButton />
           </div>
         )}
@@ -294,7 +294,7 @@ const BackButton: React.VFC = () => (
 const LoginButton: React.VFC = () => (
   <Link href="/login">
     <a
-      className="flex items-center justify-center px-4 py-2 text-white transition rounded-full bg-gray-100 text-black group"
+      className="flex items-center justify-center px-4 py-2 text-black text-white transition bg-gray-100 rounded-full group"
       aria-label="ログインする"
     >
       <ArrowLeft className="mr-2" />
