@@ -7,6 +7,7 @@ module.exports = {
     domains: [
       "lh3.googleusercontent.com",
       "f-2108.s3.ap-northeast-1.amazonaws.com",
+      "f-2108.s3.amazonaws.com.s3.ap-northeast-1.amazonaws.com",
     ],
   },
   webpack: (config) => {
