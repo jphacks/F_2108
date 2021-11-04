@@ -107,6 +107,8 @@ export const FileUploader: NextPage = () => {
                   <input
                     type="file"
                     className="hidden"
+                    accept=".pdf"
+                    required
                     onChange={(e) => imageHandler(e)}
                   />
                 </label>
