@@ -106,8 +106,7 @@ export class FileUseCase implements FileUseCaseInterface {
     const res = await this.restClient.get<FileDataSnapshot[]>(`/file`)
     return res.map((file) => ({
       ...file,
-      // @ts-ignore
-      updatedBy: file.updatedBy ?? file.updatedBt,
+      updatedBy: file.updatedBy,
     }))
   }
 
@@ -115,14 +114,11 @@ export class FileUseCase implements FileUseCaseInterface {
     const res = await this.restClient.get<GetDetailResponse>(`/file/${fileId}`)
     return {
       ...res,
-      // @ts-ignore
       stamps: res.stamps.map((stamp) => ({
         ...stamp,
         id: `${stamp.id}`,
         comments: stamp.comments.map((comment) => ({
           ...comment,
-          // @ts-ignore
-          dataType: comment.dataType ?? comment.dateType,
           id: `${comment.id}`,
         })),
       })),
@@ -156,12 +152,9 @@ export class FileUseCase implements FileUseCaseInterface {
     return {
       ...res,
       id: `${res.id}`,
-      // @ts-ignore
       comments: res.comments.map((comment) => ({
         ...comment,
         id: `${comment.id}`,
-        // @ts-ignore
-        dataType: comment.dataType ?? comment.dateType,
       })),
     }
   }
@@ -187,7 +180,7 @@ export class FileUseCase implements FileUseCaseInterface {
       `/file/${fileId}/stamp/${stampId}/comment`,
       form,
     )
-    // @ts-ignore
-    return { ...res, id: `${res.id}`, dataType: res.dataType ?? res.dateType }
+
+    return { ...res, id: `${res.id}` }
   }
 }

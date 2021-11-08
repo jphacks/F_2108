@@ -40,7 +40,7 @@ export const fileHandler = async (server: FastifyInstance) => {
         type: f.fileType(req.currentUser),
         file: buildFileResponse(f),
         updatedAt: f.updated_at,
-        updatedBt: buildUserResponse(f.updated_by),
+        updatedBy: buildUserResponse(f.updated_by),
       })),
     })
   })
