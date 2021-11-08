@@ -6,12 +6,16 @@ import { NextPage } from "next"
 // import authReducer from "@reducers/authReducer";
 // import { authUseCase } from "@useCase/authUseCase";
 import { AuthProvider } from "@contexts/authContext"
+import { Page } from "@components/pages/Page"
 
 const MyApp: NextPage<AppProps> = ({ Component, pageProps }) => {
   return (
     <AuthProvider>
-      <Component {...pageProps} />
+      <Page>
+        <Component {...pageProps} />
+      </Page>
     </AuthProvider>
   )
 }
+
 export default MyApp
