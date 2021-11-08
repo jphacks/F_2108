@@ -126,23 +126,6 @@ resource "aws_iam_role" "ecs" {
   }
 }
 
-resource "aws_iam_role_policy" "ecs-fire-lambda" {
-  role = aws_iam_role.ecs.id
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = [
-          "lambda:InvokeFunction",
-        ]
-        Effect   = "Allow"
-        Resource = aws_lambda_function.pdf-generator.arn
-      },
-    ]
-  })
-}
-
 resource "aws_iam_role_policy_attachment" "ecs-read-write-s3" {
   role       = aws_iam_role.ecs.name
   policy_arn = aws_iam_policy.read-write-s3.arn

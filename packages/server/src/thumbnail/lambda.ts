@@ -3,7 +3,11 @@ import { ThumbnailGenerator } from "./ThumbnailGenerator"
 
 export class LambdaThumbnailGenerator implements ThumbnailGenerator {
   constructor(
-    private readonly lambda = new Lambda({ region: process.env.AWS_REGION }),
+    private readonly lambda = new Lambda({
+      region: process.env.AWS_REGION,
+      accessKeyId: process.env.AWS_THUMBNAIL_GENERATOR_EXEC_USER_KEY,
+      secretAccessKey: process.env.AWS_THUMBNAIL_GENERATOR_EXEC_USER_SECRET,
+    }),
   ) {}
 
   generate(fileId: string, url: string) {
