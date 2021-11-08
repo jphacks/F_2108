@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from "react"
 import { FileUploader } from "@components/organisms/fileUploader"
 import Image from "next/image"
 import { SearchInput } from "@components/organisms/searchInput"
-import { useAuth } from "@hooks/useAuth"
+import { useAuthUser } from "@hooks/useAuth"
 import { useRouter } from "next/router"
 import { useRequest } from "@hooks/useRequest"
 import { useFile } from "@hooks/useFile"
@@ -13,7 +13,7 @@ import { authUseCase } from "@useCase"
 
 const Index: React.VFC = () => {
   const [isOpenModal, setIsOpenModal] = useState(false)
-  const user = useAuth()
+  const user = useAuthUser()
   const router = useRouter()
   const fileUseCase = useFile()
 

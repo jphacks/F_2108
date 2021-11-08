@@ -4,7 +4,7 @@ import { FileDataSnapshot } from "@domain/fileDataSnapshot"
 import { Play, Share } from "react-feather"
 import { formatTime } from "@lib/formatTime"
 import { Icon } from "@components/atoms/Icon"
-import { useAuth } from "@hooks/useAuth"
+import { useAuthUser } from "@hooks/useAuth"
 import { UrlShareModal } from "./urlShareModal"
 import { Thumbnail } from "@components/atoms/Thumbnail"
 
@@ -84,7 +84,7 @@ export const ListElement: React.VFC<ListElementProps> = ({ file }) => {
 }
 
 const LastUpdateInfo: React.VFC<{ file: FileDataSnapshot }> = ({ file }) => {
-  const currentUser = useAuth()
+  const currentUser = useAuthUser()
   const userName =
     (file.updatedBy ?? file.file.author).id === currentUser?.uid
       ? "あなた"

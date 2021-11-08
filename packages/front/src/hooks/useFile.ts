@@ -10,7 +10,7 @@ import {
 } from "@useCase/file/fileUseCase"
 import { getClient } from "@lib/restClient/restClient"
 import { errorHandler } from "@lib/ErrorHandler"
-import { useAuth } from "./useAuth"
+import { useAuthUser } from "./useAuth"
 import { getStorageClient } from "@lib/storageClient/storageClient"
 import { MockFileUseCase } from "@mocks/useCase/file/mockFileUseCase"
 
@@ -30,7 +30,7 @@ type UseFile = {
 const USE_MOCK = false
 
 export const useFile = (): UseFile => {
-  const user = useAuth()
+  const user = useAuthUser()
   const apiClient = getClient()
   const storageClient = getStorageClient()
   const fileUseCase =

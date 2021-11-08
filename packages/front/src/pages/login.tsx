@@ -2,7 +2,7 @@ import React, { useEffect, FC, useReducer } from "react"
 import { useRouter } from "next/router"
 // import Image from "next/image"
 import authReducer from "@reducers/authReducer"
-import { useAuth } from "@hooks/useAuth"
+import { useAuthUser } from "@hooks/useAuth"
 import { authUseCase } from "@useCase"
 import { useWindowSize } from "@hooks/useWindowSize"
 import dynamic from "next/dynamic"
@@ -16,7 +16,7 @@ const Login: FC = () => {
     authReducer.reducer,
     authReducer.initialState,
   )
-  const user = useAuth()
+  const user = useAuthUser()
   const { width, height } = useWindowSize()
 
   useEffect(() => {
