@@ -10,7 +10,7 @@ import { Share, Plus, Minus, ArrowLeft } from "react-feather"
 import { useRequest } from "@hooks/useRequest"
 import { useFile } from "@hooks/useFile"
 import { useRouter } from "next/router"
-import { useAuth } from "@hooks/useAuth"
+import { useAuthUser } from "@hooks/useAuth"
 import { UrlShareModal } from "@components/organisms/urlShareModal"
 
 const PDFViewer: React.ComponentType<PDFViewerProps> = dynamic(
@@ -31,7 +31,7 @@ const FileDetail: NextPage<Record<string, never>, FileDetailQuery> = () => {
   const router = useRouter()
   const fileId = router.query.fileId as string
   const fileUseCase = useFile()
-  const user = useAuth()
+  const user = useAuthUser()
   const [openShareModal, setOpenShareModal] = useState(false)
 
   const { data: file } = useRequest(

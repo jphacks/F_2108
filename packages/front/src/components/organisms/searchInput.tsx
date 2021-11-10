@@ -18,7 +18,7 @@ export const SearchInput: React.VFC<SearchInputProps> = ({ setter, value }) => {
         <Search size={16} />
       </div>
       <input
-        className="w-full bg-transparent border-b-2 border-white focus:outline-none"
+        className="w-full bg-transparent focus:outline-none"
         name="search"
         value={value}
         onChange={handleValueChange}

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react"
-import { useAuth } from "./useAuth"
+import { useAuthUser } from "./useAuth"
 
 export const useRequest = <Response>(
   fetch: (...args: unknown[]) => Promise<Response>,
@@ -11,7 +11,7 @@ export const useRequest = <Response>(
   const [data, setData] = useState<Response>(initData)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<unknown>(null)
-  const user = useAuth()
+  const user = useAuthUser()
 
   useEffect(() => {
     ;(async () => {

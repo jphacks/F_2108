@@ -22,6 +22,7 @@ module.exports = {
       },
       animation: {
         "ping-slow": "ping 2s cubic-bezier(0, 0, 0.2, 1) infinite",
+        "spin-slow": "spin 4s linear infinite",
       },
     },
   },
@@ -31,18 +32,17 @@ module.exports = {
   plugins: [
     plugin(function ({ addUtilities }) {
       const newUtilities = {
-        ".skew-10deg": {
-          transform: "skewY(-10deg)",
-        },
-        ".skew-15deg": {
-          transform: "skewY(-15deg)",
-        },
         ".text-decoration-transparent": {
           "text-decoration-color": "transparent",
         },
 
         ".text-decoration-auto": {
           "text-decoration-color": "currentColor",
+        },
+        ".drag-none": {
+          "user-drag": "none",
+          "-webkit-user-drag": "none",
+          "-moz-user-select": "none",
         },
       }
 
