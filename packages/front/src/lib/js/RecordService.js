@@ -375,6 +375,7 @@ export default class RecorderService {
     let blobUrl = URL.createObjectURL(blob)
     const recording = {
       ts: new Date().getTime(),
+      blob,
       blobUrl: blobUrl,
       mimeType: blob.type,
       size: blob.size,

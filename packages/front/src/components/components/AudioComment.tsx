@@ -7,6 +7,8 @@ import { AudioComment } from "@domain/comment"
 import dynamic from "next/dynamic"
 const AudioGraph = dynamic(() => import("@components/atoms/AudioGraph"), {
   ssr: false,
+  // TODO: loading表示
+  // loading
 })
 
 /** サンプリング数 */
@@ -119,7 +121,12 @@ const AudioIndicator: React.VFC<AudioWaveProps> = ({ comment, onPlayEnd }) => {
 
   // 現在の再生位置（0~1で正規化）
   const progress =
-    audio.current == null
+    audio.current == null ||
+    audio.current.duration == null ||
+    audio.current.currentTime == null ||
+    audio.current.duration === 0 ||
+    Number.isNaN(audio.current.duration) ||
+    Number.isNaN(audio.current.currentTime)
       ? 0
       : audio.current.currentTime / audio.current.duration
 
@@ -131,7 +138,8 @@ const AudioIndicator: React.VFC<AudioWaveProps> = ({ comment, onPlayEnd }) => {
             user={comment.author}
             size={54}
             state={isPlaying ? "playing" : "default"}
-            alwaysShowIcon={isPlaying || !notPlayedYet}
+            // alwaysShowIcon={isPlaying || !notPlayedYet}
+            alwaysShowIcon
             onClick={() => playOrPause()}
           />
         </div>
@@ -147,7 +155,7 @@ const AudioIndicator: React.VFC<AudioWaveProps> = ({ comment, onPlayEnd }) => {
             )}
             {comment.title}
           </h1>
-          <div style={{ minHeight: CANVAS_HEIGHT }}>
+          <div style={{ minHeight: CANVAS_HEIGHT, minWidth: CANVAS_WIDTH }}>
             <AudioGraph
               data={data}
               progress={progress}

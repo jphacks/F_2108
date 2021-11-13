@@ -6,4 +6,5 @@ export type FileData = {
   postedAt: string
   url: string
   thumbnail: string
+  name: string
 }

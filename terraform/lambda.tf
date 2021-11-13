@@ -6,12 +6,18 @@ resource "aws_lambda_function" "pdf-generator" {
   runtime          = "nodejs12.x"
   handler          = "index.handler"
   memory_size      = 1024
-  timeout          = 10
+  timeout          = 20
 
   layers = [
     aws_lambda_layer_version.imagemagick.arn,
     aws_lambda_layer_version.ghostscript.arn
   ]
+
+  environment {
+    variables = {
+      BUCKET = aws_s3_bucket.main.bucket
+    }
+  }
 
   tags = {
     Project = var.project
@@ -59,4 +65,23 @@ resource "aws_lambda_layer_version" "imagemagick" {
 resource "aws_lambda_layer_version" "ghostscript" {
   layer_name = "${var.project}-ghostscript"
   filename   = "lambda-layers/ghostscript-layer.zip"
+}
+
+resource "aws_iam_policy" "fire-pdf-generator" {
+  name = "${var.project}-pdf-generator"
+
+  policy = jsonencode({
+    Version : "2012-10-17",
+    Statement : [
+      {
+        Effect : "Allow",
+        Action : "lambda:InvokeFunction"
+        Resource : aws_lambda_function.pdf-generator.arn
+      }
+    ]
+  })
+
+  tags = {
+    Project = var.project
+  }
 }

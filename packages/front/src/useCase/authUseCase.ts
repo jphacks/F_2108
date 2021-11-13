@@ -1,4 +1,4 @@
-import { auth } from "../lib/auth"
+import { auth } from "../lib/firebase"
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth"
 import { Dispatch } from "react"
 import { Action } from "@reducers/authReducer"
@@ -29,9 +29,7 @@ export default class AuthUseCase {
   }
 
   /**ログアウト */
-  logout() {
-    auth.signOut().then(() => {
-      window.location.reload()
-    })
+  async logout() {
+    await auth.signOut()
   }
 }

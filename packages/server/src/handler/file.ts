@@ -12,6 +12,7 @@ import createError from "fastify-error"
 import { ERR_BAD_URL, ERR_INVALID_PAYLOAD } from "../util/errors"
 import { registerFirebaseAuth } from "../util/auth"
 import { User } from "../entity/User"
+import { ThumbnailGenerator } from "../thumbnail/ThumbnailGenerator"
 
 export const fileHandler = async (server: FastifyInstance) => {
   await registerFirebaseAuth(server)
@@ -39,7 +40,7 @@ export const fileHandler = async (server: FastifyInstance) => {
         type: f.fileType(req.currentUser),
         file: buildFileResponse(f),
         updatedAt: f.updated_at,
-        updatedBt: buildUserResponse(f.updated_by),
+        updatedBy: buildUserResponse(f.updated_by),
       })),
     })
   })
@@ -55,6 +56,7 @@ export const fileHandler = async (server: FastifyInstance) => {
       const file = await query
         .innerJoinAndSelect("file.author", "file_author")
         .innerJoinAndSelect("file.updated_by", "file_updated_by")
+        .leftJoinAndSelect("file.shared_to", "shared_to")
         .leftJoinAndSelect("file.stamps", "stamp")
         .leftJoinAndSelect("stamp.author", "stamp_author")
         .leftJoinAndSelect("stamp.comments", "comment")
@@ -71,7 +73,13 @@ export const fileHandler = async (server: FastifyInstance) => {
         throw new e()
       }
 
-      file.shared_to = [req.currentUser]
+      const ownFile = file.author.id === req.currentUser.id
+      const alreadyShared = file.shared_to
+        .map((s) => s.id)
+        .includes(req.currentUser.id)
+      if (!(ownFile || alreadyShared)) {
+        file.shared_to.push(req.currentUser)
+      }
       await repository.save(file)
 
       const stamps = await file.stamps
@@ -95,26 +103,28 @@ export const fileHandler = async (server: FastifyInstance) => {
   )
 
   server.post<{
-    Body: { name: MultipartValue<string>; file: MultipartFile }
+    Body: { name: MultipartValue<string>; file: MultipartValue<string> }
     Reply: ResponseBody
   }>("/file", async (req, res) => {
-    const file = req.body.file
-    if (!file.filename) {
-      const e = createError(ERR_INVALID_PAYLOAD, "`file` should be sent.", 400)
-      throw new e()
-    }
-    const buffer = await file.toBuffer()
-    const filename = file.filename
-
-    const { fileUrl, thumbnailUrl } = await server
-      .storage()
-      .save("file", filename, buffer)
+    // const file = req.body.file
+    // if (!file.filename) {
+    //   const e = createError(ERR_INVALID_PAYLOAD, "`file` should be sent.", 400)
+    //   throw new e()
+    // }
+    // const buffer = await file.toBuffer()
+    // const filename = file.filename
+    //
+    // const { fileUrl, thumbnailUrl } = await server
+    //   .storage()
+    //   .save("file", filename, buffer)
 
     const fileModel = new File()
     fileModel.name = req.body.name.value
-    fileModel.url = fileUrl
-    fileModel.thumbnail =
-      thumbnailUrl ?? "Thumbnail is generated only in production mode."
+    // fileModel.url = fileUrl
+    fileModel.url = req.body.file.value
+    // fileModel.thumbnail =
+    //   thumbnailUrl ?? "Thumbnail is generated only in production mode."
+    fileModel.thumbnail = File.DEFAULT_THUMBNAIL_URL
     fileModel.author = req.currentUser
     fileModel.updated_by = req.currentUser
 
@@ -125,10 +135,14 @@ export const fileHandler = async (server: FastifyInstance) => {
       result: "success",
       data: {
         type: "own",
-        file: buildFileResponse(fileModel),
+        file: buildFileResponse(result),
         updatedAt: result.updated_at,
         updatedBy: buildUserResponse(result.updated_by),
       },
     })
+
+    server.thumbnailGenerator().generate(result.id, req.body.file.value)
+    fileModel.thumbnail = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/thumbnail/${fileModel.id}`
+    await repository.save(fileModel)
   })
 }

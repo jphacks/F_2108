@@ -3,6 +3,7 @@ import { Document, Page, pdfjs } from "react-pdf"
 import workerSrc from "./pdf-worker"
 import "react-pdf/dist/esm/Page/AnnotationLayer.css"
 import { Stamp } from "@domain/stamp"
+import ReactLoading from "react-loading"
 pdfjs.GlobalWorkerOptions.workerSrc = workerSrc
 
 export type PDFViewerProps = {
@@ -44,7 +45,11 @@ export const PDFViewer: React.VFC<PDFViewerProps> = ({
         const clientRect = element.getBoundingClientRect()
         const x = window.pageXOffset + clientRect.left
         const y = window.pageYOffset + clientRect.top
-        onStampAdd(index + 1, e.pageX - x, e.pageY - y)
+        onStampAdd(
+          index + 1,
+          (e.pageX - x) / clientRect.width,
+          (e.pageY - y) / clientRect.height,
+        )
       }
       element.addEventListener("dblclick", listener)
       listeners[index] = listener
@@ -67,6 +72,26 @@ export const PDFViewer: React.VFC<PDFViewerProps> = ({
         onLoadSuccess={(documentProxy) => setNumPages(documentProxy.numPages)}
         externalLinkTarget="_blank"
         className="space-y-4"
+        loading={
+          <div className="h-screen flex items-center">
+            <ReactLoading
+              type="bubbles"
+              color="#ffffff"
+              height={300}
+              width={300}
+            />
+          </div>
+        }
+        noData={
+          <div className="h-screen flex items-center">
+            <ReactLoading
+              type="bubbles"
+              color="#ffffff"
+              height={300}
+              width={300}
+            />
+          </div>
+        }
       >
         {Array.from({ length: numPages }, (_, index) => (
           <PdfPage
@@ -98,7 +123,6 @@ const PdfPage: React.VFC<{
         renderTextLayer={true}
         className="react-pdf-page-div shadow-paper"
         width={width}
-        onLoadSuccess={(page) => console.log("getViewport", page.getViewport())}
       />
       {stamps.map((stamp) => (
         <div

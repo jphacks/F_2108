@@ -1,22 +1,35 @@
 import React, { createContext, useState, useEffect } from "react"
 import firebase from "firebase/auth"
-import { auth } from "@lib/auth"
+import { auth } from "@lib/firebase"
 
-export const AuthContext = createContext<firebase.User | null>(null)
+type Auth =
+  | {
+      user: firebase.User | null
+      initialized: true
+    }
+  | {
+      user: null
+      initialized: false
+    }
+
+export const AuthContext = createContext<Auth>({
+  user: null,
+  initialized: false,
+})
 
 type AuthProviderProps = {
   children: React.ReactNode
 }
 
-export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<firebase.User | null>(null)
+export const AuthProvider: React.VFC<AuthProviderProps> = ({ children }) => {
+  const [user, setUser] = useState<Auth>({ user: null, initialized: false })
 
   useEffect(() => {
     auth.onAuthStateChanged((user) => {
       if (!user) {
-        setUser(null)
+        setUser({ user: null, initialized: true })
       } else {
-        setUser(user)
+        setUser({ user, initialized: true })
       }
     })
   }, [])

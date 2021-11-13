@@ -1,5 +1,5 @@
 import type { Stamp as StampModel } from "@domain/stamp"
-import React, { Fragment, useCallback, useRef, useState } from "react"
+import React, { Fragment, useCallback, useEffect, useState } from "react"
 import { Icon } from "./Icon"
 import { Popover, Transition } from "@headlessui/react"
 import { Play } from "react-feather"
@@ -7,9 +7,21 @@ import Thread from "@components/components/Thread"
 
 export type StampProps = {
   stamp: StampModel
+  onAddComment: (
+    comment:
+      | { dataType: "audio"; content: Blob; title: string }
+      | { dataType: "text"; content: string },
+  ) => void
+  isTemporary?: boolean
+  onClose?: () => void
 }
 
-const Stamp: React.VFC<StampProps> = ({ stamp }) => {
+const Stamp: React.VFC<StampProps> = ({
+  stamp,
+  onAddComment,
+  isTemporary,
+  onClose,
+}) => {
   // const [popOverDirection, setPopOverDirection] = useState<
   //   "left" | "bottom" | "right"
   // >("bottom")
@@ -34,11 +46,17 @@ const Stamp: React.VFC<StampProps> = ({ stamp }) => {
   //   }
   // }, [])
 
+  const buttonRef = useCallback((node: HTMLButtonElement) => {
+    if (isTemporary) {
+      node?.click()
+    }
+  }, [])
+
   return (
     <Popover className="relative">
       {({ open }) => (
         <>
-          <Popover.Button>
+          <Popover.Button ref={buttonRef}>
             <div
               className="relative"
               // ref={handleIconRef}
@@ -46,6 +64,7 @@ const Stamp: React.VFC<StampProps> = ({ stamp }) => {
               <StampIcon stamp={stamp} open={open} />
             </div>
           </Popover.Button>
+          {onClose != null && <OpenCheck open={open} onClose={onClose} />}
           <Transition
             as={Fragment}
             enter="transition ease-out duration-200"
@@ -56,7 +75,7 @@ const Stamp: React.VFC<StampProps> = ({ stamp }) => {
             leaveTo="opacity-0 translate-y-1"
           >
             <Popover.Panel className="absolute z-10 max-w-sm px-4 transform sm:px-0 lg:max-w-3xl max-h-[540px] -translate-x-1/2 left-1/2 mt-4">
-              <Thread comments={stamp.comments} />
+              <Thread comments={stamp.comments} onAddComment={onAddComment} />
             </Popover.Panel>
           </Transition>
         </>
@@ -82,7 +101,7 @@ const StampIcon: React.VFC<{ stamp: StampModel; open: boolean }> = ({
         (open ? "opacity-0" : "")
       }
     />
-    {0 < stamp.comments.length && (
+    {2 <= stamp.comments.length && (
       <span className="absolute flex items-center justify-center w-5 h-5 text-[9px] tracking-tighter font-bold leading-none text-black rounded-full tabular-nums bg-primary top-[-10%] right-[-10%]">
         +{stamp.comments.length}
       </span>
@@ -98,3 +117,21 @@ const StampIcon: React.VFC<{ stamp: StampModel; open: boolean }> = ({
     </div>
   </div>
 )
+
+/**
+ * PopoverのonCloseイベントを取得するためのコンポーネント（ハック的なことをしている）
+ */
+const OpenCheck: React.VFC<{ open: boolean; onClose: () => void }> = ({
+  open,
+  onClose,
+}) => {
+  const [onceOpen, setOnceOpen] = useState(false)
+  useEffect(() => {
+    if (open) {
+      setOnceOpen(true)
+    } else if (onceOpen && !open) {
+      onClose()
+    }
+  }, [open])
+  return null
+}

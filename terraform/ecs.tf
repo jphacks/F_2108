@@ -9,12 +9,11 @@ resource "aws_ecs_cluster" "main" {
 resource "aws_ecs_service" "main" {
   name                               = var.project
   cluster                            = aws_ecs_cluster.main.arn
-  task_definition                    = aws_ecs_task_definition.main.arn
+  task_definition                    = "${aws_ecs_task_definition.main.family}:${max(aws_ecs_task_definition.main.revision, data.aws_ecs_task_definition.main.revision)}"
   desired_count                      = 1
   launch_type                        = "FARGATE"
   deployment_maximum_percent         = 200
   deployment_minimum_healthy_percent = 100
-  force_new_deployment               = true
   wait_for_steady_state              = true
 
   network_configuration {
@@ -34,6 +33,10 @@ resource "aws_ecs_service" "main" {
   tags = {
     Project = var.project
   }
+}
+
+data "aws_ecs_task_definition" "main" {
+  task_definition = aws_ecs_task_definition.main.family
 }
 
 resource "aws_ecs_task_definition" "main" {
@@ -60,7 +63,8 @@ resource "aws_ecs_task_definition" "main" {
         { name : "FIREBASE_ADMIN_CLIENT_EMAIL", value : var.firebase.client_email },
         { name : "FIREBASE_ADMIN_PRIVATE_KEY", value : var.firebase.private_key },
         { name : "AWS_REGION", value : var.region },
-        { name : "AWS_BUCKET_NAME", value : aws_s3_bucket.main.bucket_domain_name },
+        { name : "AWS_BUCKET_NAME", value : aws_s3_bucket.main.bucket },
+        { name : "AWS_LAMBDA_FUNCTION_NAME", value : aws_lambda_function.pdf-generator.function_name },
         { name : "CORS_ORIGIN", value : var.cors_origin }
       ]
       logConfiguration = {

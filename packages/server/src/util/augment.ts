@@ -9,6 +9,7 @@ import {
 import { FastifyLoggerInstance } from "fastify/types/logger"
 import { IStorage } from "../storage/IStorage"
 import { RouteGenericInterface } from "fastify/types/route"
+import { ThumbnailGenerator } from "../thumbnail/ThumbnailGenerator"
 
 declare module "fastify" {
   export interface FastifyInstance<
@@ -18,6 +19,7 @@ declare module "fastify" {
     Logger = FastifyLoggerInstance,
   > {
     storage(): IStorage
+    thumbnailGenerator(): ThumbnailGenerator
   }
 
   export interface FastifyRequest<

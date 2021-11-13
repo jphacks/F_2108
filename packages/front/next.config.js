@@ -2,6 +2,14 @@
 // eslint-disable-next-line
 module.exports = {
   reactStrictMode: true,
+  images: {
+    // eslint-disable-next-line no-undef
+    domains: [
+      "lh3.googleusercontent.com",
+      "f-2108.s3.ap-northeast-1.amazonaws.com",
+      "f-2108.s3.amazonaws.com.s3.ap-northeast-1.amazonaws.com",
+    ],
+  },
   webpack: (config) => {
     // load worker files as a urls with `file-loader`
     config.module.rules.unshift({

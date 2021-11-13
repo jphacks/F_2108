@@ -25,6 +25,18 @@ resource "aws_lb_listener" "http" {
   }
 }
 
+resource "aws_alb_listener" "https" {
+  load_balancer_arn = aws_lb.main.arn
+  port              = 443
+  protocol          = "HTTPS"
+  certificate_arn   = aws_acm_certificate.main.arn
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.main.arn
+  }
+}
+
 resource "aws_lb_target_group" "main" {
   name        = "${var.project}-target-group"
   vpc_id      = aws_vpc.main.id

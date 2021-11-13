@@ -1,3 +1,5 @@
+// eslint-disable-next-line @typescript-eslint/no-var-requires, no-undef
+const plugin = require("tailwindcss/plugin")
 /** @type {import('@types/tailwindcss/tailwind-config').TailwindConfig} */
 // eslint-disable-next-line no-undef
 module.exports = {
@@ -20,11 +22,31 @@ module.exports = {
       },
       animation: {
         "ping-slow": "ping 2s cubic-bezier(0, 0, 0.2, 1) infinite",
+        "spin-slow": "spin 4s linear infinite",
       },
     },
   },
   variants: {
     extend: {},
   },
-  plugins: [],
+  plugins: [
+    plugin(function ({ addUtilities }) {
+      const newUtilities = {
+        ".text-decoration-transparent": {
+          "text-decoration-color": "transparent",
+        },
+
+        ".text-decoration-auto": {
+          "text-decoration-color": "currentColor",
+        },
+        ".drag-none": {
+          "user-drag": "none",
+          "-webkit-user-drag": "none",
+          "-moz-user-select": "none",
+        },
+      }
+
+      addUtilities(newUtilities)
+    }),
+  ],
 }
