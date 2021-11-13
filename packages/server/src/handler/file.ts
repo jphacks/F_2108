@@ -1,7 +1,7 @@
 import { FastifyInstance } from "fastify"
 import { File } from "../entity/File"
 import { connection } from "../index"
-import { MultipartFile, MultipartValue } from "fastify-multipart"
+import { MultipartValue } from "fastify-multipart"
 import { ResponseBody } from "../util/schema"
 import {
   buildFileResponse,
@@ -9,10 +9,9 @@ import {
   buildUserResponse,
 } from "../util/responseBuilders"
 import createError from "fastify-error"
-import { ERR_BAD_URL, ERR_INVALID_PAYLOAD } from "../util/errors"
+import { ERR_BAD_URL } from "../util/errors"
 import { registerFirebaseAuth } from "../util/auth"
 import { User } from "../entity/User"
-import { ThumbnailGenerator } from "../thumbnail/ThumbnailGenerator"
 
 export const fileHandler = async (server: FastifyInstance) => {
   await registerFirebaseAuth(server)
