@@ -30,6 +30,11 @@ export const FileUploader: NextPage = () => {
       return
     }
     setPdf(file)
+
+    // タイトルが未入力の場合はファイル名をセットする
+    if (fileName.length === 0) {
+      setFileName(file.name)
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
