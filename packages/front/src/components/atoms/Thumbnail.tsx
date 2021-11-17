@@ -22,9 +22,14 @@ export const Thumbnail: React.VFC<ThumbnailProps> = ({ file, className }) => {
         (className ?? "")
       }
     >
+      {file.thumbnail}
       {!error ? (
         <Image
-          src={file.thumbnail}
+          src={
+            file.thumbnail === "dummy-thumbnail-url"
+              ? "/logo_black.png"
+              : file.thumbnail
+          }
           alt=""
           layout="fill"
           className="object-cover pointer-events-none"

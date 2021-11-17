@@ -6,9 +6,12 @@ import { useAuthUser } from "@hooks/useAuth"
 import { authUseCase } from "@useCase"
 import { useWindowSize } from "@hooks/useWindowSize"
 import dynamic from "next/dynamic"
+import Head from "next/head"
 const Image = dynamic(() => import("next/image"), {
   ssr: false,
 })
+
+const VOICE_TAG_URL = process.env.VOICE_TAG_URL
 
 const Login: FC = () => {
   const router = useRouter()
@@ -34,6 +37,27 @@ const Login: FC = () => {
 
   return (
     <>
+      <Head>
+        <title>Voice Tag</title>
+        <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+        <meta
+          name="description"
+          content="あなたの声を付箋に。PDFファイル上に音声ふせんを配置し、URLで共有できるサービスです。"
+        />
+        <meta property="og:url" content={VOICE_TAG_URL} />
+        <meta property="og:title" content="Voice Tag" />
+        <meta property="og:site_name" content="Voice Tag" />
+        <meta
+          property="og:description"
+          content="あなたの声を付箋に。PDFファイル上に音声ふせんを配置し、URLで共有できるサービスです。"
+        />
+        <meta property="og:type" content="website" />
+        <meta property="og:image" content="/ogp.png" />
+        <meta property="og:locale" content="ja_JP" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" />
+        <link rel="canonical" href={VOICE_TAG_URL} />
+      </Head>
       <div className="fixed z-0 -top-52 -left-40">
         <Image
           src="/ellipse.svg"
