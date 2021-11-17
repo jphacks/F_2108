@@ -1,3 +1,4 @@
+import React from "react"
 import HeadIcons from "@components/organisms/HeadIcons"
 import Document, {
   Html,
@@ -6,7 +7,8 @@ import Document, {
   NextScript,
   DocumentContext,
 } from "next/document"
-import React from "react"
+
+const VOICE_TAG_URL = process.env.VOICE_TAG_URL
 
 class MyDocument extends Document {
   static async getInitialProps(ctx: DocumentContext) {
@@ -20,6 +22,27 @@ class MyDocument extends Document {
         <Head>
           <HeadIcons />
           <link rel="manifest" href="/manifest.webmanifest" />
+          <meta
+            name="viewport"
+            content="width=device-width,initial-scale=1.0"
+          />
+          <meta
+            name="description"
+            content="あなたの声を付箋に。PDFファイル上に音声ふせんを配置し、URLで共有できるサービスです。"
+          />
+          <meta property="og:url" content={VOICE_TAG_URL} />
+          <meta property="og:title" content="Voice Tag" />
+          <meta property="og:site_name" content="Voice Tag" />
+          <meta
+            property="og:description"
+            content="あなたの声を付箋に。PDFファイル上に音声ふせんを配置し、URLで共有できるサービスです。"
+          />
+          <meta property="og:type" content="website" />
+          <meta property="og:image" content="/ogp.png" />
+          <meta property="og:locale" content="ja_JP" />
+          <meta name="twitter:card" content="summary_large_image" />
+          <link rel="preconnect" href="https://fonts.gstatic.com" />
+          <link rel="canonical" href={VOICE_TAG_URL} />
         </Head>
         <body>
           <Main />
