@@ -3,6 +3,8 @@ import { useFile } from "@hooks/useFile"
 import { NextPage } from "next"
 import { useRouter } from "next/router"
 import React, { ChangeEvent, useState } from "react"
+import GooglePicker from "react-google-picker"
+import { gapi } from "gapi-script"
 
 export const FileUploader: NextPage = () => {
   const router = useRouter()
@@ -28,6 +30,28 @@ export const FileUploader: NextPage = () => {
       return
     }
     setPdf(file)
+  }
+
+  //Google DriveからPDFを追加する
+  const filePickerCallback = async (google, data: any) => {
+    if (data[google.picker.Response.ACTION] === google.picker.Action.PICKED) {
+      const doc = data.docs[0]
+      if (doc.mimeType !== "application/pdf") {
+        return
+      }
+      setFileName(doc.name)
+      gapi.load("client:auth2", () => {
+        gapi.client.drive.files
+          .get({
+            fileId: doc.id,
+            alt: "media",
+          })
+          .then(function (res) {
+            const file = new File([res.body], doc.name, { type: doc.mimeType })
+            setPdf(file)
+          })
+      })
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -100,7 +124,48 @@ export const FileUploader: NextPage = () => {
                         <div className="text-blue-600 hover:underline">
                           select a file
                         </div>{" "}
-                        from your computer
+                        from your computer <br /> or{" "}
+                        <GooglePicker
+                          clientId={process.env.NEXT_PUBLIC_AUTH_CLIENT_ID}
+                          developerKey={
+                            process.env.NEXT_PUBLIC_AUTH_CLIENT_SECRET
+                          }
+                          scope={[
+                            "https://www.googleapis.com/auth/drive.readonly",
+                          ]}
+                          onChange={(data) => console.log("on change:", data)}
+                          onAuthFailed={(data) =>
+                            console.log("on auth failed:", data)
+                          }
+                          multiselect={true}
+                          navHidden={true}
+                          authImmediate={false}
+                          viewId={"FOLDERS"}
+                          createPicker={(google, oauthToken) => {
+                            const googleViewId = google.picker.ViewId.FOLDERS
+                            const docsView = new google.picker.DocsView(
+                              googleViewId,
+                            ).setMimeTypes("application/pdf")
+
+                            const picker =
+                              new window.google.picker.PickerBuilder()
+                                .addView(docsView)
+                                .setOAuthToken(oauthToken)
+                                .setDeveloperKey(
+                                  process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+                                )
+                                .setLocale("ja")
+                                .setCallback((data) =>
+                                  filePickerCallback(google, data),
+                                )
+                            picker.build().setVisible(true)
+                          }}
+                        >
+                          <span className="text-blue-600 hover:underline">
+                            Select a file from google drive
+                          </span>
+                          <div className="google"></div>
+                        </GooglePicker>
                       </p>
                     )}
                   </div>
