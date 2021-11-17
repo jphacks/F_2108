@@ -1,21 +1,14 @@
 import React, { useEffect, FC, useReducer } from "react"
 import { useRouter } from "next/router"
-// import Image from "next/image"
+import Image from "next/image"
 import authReducer from "@reducers/authReducer"
 import { useAuthUser } from "@hooks/useAuth"
 import { authUseCase } from "@useCase"
 import { useWindowSize } from "@hooks/useWindowSize"
-import dynamic from "next/dynamic"
-const Image = dynamic(() => import("next/image"), {
-  ssr: false,
-})
 
 const Login: FC = () => {
   const router = useRouter()
-  const [state, dispatch] = useReducer(
-    authReducer.reducer,
-    authReducer.initialState,
-  )
+  const [, dispatch] = useReducer(authReducer.reducer, authReducer.initialState)
   const user = useAuthUser()
   const { width, height } = useWindowSize()
 

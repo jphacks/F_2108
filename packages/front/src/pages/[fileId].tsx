@@ -1,8 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react"
 import { NextPage } from "next"
 import Link from "next/link"
-import dynamic from "next/dynamic"
-import { PDFViewer, PDFViewerProps } from "@components/components/PdfViewer"
+import { PDFViewer } from "@components/components/PdfViewer"
 import Stamp from "@components/atoms/Stamp"
 import { Stamp as StampModel } from "@domain/stamp"
 import { useWindowSize, useWindowWidthGreaterThan } from "@hooks/useWindowSize"
@@ -19,16 +18,6 @@ import {
 import useHash from "@hooks/useHash"
 
 const TEMPORARY_STAMP_PREFIX = "temporary_"
-
-// const PDFViewer: React.ComponentType<PDFViewerProps> = dynamic(
-//   () =>
-//     import("../components/components/PdfViewer").then(
-//       (module) => module.PDFViewer,
-//     ),
-//   {
-//     ssr: false,
-//   },
-// )
 
 /** 検索モーダルのレスポンシブ対応の閾値 */
 const SEARCH_MODAL_RESPONSIVE_BORDER = 1300
