@@ -33,10 +33,34 @@ const getMatchCount = (stamp: Stamp, regexp: RegExp) =>
  * @param b stamp
  * @returns -1, 0, 1
  */
-export const stampCompareFunc = (searchInput: string, a: Stamp, b: Stamp) => {
+export const stampMatchCompareFn = (
+  searchInput: string,
+  a: Stamp,
+  b: Stamp,
+) => {
   if (searchInput === "") return 1
   const regexp = new RegExp(searchInput, "g")
   const aMatchCount = getMatchCount(a, regexp)
   const bMatchCount = getMatchCount(b, regexp)
   return aMatchCount < bMatchCount ? 1 : aMatchCount === bMatchCount ? 0 : -1
+}
+
+/**
+ * スタンプを最新のコメントが新しい順に並び替えるための比較関数
+ * @param a stamp
+ * @param b stamp
+ * @returns -1, 0, 1
+ */
+export const stampPostedAtCompareFn = (a: Stamp, b: Stamp) => {
+  const aNewestCommentPostedAt = new Date(
+    a.comments[a.comments.length - 1]?.postedAt ?? "",
+  ).getTime()
+  const bNewestCommentPostedAt = new Date(
+    b.comments[b.comments.length - 1]?.postedAt ?? "",
+  ).getTime()
+  return aNewestCommentPostedAt < bNewestCommentPostedAt
+    ? 1
+    : aNewestCommentPostedAt === bNewestCommentPostedAt
+    ? 0
+    : -1
 }

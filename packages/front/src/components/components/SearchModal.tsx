@@ -2,7 +2,11 @@ import HighlightText from "@components/atoms/HighlightText"
 import { SearchInput } from "@components/organisms/searchInput"
 import { Stamp } from "@domain/stamp"
 import { Dialog, Transition } from "@headlessui/react"
-import { stampCompareFunc, stampIsMatched } from "@lib/stampSearch"
+import {
+  stampMatchCompareFn,
+  stampIsMatched,
+  stampPostedAtCompareFn,
+} from "@lib/stampSearch"
 import Link from "next/link"
 import React, { Fragment, useEffect, useMemo, useState } from "react"
 import { X as Cross, ArrowUpLeft } from "react-feather"
@@ -93,7 +97,11 @@ const SearchScreen: React.VFC<SearchScreenProps> = ({
 
   const sortedStamps = useMemo(() => {
     const sortedStamps = [...stamps]
-    sortedStamps.sort((a, b) => stampCompareFunc(searchInput, a, b))
+    if (searchInput.length === 0) {
+      sortedStamps.sort((a, b) => stampPostedAtCompareFn(a, b))
+    } else {
+      sortedStamps.sort((a, b) => stampMatchCompareFn(searchInput, a, b))
+    }
     return sortedStamps
   }, [stamps, searchInput])
 
