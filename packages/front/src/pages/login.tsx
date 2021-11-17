@@ -1,6 +1,5 @@
 import React, { useEffect, FC, useReducer } from "react"
 import { useRouter } from "next/router"
-// import Image from "next/image"
 import authReducer from "@reducers/authReducer"
 import { useAuthUser } from "@hooks/useAuth"
 import { authUseCase } from "@useCase"
@@ -20,7 +19,9 @@ const Login: FC = () => {
   const { width, height } = useWindowSize()
 
   useEffect(() => {
-    user && router.push("/dashboard")
+    if (user && user.displayName !== null) {
+      router.push("/dashboard")
+    }
   }, [user])
 
   const logIn = async () => {

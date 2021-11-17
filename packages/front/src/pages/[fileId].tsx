@@ -12,6 +12,8 @@ import { useFile } from "@hooks/useFile"
 import { useRouter } from "next/router"
 import { useAuthUser } from "@hooks/useAuth"
 import { UrlShareModal } from "@components/organisms/urlShareModal"
+import { auth } from "@lib/firebase"
+import { signInAnonymously } from "firebase/auth"
 
 const PDFViewer: React.ComponentType<PDFViewerProps> = dynamic(
   () =>
@@ -44,6 +46,20 @@ const FileDetail: NextPage<Record<string, never>, FileDetailQuery> = () => {
   const { width } = useWindowSize()
   const [sizeRate, setSizeRate] = useState(6)
   const [stamps, setStamps] = useState<StampModel[]>(file?.stamps ?? [])
+
+  useEffect(() => {
+    auth.onAuthStateChanged((user) => {
+      if (!user) {
+        signInAnonymously(auth)
+          .then((u) => {
+            console.log(u.user.getIdToken())
+          })
+          .catch((e) => {
+            throw e.message
+          })
+      }
+    })
+  }, [])
 
   useEffect(() => {
     setStamps(file?.stamps ?? [])
@@ -221,7 +237,7 @@ const FileDetail: NextPage<Record<string, never>, FileDetailQuery> = () => {
         <div className="fixed top-0 left-0 m-4 space-y-8 rounded">
           <BackButton />
         </div>
-        {user === null && (
+        {user === null || user.displayName === null && (
           <div className="fixed left-0 m-4 space-y-8 rounded top-20">
             <LoginButton />
           </div>
