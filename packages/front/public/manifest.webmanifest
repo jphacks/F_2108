@@ -6,7 +6,7 @@
   "start_url": "/login",
   "name": "Voice Tag",
   "short_name": "Voice Tag",
-  "description": "\u3042\u306a\u305f\u306e\u58f0\u3092\u4ed8\u7b8b\u306b",
+  "description": "あなたの声を付箋に。Voice TagはPDF上に音声ふせんを配置し、共有できるサービスです。",
   "icons": [
     {
       "src": "/android-chrome-36x36.png",
