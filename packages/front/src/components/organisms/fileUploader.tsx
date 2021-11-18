@@ -4,7 +4,6 @@ import { NextPage } from "next"
 import { useRouter } from "next/router"
 import React, { ChangeEvent, useState } from "react"
 import GooglePicker from "react-google-picker"
-import { gapi } from "gapi-script"
 
 export const FileUploader: NextPage = () => {
   const router = useRouter()
@@ -40,17 +39,20 @@ export const FileUploader: NextPage = () => {
         return
       }
       setFileName(doc.name)
-      gapi.load("client:auth2", () => {
-        gapi.client.drive.files
-          .get({
-            fileId: doc.id,
-            alt: "media",
+      window.gapi.load("client:auth2", () => {
+        window.gapi.client.load("drive", "v3", () => {
+          // gapi.client.drive が使用可能になる
+          window.gapi.client.drive.files
+            .get({
+              fileId: doc.id,
+              alt: "media",
+            })
+            .then(function (res) {
+              const file = new File([res.body], doc.name, { type: doc.mimeType })
+              setPdf(file)
+            })
           })
-          .then(function (res) {
-            const file = new File([res.body], doc.name, { type: doc.mimeType })
-            setPdf(file)
-          })
-      })
+        })
     }
   }
 
