@@ -237,11 +237,12 @@ const FileDetail: NextPage<Record<string, never>, FileDetailQuery> = () => {
         <div className="fixed top-0 left-0 m-4 space-y-8 rounded">
           <BackButton />
         </div>
-        {user === null || user.displayName === null && (
-          <div className="fixed left-0 m-4 space-y-8 rounded top-20">
-            <LoginButton />
-          </div>
-        )}
+        {user === null ||
+          (user.displayName === null && (
+            <div className="fixed left-0 m-4 space-y-8 rounded top-20">
+              <LoginButton />
+            </div>
+          ))}
       </div>
       {file != null && (
         <UrlShareModal
