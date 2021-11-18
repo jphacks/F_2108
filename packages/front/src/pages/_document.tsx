@@ -1,5 +1,4 @@
 import React from "react"
-import HeadIcons from "@components/organisms/HeadIcons"
 import Document, {
   Html,
   Head,
