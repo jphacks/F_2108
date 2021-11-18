@@ -12,7 +12,7 @@ yarn
 yarn dev
 ```
 
-`/login`にアクセスしてログインしてください！
+`/`にアクセスしてログインしてください！
 
 ## Architecture
 

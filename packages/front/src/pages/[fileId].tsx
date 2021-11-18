@@ -292,7 +292,7 @@ const BackButton: React.VFC = () => (
 )
 
 const LoginButton: React.VFC = () => (
-  <Link href="/login">
+  <Link href="/">
     <a
       className="flex items-center justify-center px-4 py-2 text-black text-white transition bg-gray-100 rounded-full group"
       aria-label="ログインする"

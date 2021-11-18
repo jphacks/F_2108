@@ -18,7 +18,7 @@ const Index: React.VFC = () => {
   const fileUseCase = useFile()
 
   useEffect(() => {
-    !user && router.push("/login")
+    !user && router.push("/")
   }, [user])
 
   const { data: files } = useRequest(() => fileUseCase.fetchFileList(), [])
