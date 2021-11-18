@@ -20,8 +20,6 @@ class MyDocument extends Document {
     return (
       <Html lang="ja" prefix="og: http://ogp.me/ns#">
         <Head>
-          <HeadIcons />
-          <link rel="manifest" href="/manifest.webmanifest" />
           <meta
             name="viewport"
             content="width=device-width,initial-scale=1.0"
