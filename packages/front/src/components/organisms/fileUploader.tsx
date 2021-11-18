@@ -48,11 +48,13 @@ export const FileUploader: NextPage = () => {
               alt: "media",
             })
             .then(function (res) {
-              const file = new File([res.body], doc.name, { type: doc.mimeType })
+              const file = new File([res.body], doc.name, {
+                type: doc.mimeType,
+              })
               setPdf(file)
             })
-          })
         })
+      })
     }
   }
 
