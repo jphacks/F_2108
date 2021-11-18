@@ -75,7 +75,11 @@ const Stamp: React.VFC<StampProps> = ({
             leaveTo="opacity-0 translate-y-1"
           >
             <Popover.Panel className="absolute z-10 max-w-sm px-4 transform sm:px-0 lg:max-w-3xl max-h-[540px] -translate-x-1/2 left-1/2 mt-4">
-              <Thread comments={stamp.comments} onAddComment={onAddComment} />
+              <Thread
+                isOpened={open}
+                comments={stamp.comments}
+                onAddComment={onAddComment}
+              />
             </Popover.Panel>
           </Transition>
         </>
