@@ -33,7 +33,7 @@ const Login: FC = () => {
   }
 
   return (
-    <>
+    <article className="w-full min-h-screen bg-[#fbfbfb]">
       <div className="fixed z-0 -top-52 -left-40">
         <Image
           src="/ellipse.svg"
@@ -72,9 +72,9 @@ const Login: FC = () => {
             />
           </div>
         </div>
-        <div className="relative h-3/5" style={{ width: "70%" }}>
+        <div className="relative h-3/5" style={{ width: "60%" }}>
           <Image
-            src="/discussion.png"
+            src="/public_discussion.svg"
             width={width * 0.7}
             height={height * 0.6}
             className="w-full object-fit"
@@ -95,7 +95,7 @@ const Login: FC = () => {
           </div>
         </button>
       </div>
-    </>
+    </article>
   )
 }
 
