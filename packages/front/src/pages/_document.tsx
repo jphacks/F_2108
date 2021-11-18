@@ -8,7 +8,7 @@ import Document, {
   DocumentContext,
 } from "next/document"
 
-const VOICE_TAG_URL = process.env.VOICE_TAG_URL
+const NEXT_PUBLIC_URL = process.env.NEXT_PUBLIC_URL
 
 class MyDocument extends Document {
   static async getInitialProps(ctx: DocumentContext) {
@@ -30,7 +30,7 @@ class MyDocument extends Document {
             name="description"
             content="あなたの声を付箋に。PDFファイル上に音声ふせんを配置し、URLで共有できるサービスです。"
           />
-          <meta property="og:url" content={VOICE_TAG_URL} />
+          <meta property="og:url" content={NEXT_PUBLIC_URL + "/login"} />
           <meta property="og:title" content="Voice Tag" />
           <meta property="og:site_name" content="Voice Tag" />
           <meta
@@ -42,7 +42,7 @@ class MyDocument extends Document {
           <meta property="og:locale" content="ja_JP" />
           <meta name="twitter:card" content="summary_large_image" />
           <link rel="preconnect" href="https://fonts.gstatic.com" />
-          <link rel="canonical" href={VOICE_TAG_URL} />
+          <link rel="canonical" href={NEXT_PUBLIC_URL} />
         </Head>
         <body>
           <Main />
