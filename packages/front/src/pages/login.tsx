@@ -5,6 +5,7 @@ import { useAuthUser } from "@hooks/useAuth"
 import { authUseCase } from "@useCase"
 import { useWindowSize } from "@hooks/useWindowSize"
 import dynamic from "next/dynamic"
+import Head from "next/head"
 const Image = dynamic(() => import("next/image"), {
   ssr: false,
 })
@@ -35,6 +36,9 @@ const Login: FC = () => {
 
   return (
     <>
+      <Head>
+        <title>Voice Tag</title>
+      </Head>
       <div className="fixed z-0 -top-52 -left-40">
         <Image
           src="/ellipse.svg"

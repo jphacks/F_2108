@@ -16,6 +16,7 @@ import { auth, googleProvider } from "@lib/firebase"
 import { signInAnonymously, linkWithPopup } from "firebase/auth"
 import { authUseCase } from "useCase"
 import authReducer from "@reducers/authReducer"
+import Head from "next/head"
 
 const PDFViewer: React.ComponentType<PDFViewerProps> = dynamic(
   () =>
@@ -180,14 +181,15 @@ const FileDetail: NextPage<Record<string, never>, FileDetailQuery> = () => {
     a.position.y < b.position.y ? 1 : a.position.y === b.position.y ? 0 : -1,
   )
 
-  console.log(stamps)
-
   const handleDeleteTemporary = (stamp: StampModel) => {
     setStamps((prev) => prev.filter(({ id }) => id !== stamp.id))
   }
 
   return (
     <>
+      <Head>
+        <title>{file?.fileSnapshot.file.name}</title>
+      </Head>
       <div className="flex flex-col items-center w-full px-[10vw] py-8 bg-bgBlack relative min-h-screen">
         <PDFViewer
           src={file?.fileSnapshot.file.url ?? ""}
