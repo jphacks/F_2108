@@ -34,6 +34,8 @@
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "^11.1.2",
+    "@types/gapi": "^0.0.41",
+    "@types/gapi.client.drive": "^3.0.13",
     "@types/lodash.debounce": "^4.0.6",
     "@types/react": "17.0.31",
     "@types/react-pdf": "^5.0.8",
