@@ -1,18 +1,25 @@
 import React, { useEffect, useState } from "react"
 import { NextPage } from "next"
 import Link from "next/link"
+import Head from "next/head"
 import dynamic from "next/dynamic"
 import type { PDFViewerProps } from "@components/components/PdfViewer"
 import Stamp from "@components/atoms/Stamp"
 import { Stamp as StampModel } from "@domain/stamp"
-import { useWindowSize } from "@hooks/useWindowSize"
-import { Share, Plus, Minus, ArrowLeft } from "react-feather"
+import { useWindowSize, useWindowWidthGreaterThan } from "@hooks/useWindowSize"
+import { Share, Plus, Minus, ArrowLeft, Search } from "react-feather"
 import { useRequest } from "@hooks/useRequest"
 import { useFile } from "@hooks/useFile"
 import { useRouter } from "next/router"
 import { useAuthUser } from "@hooks/useAuth"
 import { UrlShareModal } from "@components/organisms/urlShareModal"
-import Head from "next/head"
+import {
+  SearchDawerColumn,
+  SearchDrawerOverlay,
+} from "@components/components/SearchModal"
+import useHash from "@hooks/useHash"
+
+const TEMPORARY_STAMP_PREFIX = "temporary_"
 
 const PDFViewer: React.ComponentType<PDFViewerProps> = dynamic(
   () =>
@@ -24,6 +31,9 @@ const PDFViewer: React.ComponentType<PDFViewerProps> = dynamic(
   },
 )
 
+/** 検索モーダルのレスポンシブ対応の閾値 */
+const SEARCH_MODAL_RESPONSIVE_BORDER = 1300
+
 type FileDetailQuery = {
   fileId: string
 }
@@ -31,9 +41,11 @@ type FileDetailQuery = {
 const FileDetail: NextPage<Record<string, never>, FileDetailQuery> = () => {
   const router = useRouter()
   const fileId = router.query.fileId as string
+  const [hash, setHash] = useHash()
   const fileUseCase = useFile()
   const user = useAuthUser()
   const [openShareModal, setOpenShareModal] = useState(false)
+  const [openSearchDrawer, setOpenSearchDrawer] = useState(false)
 
   const { data: file } = useRequest(
     () => fileUseCase.fetchFileDetail(fileId),
@@ -42,22 +54,27 @@ const FileDetail: NextPage<Record<string, never>, FileDetailQuery> = () => {
     fileId != null && user != null,
     false,
   )
-  const { width } = useWindowSize()
+  const { width: windowWidth } = useWindowSize()
+  const isWideWidth = useWindowWidthGreaterThan(SEARCH_MODAL_RESPONSIVE_BORDER)
   const [sizeRate, setSizeRate] = useState(6)
   const [stamps, setStamps] = useState<StampModel[]>(file?.stamps ?? [])
 
   useEffect(() => {
-    setStamps(file?.stamps ?? [])
+    if (file != null) {
+      setStamps(file.stamps)
+    }
   }, [file])
 
+  // temporaryスタンプを追加する
   const handleAddStamp = (page: number, x: number, y: number) => {
     if (user == null) {
       return
     }
+    // 既に存在しているtemporaryスタンプを消去し、新しくtemporaryスタンプを追加する
     setStamps((prev) => [
-      ...prev.filter((stamp) => !stamp.id.startsWith("temporary_")),
+      ...prev.filter((stamp) => !stamp.id.startsWith(TEMPORARY_STAMP_PREFIX)),
       {
-        id: "temporary_" + new Date().getTime(),
+        id: TEMPORARY_STAMP_PREFIX + new Date().getTime(),
         author: {
           id: user.uid,
           iconUrl: user.photoURL ?? "",
@@ -73,38 +90,7 @@ const FileDetail: NextPage<Record<string, never>, FileDetailQuery> = () => {
     ])
   }
 
-  const handleSendComment = async (
-    stampId: string,
-    comment:
-      | { dataType: "audio"; content: Blob; title: string }
-      | { dataType: "text"; content: string },
-  ) => {
-    const body =
-      comment.dataType === "audio"
-        ? {
-            dataType: comment.dataType,
-            content: comment.content,
-            title: comment.title as string,
-          }
-        : {
-            dataType: comment.dataType,
-            content: comment.content,
-          }
-    const res = await fileUseCase.postComment(body, fileId, stampId)
-    setStamps((prev) =>
-      prev.map((stamp) => {
-        if (stamp.id === stampId) {
-          return {
-            ...stamp,
-            comments: [...stamp.comments, res],
-          }
-        } else {
-          return stamp
-        }
-      }),
-    )
-  }
-
+  /** スタンプと最初のコメントを投稿する */
   const handleSendCommentAndStamp = async (
     stamp: StampModel,
     comment:
@@ -158,82 +144,149 @@ const FileDetail: NextPage<Record<string, never>, FileDetailQuery> = () => {
     }
   }
 
+  /** 既にあるスタンプにコメントを投稿する */
+  const handleSendComment = async (
+    stampId: string,
+    comment:
+      | { dataType: "audio"; content: Blob; title: string }
+      | { dataType: "text"; content: string },
+  ) => {
+    const body =
+      comment.dataType === "audio"
+        ? {
+            dataType: comment.dataType,
+            content: comment.content,
+            title: comment.title as string,
+          }
+        : {
+            dataType: comment.dataType,
+            content: comment.content,
+          }
+    const res = await fileUseCase.postComment(body, fileId, stampId)
+    setStamps((prev) =>
+      prev.map((stamp) => {
+        if (stamp.id === stampId) {
+          return {
+            ...stamp,
+            comments: [...stamp.comments, res],
+          }
+        } else {
+          return stamp
+        }
+      }),
+    )
+  }
+
   // NOTE: Popoverを開いたときに他のスタンプに邪魔されないように、y座標が大きいスタンプから順にレンダリングする
   const sortedStamps = stamps.sort((a, b) =>
     a.position.y < b.position.y ? 1 : a.position.y === b.position.y ? 0 : -1,
   )
 
+  // temporaryスタンプを消去する
   const handleDeleteTemporary = (stamp: StampModel) => {
     setStamps((prev) => prev.filter(({ id }) => id !== stamp.id))
   }
 
+  // SearchModalを閉じたときにhashをクリアする（見栄えが良いので）
+  useEffect(() => {
+    if (isWideWidth && !openSearchDrawer) {
+      setHash(null)
+    }
+  }, [openSearchDrawer, isWideWidth])
+
   return (
     <>
-      <Head>
-        <title>{file?.fileSnapshot.file.name}</title>
-      </Head>
-      <div className="flex flex-col items-center w-full px-[10vw] py-8 bg-bgBlack relative min-h-screen">
-        <PDFViewer
-          src={file?.fileSnapshot.file.url ?? ""}
-          stamps={sortedStamps}
-          onStampAdd={handleAddStamp}
-          width={width * (sizeRate / 10.0)}
-          stampRender={(stamp) => {
-            const isTemporary = stamp.id.startsWith("temporary_")
-            return (
-              <div className="relative" key={stamp.id}>
-                <Stamp
-                  stamp={stamp}
-                  onAddComment={(comment) => {
-                    if (isTemporary) {
-                      handleSendCommentAndStamp(stamp, comment)
-                    } else {
-                      handleSendComment(stamp.id, comment)
-                    }
-                  }}
-                  isTemporary={isTemporary}
-                  onClose={() => {
-                    if (isTemporary) {
-                      handleDeleteTemporary(stamp)
-                    }
-                  }}
-                />
-                {/* デバッグ（座標確認用） */}
-                {/* <div className="absolute z-10 w-40 text-sm bg-white border border-gray-400 rounded shadow-md opacity-100 left-full top-full hover:opacity-30">
-                <div className="text-center">
-                  <span className="inline-block pointer-events-none">
-                    (x, y) = ({stamp.position.x}, {stamp.position.y})
-                  </span>
-                  <br />
-                  <span className="inline-block pointer-events-none">
-                    page = {stamp.position.page}
-                  </span>
+      <div className="px-[10vw] py-8 bg-bgBlack relative min-h-screen">
+        {/* TODO: 閾値を変数化する */}
+        <div
+          className={`flex flex-col items-center transition-all ${
+            isWideWidth && openSearchDrawer
+              ? "w-[calc(100%-var(--searchmodal-width))]"
+              : "w-full"
+          }`}
+        >
+          <PDFViewer
+            src={file?.fileSnapshot.file.url ?? ""}
+            stamps={sortedStamps}
+            onStampAdd={handleAddStamp}
+            width={windowWidth * (sizeRate / 10.0)}
+            stampRender={(stamp) => {
+              const isTemporary = stamp.id.startsWith(TEMPORARY_STAMP_PREFIX)
+              return (
+                <div
+                  key={stamp.id}
+                  id={stamp.id}
+                  className={`relative p-3 border-dashed border-2 transition rounded ${
+                    hash == stamp.id
+                      ? "border-yellow-600"
+                      : "border-transparent"
+                  }`}
+                >
+                  <Stamp
+                    stamp={stamp}
+                    onAddComment={(comment) => {
+                      if (isTemporary) {
+                        handleSendCommentAndStamp(stamp, comment)
+                      } else {
+                        handleSendComment(stamp.id, comment)
+                      }
+                    }}
+                    isTemporary={isTemporary}
+                    onClose={() => {
+                      setHash(null)
+                      if (isTemporary) {
+                        handleDeleteTemporary(stamp)
+                      }
+                    }}
+                  />
                 </div>
-              </div> */}
-              </div>
-            )
-          }}
-        />
+              )
+            }}
+          />
+          {isWideWidth && (
+            <SearchDawerColumn
+              stamps={stamps}
+              open={openSearchDrawer}
+              onClose={() => setOpenSearchDrawer(false)}
+            />
+          )}
+        </div>
         {/* サイドバー */}
         <div className="fixed top-0 right-0 p-4 m-4 space-y-8 rounded bg-bgBlack/60">
-          <ShareButton onClick={() => setOpenShareModal(true)} />
+          <IconButton title="シェア" onClick={() => setOpenShareModal(true)}>
+            <Share />
+          </IconButton>
+          <IconButton title="検索" onClick={() => setOpenSearchDrawer(true)}>
+            <Search />
+          </IconButton>
           <SizeRateButton sizeRate={sizeRate} setSizeRate={setSizeRate} />
         </div>
         {/* 戻るボタン */}
         <div className="fixed top-0 left-0 m-4 space-y-8 rounded">
           <BackButton />
         </div>
+        {/* ログインボタン */}
         {user === null && (
           <div className="fixed left-0 m-4 space-y-8 rounded top-20">
             <LoginButton />
           </div>
         )}
       </div>
+      {/* 共有ポップアップ */}
       {file != null && (
         <UrlShareModal
           open={openShareModal}
           onClose={() => setOpenShareModal(false)}
           file={file?.fileSnapshot.file}
+        />
+      )}
+      {/* 検索モーダル */}
+      {!isWideWidth && (
+        <SearchDrawerOverlay
+          stamps={stamps}
+          open={openSearchDrawer}
+          onClose={() => setOpenSearchDrawer(false)}
+          autoCloseWhenClickShow
         />
       )}
     </>
@@ -242,14 +295,18 @@ const FileDetail: NextPage<Record<string, never>, FileDetailQuery> = () => {
 
 export default FileDetail
 
-const ShareButton: React.VFC<{ onClick: () => void }> = ({ onClick }) => (
+const IconButton: React.VFC<{
+  onClick: () => void
+  children: React.ReactNode
+  title: string
+}> = ({ onClick, children, title }) => (
   <button
     className="flex items-center justify-center transition bg-white rounded-full w-14 h-14 shadow-paper hover:bg-gray-100"
-    title="シェア"
-    aria-label="シェア"
+    title={title}
+    aria-label={title}
     onClick={onClick}
   >
-    <Share />
+    {children}
   </button>
 )
 

@@ -15,3 +15,15 @@ export const useWindowSize = () => {
   }, [])
   return size
 }
+
+export const useWindowWidthGreaterThan = (border: number) => {
+  const [isGreater, setIsGreater] = useState(border < window.innerWidth)
+  useEffect(() => {
+    const handler = debounce(() => {
+      setIsGreater(border < window.innerWidth)
+    })
+    window.addEventListener("resize", handler)
+    return () => window.removeEventListener("resize", handler)
+  }, [border])
+  return isGreater
+}

@@ -21,9 +21,15 @@ const CANVAS_HEIGHT = 60.0
 export type AudioWaveProps = {
   comment: AudioComment
   onPlayEnd?: () => void
+  /** タイトルを描画する関数（主に検索結果表示時にハイライトするために利用） */
+  titleRender?: (title: string) => React.ReactNode
 }
 
-const AudioIndicator: React.VFC<AudioWaveProps> = ({ comment, onPlayEnd }) => {
+const AudioIndicator: React.VFC<AudioWaveProps> = ({
+  comment,
+  onPlayEnd,
+  titleRender,
+}) => {
   // グラフで表示する波形データ
   const [data, setData] = useState<number[]>([])
   // Audioデータ
@@ -153,7 +159,7 @@ const AudioIndicator: React.VFC<AudioWaveProps> = ({ comment, onPlayEnd }) => {
                 <span className="w-3 h-3 rounded-full bg-primary/75 animate-ping" />
               </span>
             )}
-            {comment.title}
+            {titleRender?.(comment.title) ?? comment.title}
           </h1>
           <div style={{ minHeight: CANVAS_HEIGHT, minWidth: CANVAS_WIDTH }}>
             <AudioGraph
