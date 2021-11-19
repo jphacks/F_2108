@@ -1,9 +1,12 @@
 import LoadingIcon from "@components/atoms/LoadingIcon"
 import PrimaryButton from "@components/atoms/PrimaryButton"
+import GoogleDrivePicker from "@components/components/GoogleDrivePicker"
 import { useFile } from "@hooks/useFile"
 import { NextPage } from "next"
 import { useRouter } from "next/router"
 import React, { ChangeEvent, useState } from "react"
+import Image from "next/image"
+import GooglePicker from "react-google-picker"
 
 export const FileUploader: NextPage = () => {
   const router = useRouter()
@@ -99,38 +102,51 @@ export const FileUploader: NextPage = () => {
               <input
                 className="p-2 text-base border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500"
                 type=""
+                name="title"
                 value={fileName}
                 onChange={handleFileName}
                 placeholder="エンジニア議事録"
               />
             </div>
-            <div className="grid grid-cols-1 space-y-2">
+            <div className="relative grid grid-cols-1 p-4 space-y-2 border-4 border-dashed rounded-lg">
               <div className="flex items-center justify-center w-full">
-                <label className="flex flex-col w-full p-10 text-center border-4 border-dashed rounded-lg h-60 group">
+                <label className="flex flex-col w-full py-4 text-center group">
                   <div className="flex flex-col items-center justify-center w-full h-full text-center ">
                     {pdf ? (
                       <> {fileUi}</>
                     ) : (
-                      <p className="leading-loose text-gray-500 pointer-none ">
+                      <p className="leading-snug text-gray-500 pointer-none">
                         ファイルをドラッグ&ドロップ
                         <br />
                         or
                         <br />
-                        <p className="text-blue-500 underline cursor-pointer">
+                        <span className="text-blue-500 underline cursor-pointer">
                           ファイルを選択
-                        </p>
+                        </span>
                       </p>
                     )}
                   </div>
                   <input
                     type="file"
-                    className="hidden"
+                    className="sr-only"
                     accept=".pdf"
-                    required
+                    name="file"
                     onChange={(e) => imageHandler(e)}
                   />
                 </label>
               </div>
+              <hr className="mx-8 border-t-2" />
+              <GoogleDrivePicker
+                onChange={({ file, name }) => {
+                  setPdf(file)
+                  setFileName(name)
+                }}
+              >
+                <div className="flex items-center justify-center py-4 space-x-2 text-blue-500 underline cursor-pointer">
+                  <Image src="/drive.png" alt="" width="32px" height="32px" />
+                  <p>Google Driveからインポート</p>
+                </div>
+              </GoogleDrivePicker>
             </div>
             <div className="w-full mt-4 text-center">
               <PrimaryButton
