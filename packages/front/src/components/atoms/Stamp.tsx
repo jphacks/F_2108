@@ -1,5 +1,11 @@
 import type { Stamp as StampModel } from "@domain/stamp"
-import React, { Fragment, useCallback, useEffect, useState } from "react"
+import React, {
+  Fragment,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react"
 import { Icon } from "./Icon"
 import { Popover, Transition } from "@headlessui/react"
 import { Play } from "react-feather"
@@ -12,7 +18,7 @@ export type StampProps = {
     comment:
       | { dataType: "audio"; content: Blob; title: string }
       | { dataType: "text"; content: string },
-  ) => void
+  ) => Promise<void>
   isTemporary?: boolean
   onClose?: () => void
 }
@@ -48,11 +54,32 @@ const Stamp: React.VFC<StampProps> = ({
   //   }
   // }, [])
 
-  const buttonRef = useCallback((node: HTMLButtonElement) => {
+  const buttonRef = useRef<HTMLButtonElement | null>(null)
+
+  // const buttonRef = useCallback((node: HTMLButtonElement) => {
+  //   if (isTemporary) {
+  //     node?.click()
+  //   }
+  // }, [])
+  useEffect(() => {
     if (isTemporary) {
-      node?.click()
+      buttonRef.current?.click()
     }
   }, [])
+
+  const handleAddComment = useCallback(
+    async (
+      comment:
+        | { dataType: "audio"; content: Blob; title: string }
+        | { dataType: "text"; content: string },
+    ) => {
+      await onAddComment(comment)
+      if (isTemporary) {
+        buttonRef.current?.click()
+      }
+    },
+    [onAddComment],
+  )
 
   return (
     <Popover className="relative">
@@ -79,7 +106,7 @@ const Stamp: React.VFC<StampProps> = ({
             <Popover.Panel className="absolute z-10 max-w-sm px-4 transform sm:px-0 lg:max-w-3xl max-h-[540px] -translate-x-1/2 left-1/2 mt-4">
               <Thread
                 comments={stamp.comments}
-                onAddComment={onAddComment}
+                onAddComment={handleAddComment}
                 isAuthed={user != null && !user.isAnonymous}
               />
             </Popover.Panel>

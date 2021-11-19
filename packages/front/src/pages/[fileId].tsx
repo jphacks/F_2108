@@ -2,7 +2,6 @@ import React, { useEffect, useReducer, useState } from "react"
 import { NextPage } from "next"
 import Image from "next/image"
 import Link from "next/link"
-import Head from "next/head"
 import dynamic from "next/dynamic"
 import type { PDFViewerProps } from "@components/components/PdfViewer"
 import Stamp from "@components/atoms/Stamp"
@@ -24,6 +23,7 @@ import {
   SearchDrawerOverlay,
 } from "@components/components/SearchModal"
 import useHash from "@hooks/useHash"
+import TutorialModal from "@components/organisms/TutorialModal"
 
 const TEMPORARY_STAMP_PREFIX = "temporary_"
 
@@ -244,11 +244,11 @@ const FileDetail: NextPage<Record<string, never>, FileDetailQuery> = () => {
                 >
                   <Stamp
                     stamp={stamp}
-                    onAddComment={(comment) => {
+                    onAddComment={async (comment) => {
                       if (isTemporary) {
-                        handleSendCommentAndStamp(stamp, comment)
+                        await handleSendCommentAndStamp(stamp, comment)
                       } else {
-                        handleSendComment(stamp.id, comment)
+                        await handleSendComment(stamp.id, comment)
                       }
                     }}
                     isTemporary={isTemporary}
@@ -314,6 +314,7 @@ const FileDetail: NextPage<Record<string, never>, FileDetailQuery> = () => {
         open={openPermissionModal}
         onClose={() => setOpenPermissionModal(false)}
       />
+      <TutorialModal />
     </>
   )
 }
