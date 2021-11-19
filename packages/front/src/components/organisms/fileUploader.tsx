@@ -7,6 +7,7 @@ import { useRouter } from "next/router"
 import React, { ChangeEvent, useState, useCallback } from "react"
 import { useDropzone } from "react-dropzone"
 import Image from "next/image"
+import { RotateCcw } from "react-feather"
 
 export const FileUploader: NextPage = () => {
   const router = useRouter()
@@ -80,7 +81,7 @@ export const FileUploader: NextPage = () => {
               onClick={() => setPdf(null)}
               disabled={isUploading}
             >
-              remove
+              <RotateCcw />
             </button>
           </div>
         </div>
@@ -121,7 +122,7 @@ export const FileUploader: NextPage = () => {
               id="dropArea"
             >
               <div className="flex items-center justify-center w-full">
-                <label className="flex flex-col w-full py-4 text-center group">
+                <div className="flex flex-col w-full py-4 text-center group">
                   <div className="flex flex-col items-center justify-center w-full h-full text-center ">
                     {pdf ? (
                       <> {fileUi}</>
@@ -145,7 +146,7 @@ export const FileUploader: NextPage = () => {
                     name="file"
                     onChange={(e) => imageHandler(e)}
                   />
-                </label>
+                </div>
               </div>
               <hr className="mx-8 border-t-2" />
               <GoogleDrivePicker
