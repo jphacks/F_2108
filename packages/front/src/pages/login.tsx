@@ -1,6 +1,7 @@
 import React, { useEffect, FC, useReducer } from "react"
 import { useRouter } from "next/router"
 import Image from "next/image"
+import Head from "next/head"
 import authReducer from "@reducers/authReducer"
 import { useAuthUser } from "@hooks/useAuth"
 import { authUseCase } from "@useCase"
