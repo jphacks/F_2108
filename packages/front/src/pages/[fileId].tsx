@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useReducer, useState } from "react"
 import { NextPage } from "next"
 import Link from "next/link"
-import Head from "next/head"
 import dynamic from "next/dynamic"
 import type { PDFViewerProps } from "@components/components/PdfViewer"
 import Stamp from "@components/atoms/Stamp"
@@ -13,6 +12,10 @@ import { useFile } from "@hooks/useFile"
 import { useRouter } from "next/router"
 import { useAuthUser } from "@hooks/useAuth"
 import { UrlShareModal } from "@components/organisms/urlShareModal"
+import { auth, googleProvider } from "@lib/firebase"
+import { signInAnonymously, linkWithPopup } from "firebase/auth"
+import { authUseCase } from "useCase"
+import authReducer from "@reducers/authReducer"
 import {
   SearchDawerColumn,
   SearchDrawerOverlay,
@@ -61,9 +64,21 @@ const FileDetail: NextPage<Record<string, never>, FileDetailQuery> = () => {
   const [stamps, setStamps] = useState<StampModel[]>(file?.stamps ?? [])
 
   useEffect(() => {
-    if (file != null) {
-      setStamps(file.stamps)
-    }
+    auth.onAuthStateChanged((user) => {
+      if (!user) {
+        signInAnonymously(auth)
+          .then((u) => {
+            console.log(u.user.getIdToken())
+          })
+          .catch((e) => {
+            throw e.message
+          })
+      }
+    })
+  }, [])
+
+  useEffect(() => {
+    setStamps(file?.stamps ?? [])
   }, [file])
 
   // temporaryスタンプを追加する
@@ -262,14 +277,15 @@ const FileDetail: NextPage<Record<string, never>, FileDetailQuery> = () => {
           </IconButton>
           <SizeRateButton sizeRate={sizeRate} setSizeRate={setSizeRate} />
         </div>
-        {/* 戻るボタン */}
-        <div className="fixed top-0 left-0 m-4 space-y-8 rounded">
-          <BackButton />
-        </div>
-        {/* ログインボタン */}
-        {user === null && (
+        {user == null || user?.isAnonymous ? (
+          // ログインボタン
           <div className="fixed left-0 m-4 space-y-8 rounded top-20">
             <LoginButton />
+          </div>
+        ) : (
+          // 戻るボタン
+          <div className="fixed top-0 left-0 m-4 space-y-8 rounded">
+            <BackButton />
           </div>
         )}
       </div>
@@ -352,14 +368,46 @@ const BackButton: React.VFC = () => (
   </Link>
 )
 
-const LoginButton: React.VFC = () => (
-  <Link href="/login">
-    <a
+const LoginButton: React.VFC = () => {
+  const [isError, setIsError] = useState<boolean>(false)
+  const router = useRouter()
+  const [, dispatch] = useReducer(authReducer.reducer, authReducer.initialState)
+
+  const reLogIn = async () => {
+    try {
+      await authUseCase.signIn(dispatch)
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
+  const loginWithGoogle = () => {
+    if (auth.currentUser) {
+      linkWithPopup(auth.currentUser, googleProvider)
+        .then((result) => {
+          const user = result.user
+          console.log(user)
+          setIsError(false)
+          router.push("/dashboard")
+        })
+        .catch(() => {
+          setIsError(true)
+        })
+    }
+  }
+
+  useEffect(() => {
+    isError && reLogIn()
+  }, [isError])
+
+  return (
+    <button
       className="flex items-center justify-center px-4 py-2 text-black text-white transition bg-gray-100 rounded-full group"
       aria-label="ログインする"
+      onClick={loginWithGoogle}
     >
       <ArrowLeft className="mr-2" />
       <span className="opacity-100 pointer-events-none">ログインする</span>
-    </a>
-  </Link>
-)
+    </button>
+  )
+}
