@@ -27,6 +27,9 @@ const Login: FC = () => {
 
   return (
     <>
+      <Head>
+        <title>Voice Tag</title>
+      </Head>
       <div className="fixed z-0 -top-52 -left-40">
         <Image
           src="/ellipse.svg"
