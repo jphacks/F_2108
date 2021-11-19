@@ -101,6 +101,7 @@ const ComponentCheck: NextPage = () => {
               postedAt: new Date().toISOString(),
             },
           ]}
+          isAuthed
         />
       </div>
     </div>

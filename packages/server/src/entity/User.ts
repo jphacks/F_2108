@@ -23,6 +23,9 @@ export class User {
   id: string
 
   @Column()
+  is_anonymous: boolean
+
+  @Column()
   name: string
 
   @Column()

@@ -6,6 +6,9 @@ body {
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   background-color: rgb(229, 231, 235);
   min-height: 100vh;
+  scroll-behavior: smooth;
+  /* 検索結果からスタンプに飛ぶ場合に、スタンプが中央付近に表示されるように調整 */
+  scroll-padding-top: 40vh;
 }
 
 a {
@@ -32,4 +35,9 @@ a {
 .scrollbar-none::-webkit-scrollbar {
   /* Chrome, Safari 対応 */
   display: none;
+}
+
+:root {
+  /* 検索モーダルの幅 */
+  --searchmodal-width: 500px;
 }

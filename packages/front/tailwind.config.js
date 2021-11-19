@@ -18,6 +18,7 @@ module.exports = {
       },
       boxShadow: {
         paper: "4px 8px 4px rgba(0, 0, 0, 0.1)",
+        "paper-inverse": "-4px 8px 4px rgba(0, 0, 0, 0.1)",
         stamp: "2px 4px 8px rgba(0, 0, 0, 0.5)",
       },
       animation: {
@@ -43,6 +44,11 @@ module.exports = {
           "user-drag": "none",
           "-webkit-user-drag": "none",
           "-moz-user-select": "none",
+        },
+        ".highlight": {
+          "background-color": "yellow",
+          color: "#333333",
+          "font-weight": "bold",
         },
       }
 

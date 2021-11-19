@@ -1,6 +1,7 @@
 import React, { useEffect, FC, useReducer } from "react"
 import { useRouter } from "next/router"
 import Image from "next/image"
+import Head from "next/head"
 import authReducer from "@reducers/authReducer"
 import { useAuthUser } from "@hooks/useAuth"
 import { authUseCase } from "@useCase"
@@ -13,7 +14,9 @@ const Login: FC = () => {
   const { width, height } = useWindowSize()
 
   useEffect(() => {
-    user && router.push("/dashboard")
+    if (user && user.displayName !== null) {
+      router.push("/dashboard")
+    }
   }, [user])
 
   const logIn = async () => {
@@ -26,7 +29,10 @@ const Login: FC = () => {
   }
 
   return (
-    <article className="w-full min-h-screen bg-[#fbfbfb]">
+    <>
+      <Head>
+        <title>Voice Tag</title>
+      </Head>
       <div className="fixed z-0 -top-52 -left-40">
         <Image
           src="/ellipse.svg"
@@ -65,9 +71,9 @@ const Login: FC = () => {
             />
           </div>
         </div>
-        <div className="relative h-3/5" style={{ width: "60%" }}>
+        <div className="relative h-3/5" style={{ width: "70%" }}>
           <Image
-            src="/public_discussion.svg"
+            src="/discussion.png"
             width={width * 0.7}
             height={height * 0.6}
             className="w-full object-fit"
@@ -88,7 +94,7 @@ const Login: FC = () => {
           </div>
         </button>
       </div>
-    </article>
+    </>
   )
 }
 
