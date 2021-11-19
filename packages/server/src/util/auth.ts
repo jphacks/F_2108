@@ -11,6 +11,7 @@ export const registerFirebaseAuth = async (server: FastifyInstance) => {
   if (process.env.AUTH === "false") {
     const dummyUser = new User()
     dummyUser.id = "dummyuserid"
+    dummyUser.is_anonymous = false
     dummyUser.name = "dummy user"
     dummyUser.icon_url =
       User.ICON_URL_PREFIX + User.ADMIN_ICON_URL_PREFIX + "/dummy_user.png"
@@ -33,19 +34,32 @@ export const registerFirebaseAuth = async (server: FastifyInstance) => {
         return false
       }
 
+      const repository = connection.getRepository(User)
+
       const uid = decoded.uid
+      const user = await repository.findOne(uid)
+      // 登録済みの非匿名ユーザーならDBを更新する必要はない
+      if (user) {
+        req.currentUser = user
+        return true
+      }
+
       const userRecord = await admin.auth().getUser(uid)
 
-      const user = new User()
-      user.id = uid
-      user.name = userRecord.displayName ?? User.NO_NAME
-      user.icon_url = userRecord.photoURL ?? User.NO_PHOTO_URL
+      const newUser = new User()
+      newUser.id = uid
+      if (userRecord.displayName) {
+        newUser.name = userRecord.displayName
+        newUser.is_anonymous = false
+      } else {
+        newUser.name = User.NO_NAME
+        newUser.is_anonymous = true
+      }
+      newUser.icon_url = userRecord.photoURL ?? User.NO_PHOTO_URL
 
-      const repository = connection.getRepository(User)
-      await repository.save(user)
+      await repository.save(newUser)
 
-      req.currentUser = user
-
+      req.currentUser = newUser
       return true
     },
   })
