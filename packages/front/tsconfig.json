@@ -17,7 +17,8 @@
       "lib": ["./src/lib"],
       "mocks": ["./src/mocks"],
       "useCase": ["./src/useCase"]
-    }
+    },
+    "typeRoots": ["types"]
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules"]
