@@ -39,7 +39,7 @@ export const registerFirebaseAuth = async (server: FastifyInstance) => {
       const uid = decoded.uid
       const user = await repository.findOne(uid)
       // 登録済みの非匿名ユーザーならDBを更新する必要はない
-      if (user) {
+      if (user != null && !user.is_anonymous) {
         req.currentUser = user
         return true
       }
@@ -48,8 +48,10 @@ export const registerFirebaseAuth = async (server: FastifyInstance) => {
 
       const newUser = new User()
       newUser.id = uid
-      if (userRecord.displayName) {
-        newUser.name = userRecord.displayName
+      const displayName =
+        userRecord.displayName ?? userRecord.providerData?.[0]?.displayName
+      if (displayName != null) {
+        newUser.name = displayName
         newUser.is_anonymous = false
       } else {
         newUser.name = User.NO_NAME
