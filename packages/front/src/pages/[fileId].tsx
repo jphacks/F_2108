@@ -11,11 +11,16 @@ import { useFile } from "@hooks/useFile"
 import { useRouter } from "next/router"
 import { useAuthUser } from "@hooks/useAuth"
 import { UrlShareModal } from "@components/organisms/urlShareModal"
+import { auth, googleProvider } from "@lib/firebase"
+import { signInAnonymously, linkWithPopup } from "firebase/auth"
+import { authUseCase } from "useCase"
+import authReducer from "@reducers/authReducer"
 import {
   SearchDawerColumn,
   SearchDrawerOverlay,
 } from "@components/components/SearchModal"
 import useHash from "@hooks/useHash"
+import TutorialModal from "@components/organisms/TutorialModal"
 
 const TEMPORARY_STAMP_PREFIX = "temporary_"
 
@@ -48,9 +53,21 @@ const FileDetail: NextPage<Record<string, never>, FileDetailQuery> = () => {
   const [stamps, setStamps] = useState<StampModel[]>(file?.stamps ?? [])
 
   useEffect(() => {
-    if (file != null) {
-      setStamps(file.stamps)
-    }
+    auth.onAuthStateChanged((user) => {
+      if (!user) {
+        signInAnonymously(auth)
+          .then((u) => {
+            console.log(u.user.getIdToken())
+          })
+          .catch((e) => {
+            throw e.message
+          })
+      }
+    })
+  }, [])
+
+  useEffect(() => {
+    setStamps(file?.stamps ?? [])
   }, [file])
 
   // temporaryスタンプを追加する
@@ -197,11 +214,11 @@ const FileDetail: NextPage<Record<string, never>, FileDetailQuery> = () => {
       >
         <Stamp
           stamp={stamp}
-          onAddComment={(comment) => {
+          onAddComment={async (comment) => {
             if (isTemporary) {
-              handleSendCommentAndStamp(stamp, comment)
+              await handleSendCommentAndStamp(stamp, comment)
             } else {
-              handleSendComment(stamp.id, comment)
+              await handleSendComment(stamp.id, comment)
             }
           }}
           isTemporary={isTemporary}
@@ -252,14 +269,15 @@ const FileDetail: NextPage<Record<string, never>, FileDetailQuery> = () => {
           </IconButton>
           <SizeRateButton sizeRate={sizeRate} setSizeRate={setSizeRate} />
         </div>
-        {/* 戻るボタン */}
-        <div className="fixed top-0 left-0 m-4 space-y-8 rounded">
-          <BackButton />
-        </div>
-        {/* ログインボタン */}
-        {user === null && (
+        {user == null || user?.isAnonymous ? (
+          // ログインボタン
           <div className="fixed left-0 m-4 space-y-8 rounded top-20">
             <LoginButton />
+          </div>
+        ) : (
+          // 戻るボタン
+          <div className="fixed top-0 left-0 m-4 space-y-8 rounded">
+            <BackButton />
           </div>
         )}
       </div>
@@ -280,6 +298,7 @@ const FileDetail: NextPage<Record<string, never>, FileDetailQuery> = () => {
           autoCloseWhenClickShow
         />
       )}
+      <TutorialModal />
     </>
   )
 }
@@ -341,14 +360,46 @@ const BackButton: React.VFC = () => (
   </Link>
 )
 
-const LoginButton: React.VFC = () => (
-  <Link href="/login">
-    <a
+const LoginButton: React.VFC = () => {
+  const [isError, setIsError] = useState<boolean>(false)
+  const router = useRouter()
+  const [, dispatch] = useReducer(authReducer.reducer, authReducer.initialState)
+
+  const reLogIn = async () => {
+    try {
+      await authUseCase.signIn(dispatch)
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
+  const loginWithGoogle = () => {
+    if (auth.currentUser) {
+      linkWithPopup(auth.currentUser, googleProvider)
+        .then((result) => {
+          const user = result.user
+          console.log(user)
+          setIsError(false)
+          router.push("/dashboard")
+        })
+        .catch(() => {
+          setIsError(true)
+        })
+    }
+  }
+
+  useEffect(() => {
+    isError && reLogIn()
+  }, [isError])
+
+  return (
+    <button
       className="flex items-center justify-center px-4 py-2 text-black text-white transition bg-gray-100 rounded-full group"
       aria-label="ログインする"
+      onClick={loginWithGoogle}
     >
       <ArrowLeft className="mr-2" />
       <span className="opacity-100 pointer-events-none">ログインする</span>
-    </a>
-  </Link>
-)
+    </button>
+  )
+}
