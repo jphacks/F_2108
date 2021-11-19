@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import React from "react"
 import GooglePicker from "react-google-picker"
 import type { Google, ResponseObject } from "react-google-picker"
@@ -19,8 +21,12 @@ const GoogleDrivePicker: React.VFC<GoogleDrivePickerProps> = ({
       if (doc == null || doc.mimeType !== "application/pdf") {
         return
       }
+      // TODO: windowオブジェクトを参照するのをやめたい
+      // @ts-ignore
       window.gapi.load("client:auth2", () => {
+        // @ts-ignore
         window.gapi.client.load("drive", "v3", async () => {
+          // @ts-ignore
           const res = await window.gapi.client.drive.files.get({
             fileId: doc.id,
             alt: "media",
