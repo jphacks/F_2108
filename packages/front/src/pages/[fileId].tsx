@@ -1,9 +1,8 @@
-import React, { useEffect, useReducer, useState } from "react"
+import React, { useCallback, useEffect, useReducer, useState } from "react"
 import { NextPage } from "next"
 import Image from "next/image"
 import Link from "next/link"
-import dynamic from "next/dynamic"
-import type { PDFViewerProps } from "@components/components/PdfViewer"
+import { PDFViewer } from "@components/components/PdfViewer"
 import Stamp from "@components/atoms/Stamp"
 import { Stamp as StampModel } from "@domain/stamp"
 import { useWindowSize, useWindowWidthGreaterThan } from "@hooks/useWindowSize"
@@ -26,16 +25,6 @@ import useHash from "@hooks/useHash"
 import TutorialModal from "@components/organisms/TutorialModal"
 
 const TEMPORARY_STAMP_PREFIX = "temporary_"
-
-const PDFViewer: React.ComponentType<PDFViewerProps> = dynamic(
-  () =>
-    import("../components/components/PdfViewer").then(
-      (module) => module.PDFViewer,
-    ),
-  {
-    ssr: false,
-  },
-)
 
 /** 検索モーダルのレスポンシブ対応の閾値 */
 const SEARCH_MODAL_RESPONSIVE_BORDER = 1300
@@ -85,30 +74,33 @@ const FileDetail: NextPage<Record<string, never>, FileDetailQuery> = () => {
   }, [file])
 
   // temporaryスタンプを追加する
-  const handleAddStamp = (page: number, x: number, y: number) => {
-    if (user == null || user.isAnonymous) {
-      setOpenPermissionModal(true)
-      return
-    }
-    // 既に存在しているtemporaryスタンプを消去し、新しくtemporaryスタンプを追加する
-    setStamps((prev) => [
-      ...prev.filter((stamp) => !stamp.id.startsWith(TEMPORARY_STAMP_PREFIX)),
-      {
-        id: TEMPORARY_STAMP_PREFIX + new Date().getTime(),
-        author: {
-          id: user.uid,
-          iconUrl: user.photoURL ?? "",
-          name: user.displayName ?? "",
+  const handleAddStamp = useCallback(
+    (page: number, x: number, y: number) => {
+      if (user == null || user.isAnonymous) {
+        setOpenPermissionModal(true)
+        return
+      }
+      // 既に存在しているtemporaryスタンプを消去し、新しくtemporaryスタンプを追加する
+      setStamps((prev) => [
+        ...prev.filter((stamp) => !stamp.id.startsWith(TEMPORARY_STAMP_PREFIX)),
+        {
+          id: TEMPORARY_STAMP_PREFIX + new Date().getTime(),
+          author: {
+            id: user.uid,
+            iconUrl: user.photoURL ?? "",
+            name: user.displayName ?? "",
+          },
+          comments: [],
+          position: {
+            page,
+            x,
+            y,
+          },
         },
-        comments: [],
-        position: {
-          page,
-          x,
-          y,
-        },
-      },
-    ])
-  }
+      ])
+    },
+    [user],
+  )
 
   /** スタンプと最初のコメントを投稿する */
   const handleSendCommentAndStamp = async (
@@ -214,6 +206,37 @@ const FileDetail: NextPage<Record<string, never>, FileDetailQuery> = () => {
     }
   }, [openSearchDrawer, isWideWidth])
 
+  const stampRender = useCallback((stamp) => {
+    const isTemporary = stamp.id.startsWith(TEMPORARY_STAMP_PREFIX)
+    return (
+      <div
+        key={stamp.id}
+        id={stamp.id}
+        className={`relative p-3 border-dashed border-2 transition rounded ${
+          hash == stamp.id ? "border-yellow-600" : "border-transparent"
+        }`}
+      >
+        <Stamp
+          stamp={stamp}
+          onAddComment={async (comment) => {
+            if (isTemporary) {
+              await handleSendCommentAndStamp(stamp, comment)
+            } else {
+              await handleSendComment(stamp.id, comment)
+            }
+          }}
+          isTemporary={isTemporary}
+          onClose={() => {
+            setHash(null)
+            if (isTemporary) {
+              handleDeleteTemporary(stamp)
+            }
+          }}
+        />
+      </div>
+    )
+  }, [])
+
   return (
     <>
       <div className="px-[10vw] py-8 bg-bgBlack relative min-h-screen">
@@ -230,38 +253,7 @@ const FileDetail: NextPage<Record<string, never>, FileDetailQuery> = () => {
             stamps={sortedStamps}
             onStampAdd={handleAddStamp}
             width={windowWidth * (sizeRate / 10.0)}
-            stampRender={(stamp) => {
-              const isTemporary = stamp.id.startsWith(TEMPORARY_STAMP_PREFIX)
-              return (
-                <div
-                  key={stamp.id}
-                  id={stamp.id}
-                  className={`relative p-3 border-dashed border-2 transition rounded ${
-                    hash == stamp.id
-                      ? "border-yellow-600"
-                      : "border-transparent"
-                  }`}
-                >
-                  <Stamp
-                    stamp={stamp}
-                    onAddComment={async (comment) => {
-                      if (isTemporary) {
-                        await handleSendCommentAndStamp(stamp, comment)
-                      } else {
-                        await handleSendComment(stamp.id, comment)
-                      }
-                    }}
-                    isTemporary={isTemporary}
-                    onClose={() => {
-                      setHash(null)
-                      if (isTemporary) {
-                        handleDeleteTemporary(stamp)
-                      }
-                    }}
-                  />
-                </div>
-              )
-            }}
+            stampRender={stampRender}
           />
           {isWideWidth && (
             <SearchDawerColumn

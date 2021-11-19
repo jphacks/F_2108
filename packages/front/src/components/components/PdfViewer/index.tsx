@@ -73,7 +73,7 @@ export const PDFViewer: React.VFC<PDFViewerProps> = ({
         externalLinkTarget="_blank"
         className="space-y-4"
         loading={
-          <div className="h-screen flex items-center">
+          <div className="flex items-center h-screen">
             <ReactLoading
               type="bubbles"
               color="#ffffff"
@@ -83,7 +83,7 @@ export const PDFViewer: React.VFC<PDFViewerProps> = ({
           </div>
         }
         noData={
-          <div className="h-screen flex items-center">
+          <div className="flex items-center h-screen">
             <ReactLoading
               type="bubbles"
               color="#ffffff"
