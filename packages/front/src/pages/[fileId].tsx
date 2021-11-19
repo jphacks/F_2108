@@ -237,16 +237,17 @@ const FileDetail: NextPage<Record<string, never>, FileDetailQuery> = () => {
           <ShareButton onClick={() => setOpenShareModal(true)} />
           <SizeRateButton sizeRate={sizeRate} setSizeRate={setSizeRate} />
         </div>
-        {/* 戻るボタン */}
-        <div className="fixed top-0 left-0 m-4 space-y-8 rounded">
-          <BackButton />
-        </div>
-        {user === null ||
-          (user.displayName === null && (
-            <div className="fixed left-0 m-4 space-y-8 rounded top-20">
-              <LoginButton />
-            </div>
-          ))}
+        {user == null || user?.isAnonymous ? (
+          // ログインボタン
+          <div className="fixed left-0 m-4 space-y-8 rounded top-20">
+            <LoginButton />
+          </div>
+        ) : (
+          // 戻るボタン
+          <div className="fixed top-0 left-0 m-4 space-y-8 rounded">
+            <BackButton />
+          </div>
+        )}
       </div>
       {file != null && (
         <UrlShareModal
@@ -314,10 +315,8 @@ const BackButton: React.VFC = () => (
 
 const LoginButton: React.VFC = () => {
   const [isError, setIsError] = useState<boolean>(false)
-  const [state, dispatch] = useReducer(
-    authReducer.reducer,
-    authReducer.initialState,
-  )
+  const router = useRouter()
+  const [, dispatch] = useReducer(authReducer.reducer, authReducer.initialState)
 
   const reLogIn = async () => {
     try {
@@ -334,8 +333,9 @@ const LoginButton: React.VFC = () => {
           const user = result.user
           console.log(user)
           setIsError(false)
+          router.push("/dashboard")
         })
-        .catch((error) => {
+        .catch(() => {
           setIsError(true)
         })
     }
