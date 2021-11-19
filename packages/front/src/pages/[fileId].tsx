@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useReducer, useState } from "react"
 import { NextPage } from "next"
 import Link from "next/link"
 import dynamic from "next/dynamic"
@@ -12,8 +12,11 @@ import { useFile } from "@hooks/useFile"
 import { useRouter } from "next/router"
 import { useAuthUser } from "@hooks/useAuth"
 import { UrlShareModal } from "@components/organisms/urlShareModal"
-import { auth } from "@lib/firebase"
-import { signInAnonymously } from "firebase/auth"
+import { auth, googleProvider } from "@lib/firebase"
+import { signInAnonymously, linkWithPopup } from "firebase/auth"
+import { authUseCase } from "useCase"
+import authReducer from "@reducers/authReducer"
+import Head from "next/head"
 
 const PDFViewer: React.ComponentType<PDFViewerProps> = dynamic(
   () =>
@@ -178,14 +181,15 @@ const FileDetail: NextPage<Record<string, never>, FileDetailQuery> = () => {
     a.position.y < b.position.y ? 1 : a.position.y === b.position.y ? 0 : -1,
   )
 
-  console.log(stamps)
-
   const handleDeleteTemporary = (stamp: StampModel) => {
     setStamps((prev) => prev.filter(({ id }) => id !== stamp.id))
   }
 
   return (
     <>
+      <Head>
+        <title>{file?.fileSnapshot.file.name}</title>
+      </Head>
       <div className="flex flex-col items-center w-full px-[10vw] py-8 bg-bgBlack relative min-h-screen">
         <PDFViewer
           src={file?.fileSnapshot.file.url ?? ""}
@@ -308,14 +312,47 @@ const BackButton: React.VFC = () => (
   </Link>
 )
 
-const LoginButton: React.VFC = () => (
-  <Link href="/login">
-    <a
+const LoginButton: React.VFC = () => {
+  const [isError, setIsError] = useState<boolean>(false)
+  const [state, dispatch] = useReducer(
+    authReducer.reducer,
+    authReducer.initialState,
+  )
+
+  const reLogIn = async () => {
+    try {
+      await authUseCase.signIn(dispatch)
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
+  const loginWithGoogle = () => {
+    if (auth.currentUser) {
+      linkWithPopup(auth.currentUser, googleProvider)
+        .then((result) => {
+          const user = result.user
+          console.log(user)
+          setIsError(false)
+        })
+        .catch((error) => {
+          setIsError(true)
+        })
+    }
+  }
+
+  useEffect(() => {
+    isError && reLogIn()
+  }, [isError])
+
+  return (
+    <button
       className="flex items-center justify-center px-4 py-2 text-black text-white transition bg-gray-100 rounded-full group"
       aria-label="ログインする"
+      onClick={loginWithGoogle}
     >
       <ArrowLeft className="mr-2" />
       <span className="opacity-100 pointer-events-none">ログインする</span>
-    </a>
-  </Link>
-)
+    </button>
+  )
+}
