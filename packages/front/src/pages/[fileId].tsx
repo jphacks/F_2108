@@ -18,6 +18,7 @@ import {
   SearchDrawerOverlay,
 } from "@components/components/SearchModal"
 import useHash from "@hooks/useHash"
+import TutorialModal from "@components/organisms/TutorialModal"
 
 const TEMPORARY_STAMP_PREFIX = "temporary_"
 
@@ -289,6 +290,7 @@ const FileDetail: NextPage<Record<string, never>, FileDetailQuery> = () => {
           autoCloseWhenClickShow
         />
       )}
+      <TutorialModal />
     </>
   )
 }
