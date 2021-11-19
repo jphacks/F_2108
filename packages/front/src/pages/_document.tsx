@@ -20,10 +20,6 @@ class MyDocument extends Document {
       <Html lang="ja" prefix="og: http://ogp.me/ns#">
         <Head>
           <meta
-            name="viewport"
-            content="width=device-width,initial-scale=1.0"
-          />
-          <meta
             name="description"
             content="PDFファイル上に音声ふせんを配置し、URLで共有できるサービスです。"
           />
