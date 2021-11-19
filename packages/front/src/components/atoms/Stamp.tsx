@@ -4,6 +4,7 @@ import { Icon } from "./Icon"
 import { Popover, Transition } from "@headlessui/react"
 import { Play } from "react-feather"
 import Thread from "@components/components/Thread"
+import { useAuthUser } from "@hooks/useAuth"
 
 export type StampProps = {
   stamp: StampModel
@@ -22,6 +23,7 @@ const Stamp: React.VFC<StampProps> = ({
   isTemporary,
   onClose,
 }) => {
+  const user = useAuthUser()
   // const [popOverDirection, setPopOverDirection] = useState<
   //   "left" | "bottom" | "right"
   // >("bottom")
@@ -75,7 +77,11 @@ const Stamp: React.VFC<StampProps> = ({
             leaveTo="opacity-0 translate-y-1"
           >
             <Popover.Panel className="absolute z-10 max-w-sm px-4 transform sm:px-0 lg:max-w-3xl max-h-[540px] -translate-x-1/2 left-1/2 mt-4">
-              <Thread comments={stamp.comments} onAddComment={onAddComment} />
+              <Thread
+                comments={stamp.comments}
+                onAddComment={onAddComment}
+                isAuthed={user != null && !user.isAnonymous}
+              />
             </Popover.Panel>
           </Transition>
         </>

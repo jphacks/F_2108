@@ -1,5 +1,6 @@
 import React, { useEffect, useReducer, useState } from "react"
 import { NextPage } from "next"
+import Image from "next/image"
 import Link from "next/link"
 import dynamic from "next/dynamic"
 import type { PDFViewerProps } from "@components/components/PdfViewer"
@@ -17,6 +18,7 @@ import { signInAnonymously, linkWithPopup } from "firebase/auth"
 import { authUseCase } from "useCase"
 import authReducer from "@reducers/authReducer"
 import Head from "next/head"
+import PermissionModal from "@components/organisms/PermissionModal"
 
 const PDFViewer: React.ComponentType<PDFViewerProps> = dynamic(
   () =>
@@ -38,6 +40,7 @@ const FileDetail: NextPage<Record<string, never>, FileDetailQuery> = () => {
   const fileUseCase = useFile()
   const user = useAuthUser()
   const [openShareModal, setOpenShareModal] = useState(false)
+  const [openPermissionModal, setOpenPermissionModal] = useState(false)
 
   const { data: file } = useRequest(
     () => fileUseCase.fetchFileDetail(fileId),
@@ -69,7 +72,8 @@ const FileDetail: NextPage<Record<string, never>, FileDetailQuery> = () => {
   }, [file])
 
   const handleAddStamp = (page: number, x: number, y: number) => {
-    if (user == null) {
+    if (user == null || user.isAnonymous) {
+      setOpenPermissionModal(true)
       return
     }
     setStamps((prev) => [
@@ -239,7 +243,7 @@ const FileDetail: NextPage<Record<string, never>, FileDetailQuery> = () => {
         </div>
         {user == null || user?.isAnonymous ? (
           // ログインボタン
-          <div className="fixed left-0 m-4 space-y-8 rounded top-20">
+          <div className="fixed left-0 m-4 space-y-8 rounded">
             <LoginButton />
           </div>
         ) : (
@@ -256,6 +260,10 @@ const FileDetail: NextPage<Record<string, never>, FileDetailQuery> = () => {
           file={file?.fileSnapshot.file}
         />
       )}
+      <PermissionModal
+        open={openPermissionModal}
+        onClose={() => setOpenPermissionModal(false)}
+      />
     </>
   )
 }
@@ -347,12 +355,17 @@ const LoginButton: React.VFC = () => {
 
   return (
     <button
-      className="flex items-center justify-center px-4 py-2 text-black text-white transition bg-gray-100 rounded-full group"
+      className="flex items-center justify-center px-4 py-2 space-x-2 text-black transition bg-gray-100 rounded-full hover:bg-gray-200"
       aria-label="ログインする"
       onClick={loginWithGoogle}
     >
-      <ArrowLeft className="mr-2" />
-      <span className="opacity-100 pointer-events-none">ログインする</span>
+      <Image
+        src="/icons/g-logo.png"
+        width={24}
+        height={24}
+        className="object-fit"
+      />
+      <span>ログインする</span>
     </button>
   )
 }
