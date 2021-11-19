@@ -4,9 +4,9 @@ import GoogleDrivePicker from "@components/components/GoogleDrivePicker"
 import { useFile } from "@hooks/useFile"
 import { NextPage } from "next"
 import { useRouter } from "next/router"
-import React, { ChangeEvent, useState } from "react"
+import React, { ChangeEvent, useState, useCallback } from "react"
+import { useDropzone } from "react-dropzone"
 import Image from "next/image"
-import GooglePicker from "react-google-picker"
 
 export const FileUploader: NextPage = () => {
   const router = useRouter()
@@ -21,6 +21,13 @@ export const FileUploader: NextPage = () => {
     const inputValue = event.target.value
     setFileName(inputValue)
   }
+
+  const onDrop = useCallback((acceptedFiles) => {
+    if (acceptedFiles[0].type !== "application/pdf") return
+    setPdf(acceptedFiles[0] as File)
+  }, [])
+
+  const { getRootProps, getInputProps } = useDropzone({ onDrop })
 
   // ローカルからPDFを追加する
   const imageHandler = (event: ChangeEvent<HTMLInputElement>) => {
@@ -108,7 +115,11 @@ export const FileUploader: NextPage = () => {
                 placeholder="エンジニア議事録"
               />
             </div>
-            <div className="relative grid grid-cols-1 p-4 space-y-2 border-4 border-dashed rounded-lg">
+            <div
+              {...getRootProps()}
+              className="grid grid-cols-1 space-y-2 border-4 border-dashed rounded-lg"
+              id="dropArea"
+            >
               <div className="flex items-center justify-center w-full">
                 <label className="flex flex-col w-full py-4 text-center group">
                   <div className="flex flex-col items-center justify-center w-full h-full text-center ">
@@ -127,6 +138,7 @@ export const FileUploader: NextPage = () => {
                     )}
                   </div>
                   <input
+                    {...getInputProps()}
                     type="file"
                     className="sr-only"
                     accept=".pdf"
