@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react"
 import { NextPage } from "next"
 import Link from "next/link"
-import Head from "next/head"
 import dynamic from "next/dynamic"
 import type { PDFViewerProps } from "@components/components/PdfViewer"
 import Stamp from "@components/atoms/Stamp"
