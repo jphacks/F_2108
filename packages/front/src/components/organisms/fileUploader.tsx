@@ -3,7 +3,8 @@ import PrimaryButton from "@components/atoms/PrimaryButton"
 import { useFile } from "@hooks/useFile"
 import { NextPage } from "next"
 import { useRouter } from "next/router"
-import React, { ChangeEvent, useState } from "react"
+import React, { ChangeEvent, useState, useCallback } from "react"
+import { useDropzone } from "react-dropzone"
 
 export const FileUploader: NextPage = () => {
   const router = useRouter()
@@ -18,6 +19,13 @@ export const FileUploader: NextPage = () => {
     const inputValue = event.target.value
     setFileName(inputValue)
   }
+
+  const onDrop = useCallback((acceptedFiles) => {
+    if (acceptedFiles[0].type !== "application/pdf") return
+    setPdf(acceptedFiles[0] as File)
+  }, [])
+
+  const { getRootProps, getInputProps } = useDropzone({ onDrop })
 
   // ローカルからPDFを追加する
   const imageHandler = (event: ChangeEvent<HTMLInputElement>) => {
@@ -104,7 +112,11 @@ export const FileUploader: NextPage = () => {
                 placeholder="エンジニア議事録"
               />
             </div>
-            <div className="grid grid-cols-1 space-y-2">
+            <div
+              {...getRootProps()}
+              className="grid grid-cols-1 space-y-2"
+              id="dropArea"
+            >
               <div className="flex items-center justify-center w-full">
                 <label className="flex flex-col w-full p-10 text-center border-4 border-dashed rounded-lg h-60 group">
                   <div className="flex flex-col items-center justify-center w-full h-full text-center ">
@@ -123,6 +135,7 @@ export const FileUploader: NextPage = () => {
                     )}
                   </div>
                   <input
+                    {...getInputProps()}
                     type="file"
                     className="hidden"
                     accept=".pdf"
