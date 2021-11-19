@@ -7,7 +7,6 @@ import { useRouter } from "next/router"
 import React, { ChangeEvent, useState, useCallback } from "react"
 import { useDropzone } from "react-dropzone"
 import Image from "next/image"
-import GooglePicker from "react-google-picker"
 
 export const FileUploader: NextPage = () => {
   const router = useRouter()
@@ -118,7 +117,7 @@ export const FileUploader: NextPage = () => {
             </div>
             <div
               {...getRootProps()}
-              className="grid grid-cols-1 space-y-2"
+              className="grid grid-cols-1 space-y-2 border-4 border-dashed rounded-lg"
               id="dropArea"
             >
               <div className="flex items-center justify-center w-full">
