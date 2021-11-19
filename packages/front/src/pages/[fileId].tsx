@@ -224,11 +224,11 @@ const FileDetail: NextPage<Record<string, never>, FileDetailQuery> = () => {
                 >
                   <Stamp
                     stamp={stamp}
-                    onAddComment={(comment) => {
+                    onAddComment={async (comment) => {
                       if (isTemporary) {
-                        handleSendCommentAndStamp(stamp, comment)
+                        await handleSendCommentAndStamp(stamp, comment)
                       } else {
-                        handleSendComment(stamp.id, comment)
+                        await handleSendComment(stamp.id, comment)
                       }
                     }}
                     isTemporary={isTemporary}
