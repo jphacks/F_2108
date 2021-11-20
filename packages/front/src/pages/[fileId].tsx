@@ -273,9 +273,9 @@ const FileDetail: NextPage<Record<string, never>, FileDetailQuery> = () => {
           </IconButton>
           <SizeRateButton sizeRate={sizeRate} setSizeRate={setSizeRate} />
         </div>
-        {user == null || user?.isAnonymous ? (
+        {user == null || user.isAnonymous ? (
           // ログインボタン
-          <div className="fixed left-0 m-4 space-y-8 rounded">
+          <div className="fixed top-0 left-0 m-4 space-y-8 rounded">
             <LoginButton />
           </div>
         ) : (
