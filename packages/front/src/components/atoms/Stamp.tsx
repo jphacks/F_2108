@@ -105,6 +105,7 @@ const Stamp: React.VFC<StampProps> = ({
           >
             <Popover.Panel className="absolute z-10 max-w-sm px-4 transform sm:px-0 lg:max-w-3xl max-h-[540px] -translate-x-1/2 left-1/2 mt-4">
               <Thread
+                isOpened={open}
                 comments={stamp.comments}
                 onAddComment={handleAddComment}
                 isAuthed={user != null && !user.isAnonymous}

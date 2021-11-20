@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { Comment } from "@domain/comment"
 import { TextComment } from "./TextComment"
-import AudioComment from "./AudioComment"
+import AudioComment, { AudioWavePropsRefType } from "./AudioComment"
 import RecorderService from "@lib/js/RecordService"
 import dynamic from "next/dynamic"
+import { Play, Square } from "react-feather"
 import PermissionModal from "@components/organisms/PermissionModal"
 const AudioGraph = dynamic(() => import("@components/atoms/AudioGraph"), {
   ssr: false,
@@ -18,6 +19,7 @@ type Thread = {
   ) => void
   isAuthed: boolean
   className?: string
+  isOpened?: boolean
 }
 
 type Recording = {
@@ -31,6 +33,7 @@ type Recording = {
 const Thread: React.VFC<Thread> = ({
   comments,
   onAddComment,
+  isOpened,
   isAuthed,
   className,
 }) => {
@@ -152,16 +155,6 @@ const Thread: React.VFC<Thread> = ({
     }
   }, [volumes])
 
-  const sortedComment = useMemo(() => {
-    const array = [...comments]
-    array.sort((a, b) => {
-      const aTime = new Date(a.postedAt).getTime()
-      const bTime = new Date(b.postedAt).getTime()
-      return aTime > bTime ? 1 : aTime === bTime ? 0 : -1
-    })
-    return array
-  }, [comments])
-
   return (
     <section
       className={
@@ -169,19 +162,7 @@ const Thread: React.VFC<Thread> = ({
         className
       }
     >
-      <div className="flex flex-col items-start px-6 pb-2 space-y-4">
-        {sortedComment.map((comment) =>
-          comment.dataType === "audio" ? (
-            <div key={comment.id} className="first:mt-8 last:mb-8">
-              <AudioComment comment={comment} />
-            </div>
-          ) : (
-            <div key={comment.id} className="ml-14 first:mt-8 last:mb-8">
-              <TextComment comment={comment} />
-            </div>
-          ),
-        )}
-      </div>
+      <CommentsArea isOpened={isOpened} comments={comments} />
       <div
         className="flex flex-col flex-shrink-0 w-full mt-2 space-y-4 overflow-hidden transition-all bg-black bottom-full rounded-tl-2xl rounded-tr-2xl"
         style={{
@@ -255,7 +236,7 @@ const Thread: React.VFC<Thread> = ({
           </div>
         ) : null}
       </div>
-      {sortedComment.length === 0 &&
+      {comments.length === 0 &&
         (inputMode == null || inputMode === "audio") && (
           <div className="text-white">音声を入力して伝えよう</div>
         )}
@@ -309,7 +290,7 @@ const Thread: React.VFC<Thread> = ({
             </div>
           </div>
           <div className="flex items-center justify-center flex-1">
-            {!(inputMode === null && sortedComment.length === 0) && (
+            {!(inputMode === null && comments.length === 0) && (
               <button
                 onClick={() => {
                   if (inputMode === null) {
@@ -369,3 +350,130 @@ const Thread: React.VFC<Thread> = ({
 }
 
 export default Thread
+
+// リファクタしたい...
+const CommentsArea: React.VFC<{ comments: Comment[]; isOpened?: boolean }> = ({
+  comments,
+  isOpened,
+}) => {
+  const audioRefs = useRef<Record<string, AudioWavePropsRefType | null>>({})
+  // stateだとうまくいかなかったので, stateとrefで二重管理してます><
+  const isSequencePlaying = useRef(false)
+  const [isSeqPlaying, setIsSeqPlaying] = useState(false)
+
+  useEffect(() => {
+    if (!isOpened) {
+      setIsSeqPlaying(false)
+      isSequencePlaying.current = false
+      window.speechSynthesis.cancel()
+      sortedComment.map((comment) => {
+        audioRefs.current[comment.id]?.pause()
+      })
+    }
+  }, [isOpened])
+
+  const handleOnPlayEnd = (index: number) => {
+    if (!isSequencePlaying.current) {
+      return
+    }
+    const nextComment = comments[index + 1]
+    if (nextComment == null) {
+      isSequencePlaying.current = false
+      setIsSeqPlaying(false)
+      return
+    }
+
+    setTimeout(() => {
+      if (nextComment.dataType === "audio") {
+        audioRefs.current[nextComment.id]?.play()
+      } else {
+        const speech = new SpeechSynthesisUtterance()
+        speech.addEventListener("end", () => {
+          handleOnPlayEnd(index + 1)
+        })
+        speech.addEventListener("error", () => {
+          handleOnPlayEnd(index + 1)
+        })
+        speech.text = nextComment.content
+        speech.lang = "ja-JP"
+        window.speechSynthesis.speak(speech)
+      }
+    }, 500)
+  }
+
+  const sortedComment = useMemo(() => {
+    const array = [...comments]
+    array.sort((a, b) => {
+      const aTime = new Date(a.postedAt).getTime()
+      const bTime = new Date(b.postedAt).getTime()
+      return aTime > bTime ? 1 : aTime === bTime ? 0 : -1
+    })
+    return array
+  }, [comments])
+
+  const handleStartSequencePlay = () => {
+    window.speechSynthesis.cancel()
+    sortedComment.map((comment) => {
+      audioRefs.current[comment.id]?.pause()
+    })
+    if (isSequencePlaying.current) {
+      isSequencePlaying.current = false
+      setIsSeqPlaying(false)
+    } else if (sortedComment[0] != null) {
+      isSequencePlaying.current = true
+      setIsSeqPlaying(true)
+      audioRefs.current[sortedComment[0]?.id]?.play()
+    }
+  }
+
+  return (
+    <div className="flex flex-col items-start px-6 pb-2 space-y-4 overflow-y-scroll">
+      {1 < comments.length && (
+        <button
+          className="flex items-center self-end px-4 py-1 mt-4 space-x-1 text-sm rounded-lg y-2 text-white/70 bg-white/10 focus:bg-white/20 hover:bg-white/20"
+          onClick={handleStartSequencePlay}
+        >
+          {isSeqPlaying ? (
+            <Square fill="currentColor" size="16px" />
+          ) : (
+            <Play fill="currentColor" size="16px" />
+          )}
+          <span>{isSeqPlaying ? "停止" : "連続再生"}</span>
+        </button>
+      )}
+      {sortedComment.map((comment, index) =>
+        comment.dataType === "audio" ? (
+          <div key={comment.id} className="first:mt-8 last:mb-8">
+            <AudioComment
+              ref={(ref) => {
+                audioRefs.current[comment.id] = ref
+              }}
+              onClickStart={() => {
+                isSequencePlaying.current = false
+                setIsSeqPlaying(false)
+                sortedComment
+                  .filter(({ id }) => id !== comment.id)
+                  .map((comment) => {
+                    audioRefs.current[comment.id]?.pause()
+                  })
+                window.speechSynthesis.cancel()
+              }}
+              onClickPause={() => {
+                setIsSeqPlaying(false)
+                isSequencePlaying.current = false
+              }}
+              onPlayEnd={() => {
+                handleOnPlayEnd(index)
+              }}
+              comment={comment}
+            />
+          </div>
+        ) : (
+          <div key={comment.id} className="ml-14 first:mt-8 last:mb-8">
+            <TextComment comment={comment} />
+          </div>
+        ),
+      )}
+    </div>
+  )
+}
