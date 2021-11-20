@@ -1,9 +1,16 @@
 import type { Stamp as StampModel } from "@domain/stamp"
-import React, { Fragment, useCallback, useEffect, useState } from "react"
+import React, {
+  Fragment,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react"
 import { Icon } from "./Icon"
 import { Popover, Transition } from "@headlessui/react"
 import { Play } from "react-feather"
 import Thread from "@components/components/Thread"
+import { useAuthUser } from "@hooks/useAuth"
 
 export type StampProps = {
   stamp: StampModel
@@ -11,7 +18,7 @@ export type StampProps = {
     comment:
       | { dataType: "audio"; content: Blob; title: string }
       | { dataType: "text"; content: string },
-  ) => void
+  ) => Promise<void>
   isTemporary?: boolean
   onClose?: () => void
 }
@@ -22,6 +29,7 @@ const Stamp: React.VFC<StampProps> = ({
   isTemporary,
   onClose,
 }) => {
+  const user = useAuthUser()
   // const [popOverDirection, setPopOverDirection] = useState<
   //   "left" | "bottom" | "right"
   // >("bottom")
@@ -46,11 +54,32 @@ const Stamp: React.VFC<StampProps> = ({
   //   }
   // }, [])
 
-  const buttonRef = useCallback((node: HTMLButtonElement) => {
+  const buttonRef = useRef<HTMLButtonElement | null>(null)
+
+  // const buttonRef = useCallback((node: HTMLButtonElement) => {
+  //   if (isTemporary) {
+  //     node?.click()
+  //   }
+  // }, [])
+  useEffect(() => {
     if (isTemporary) {
-      node?.click()
+      buttonRef.current?.click()
     }
   }, [])
+
+  const handleAddComment = useCallback(
+    async (
+      comment:
+        | { dataType: "audio"; content: Blob; title: string }
+        | { dataType: "text"; content: string },
+    ) => {
+      await onAddComment(comment)
+      if (isTemporary) {
+        buttonRef.current?.click()
+      }
+    },
+    [onAddComment],
+  )
 
   return (
     <Popover className="relative">
@@ -78,7 +107,8 @@ const Stamp: React.VFC<StampProps> = ({
               <Thread
                 isOpened={open}
                 comments={stamp.comments}
-                onAddComment={onAddComment}
+                onAddComment={handleAddComment}
+                isAuthed={user != null && !user.isAnonymous}
               />
             </Popover.Panel>
           </Transition>

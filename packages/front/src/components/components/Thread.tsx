@@ -5,6 +5,7 @@ import AudioComment, { AudioWavePropsRefType } from "./AudioComment"
 import RecorderService from "@lib/js/RecordService"
 import dynamic from "next/dynamic"
 import { Play, Square } from "react-feather"
+import PermissionModal from "@components/organisms/PermissionModal"
 const AudioGraph = dynamic(() => import("@components/atoms/AudioGraph"), {
   ssr: false,
 })
@@ -16,6 +17,7 @@ type Thread = {
       | { dataType: "audio"; content: Blob; title: string }
       | { dataType: "text"; content: string },
   ) => void
+  isAuthed: boolean
   className?: string
   isOpened?: boolean
 }
@@ -32,6 +34,7 @@ const Thread: React.VFC<Thread> = ({
   comments,
   onAddComment,
   isOpened,
+  isAuthed,
   className,
 }) => {
   const [inputMode, setInputMode] = useState<
@@ -233,106 +236,115 @@ const Thread: React.VFC<Thread> = ({
           </div>
         ) : null}
       </div>
-      {comments.length === 0 && (
-        <div className="text-white">音声を入力して伝えよう</div>
-      )}
-      <section className="relative flex items-center justify-between w-full mt-4">
-        <div className="flex items-center justify-center flex-1 text-sm">
-          <button
-            className={
-              "mr-2 select-none text-white/70 transition " +
-              (inputMode != null ? "" : "opacity-0")
-            }
-            disabled={inputMode == null}
-            onClick={() => {
-              if (inputMode === "audio-title") {
-                setInputMode("audio")
-                setVolumes([])
-                setRecordingInProgress(false)
-                handleClickBtnRecording()
-              } else {
-                setInputMode(null)
-              }
-            }}
-          >
-            {inputMode === "audio-title" ? "やり直し" : "キャンセル"}
-          </button>
-        </div>
-        <div className="flex items-center justify-center flex-1">
-          <div
-            className={
-              "w-14 h-14 p-[3px] bg-white rounded-full transition transform " +
-              (inputMode === "audio" ? "bg-transparent " : "") +
-              (inputMode === "audio" || inputMode == null
-                ? ""
-                : "translate-y-8 opacity-0")
-            }
-          >
+      {comments.length === 0 &&
+        (inputMode == null || inputMode === "audio") && (
+          <div className="text-white">音声を入力して伝えよう</div>
+        )}
+      {isAuthed ? (
+        <section className="relative flex items-center justify-between w-full mt-4">
+          <div className="flex items-center justify-center flex-1 text-sm">
             <button
-              aria-label="録音"
               className={
-                "w-full h-full bg-red-500 border-[3px] border-black border-solid bg-record-button transition-all " +
-                (inputMode === "audio"
-                  ? "rounded w-8 h-8 border-transparent "
-                  : "rounded-full ")
+                "mr-2 select-none text-white/70 transition " +
+                (inputMode != null ? "" : "opacity-0")
               }
-              onClick={handleClickBtnRecording}
-              disabled={inputMode === "text"}
-              data-recording-in-progress={String(recordingInProgress || false)}
-            />
-          </div>
-        </div>
-        <div className="flex items-center justify-center flex-1">
-          {!(inputMode === null && comments.length === 0) && (
-            <button
+              disabled={inputMode == null}
               onClick={() => {
-                if (inputMode === null) {
-                  // テキスト
-                  setInputMode("text")
-                } else if (inputMode === "audio-title") {
-                  // 送信
-                  submitAudio()
-                  setInputMode(null)
-                } else if (inputMode === "text") {
-                  // 送信
-                  onAddComment({ dataType: "text", content: text })
-                  setInputMode(null)
+                if (inputMode === "audio-title") {
+                  setInputMode("audio")
+                  setVolumes([])
+                  setRecordingInProgress(false)
+                  handleClickBtnRecording()
                 } else {
-                  // unreachable
-                  return
+                  setInputMode(null)
                 }
               }}
+            >
+              {inputMode === "audio-title" ? "やり直し" : "キャンセル"}
+            </button>
+          </div>
+          <div className="flex items-center justify-center flex-1">
+            <div
               className={
-                "mr-2 select-none text-white/70 transition group " +
-                (inputMode === "text" ? "" : "") +
-                (inputMode === "audio" ? "opacity-0" : "")
-              }
-              disabled={
-                inputMode === "audio" ||
-                (inputMode === "text" && text === "") ||
-                (inputMode === "audio-title" && audioTitle === "")
+                "w-14 h-14 p-[3px] bg-white rounded-full transition transform " +
+                (inputMode === "audio" ? "bg-transparent " : "") +
+                (inputMode === "audio" || inputMode == null
+                  ? ""
+                  : "translate-y-8 opacity-0")
               }
             >
-              {inputMode === null ? (
-                <>
-                  <span className="inline-block mr-2 text-xl">Aa</span>
-                  <span className="inline-block text-xs">テキスト</span>
-                </>
-              ) : inputMode === "audio" ? (
-                <span className="inline-block text-sm">次へ</span>
-              ) : inputMode === "audio-title" ? (
-                <span className="inline-block text-sm group-disabled:text-primary/50 text-primary">
-                  送信
-                </span>
-              ) : (
-                <span className="inline-block text-sm group-disabled:text-primary/50 text-primary">
-                  送信
-                </span>
-              )}
-            </button>
-          )}
+              <button
+                aria-label="録音"
+                className={
+                  "w-full h-full bg-red-500 border-[3px] border-black border-solid bg-record-button transition-all " +
+                  (inputMode === "audio"
+                    ? "rounded w-8 h-8 border-transparent "
+                    : "rounded-full ")
+                }
+                onClick={handleClickBtnRecording}
+                disabled={inputMode === "text"}
+                data-recording-in-progress={String(
+                  recordingInProgress || false,
+                )}
+              />
+            </div>
+          </div>
+          <div className="flex items-center justify-center flex-1">
+            {!(inputMode === null && comments.length === 0) && (
+              <button
+                onClick={() => {
+                  if (inputMode === null) {
+                    // テキスト
+                    setInputMode("text")
+                  } else if (inputMode === "audio-title") {
+                    // 送信
+                    submitAudio()
+                    setInputMode(null)
+                  } else if (inputMode === "text") {
+                    // 送信
+                    onAddComment({ dataType: "text", content: text })
+                    setInputMode(null)
+                  } else {
+                    // unreachable
+                    return
+                  }
+                }}
+                className={
+                  "mr-2 select-none text-white/70 transition group " +
+                  (inputMode === "text" ? "" : "") +
+                  (inputMode === "audio" ? "opacity-0" : "")
+                }
+                disabled={
+                  inputMode === "audio" ||
+                  (inputMode === "text" && text === "") ||
+                  (inputMode === "audio-title" && audioTitle === "")
+                }
+              >
+                {inputMode === null ? (
+                  <>
+                    <span className="inline-block mr-2 text-xl">Aa</span>
+                    <span className="inline-block text-xs">テキスト</span>
+                  </>
+                ) : inputMode === "audio" ? (
+                  <span className="inline-block text-sm">次へ</span>
+                ) : inputMode === "audio-title" ? (
+                  <span className="inline-block text-sm group-disabled:text-primary/50 text-primary">
+                    送信
+                  </span>
+                ) : (
+                  <span className="inline-block text-sm group-disabled:text-primary/50 text-primary">
+                    送信
+                  </span>
+                )}
+              </button>
+            )}
+          </div>
+        </section>
+      ) : (
+        <div className="my-2 text-sm text-white/60">
+          ログインするとコメントや音声を投稿できます
         </div>
-      </section>
+      )}
     </section>
   )
 }

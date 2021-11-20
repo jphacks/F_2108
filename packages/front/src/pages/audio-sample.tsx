@@ -92,8 +92,8 @@ const audioPlay = () => {
         responseType: "blob",
       })
       .then(({ data }) => {
-        console.log(data) // Blob URL → Blob
-        console.log(URL.createObjectURL(data)) // Blob → Blob URL
+        // console.log(data) // Blob URL → Blob
+        // console.log(URL.createObjectURL(data)) // Blob → Blob URL
         return data // Blob URL → Blob
       })
       .catch((err) => {

@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react"
+import React, { useCallback, useEffect, useReducer, useState } from "react"
 import { NextPage } from "next"
+import Image from "next/image"
 import Link from "next/link"
-import dynamic from "next/dynamic"
-import type { PDFViewerProps } from "@components/components/PdfViewer"
+import { PDFViewer } from "@components/components/PdfViewer"
 import Stamp from "@components/atoms/Stamp"
 import { Stamp as StampModel } from "@domain/stamp"
 import { useWindowSize, useWindowWidthGreaterThan } from "@hooks/useWindowSize"
@@ -12,23 +12,19 @@ import { useFile } from "@hooks/useFile"
 import { useRouter } from "next/router"
 import { useAuthUser } from "@hooks/useAuth"
 import { UrlShareModal } from "@components/organisms/urlShareModal"
+import { auth, googleProvider } from "@lib/firebase"
+import { signInAnonymously, linkWithPopup } from "firebase/auth"
+import { authUseCase } from "useCase"
+import authReducer from "@reducers/authReducer"
+import PermissionModal from "@components/organisms/PermissionModal"
 import {
   SearchDawerColumn,
   SearchDrawerOverlay,
 } from "@components/components/SearchModal"
 import useHash from "@hooks/useHash"
+import TutorialModal from "@components/organisms/TutorialModal"
 
 const TEMPORARY_STAMP_PREFIX = "temporary_"
-
-const PDFViewer: React.ComponentType<PDFViewerProps> = dynamic(
-  () =>
-    import("../components/components/PdfViewer").then(
-      (module) => module.PDFViewer,
-    ),
-  {
-    ssr: false,
-  },
-)
 
 /** 検索モーダルのレスポンシブ対応の閾値 */
 const SEARCH_MODAL_RESPONSIVE_BORDER = 1300
@@ -44,6 +40,7 @@ const FileDetail: NextPage<Record<string, never>, FileDetailQuery> = () => {
   const fileUseCase = useFile()
   const user = useAuthUser()
   const [openShareModal, setOpenShareModal] = useState(false)
+  const [openPermissionModal, setOpenPermissionModal] = useState(false)
   const [openSearchDrawer, setOpenSearchDrawer] = useState(false)
 
   const { data: file } = useRequest(
@@ -59,35 +56,51 @@ const FileDetail: NextPage<Record<string, never>, FileDetailQuery> = () => {
   const [stamps, setStamps] = useState<StampModel[]>(file?.stamps ?? [])
 
   useEffect(() => {
-    if (file != null) {
-      setStamps(file.stamps)
-    }
+    auth.onAuthStateChanged((user) => {
+      if (!user) {
+        signInAnonymously(auth)
+          .then((u) => {
+            console.log(u.user.getIdToken())
+          })
+          .catch((e) => {
+            throw e.message
+          })
+      }
+    })
+  }, [])
+
+  useEffect(() => {
+    setStamps(file?.stamps ?? [])
   }, [file])
 
   // temporaryスタンプを追加する
-  const handleAddStamp = (page: number, x: number, y: number) => {
-    if (user == null) {
-      return
-    }
-    // 既に存在しているtemporaryスタンプを消去し、新しくtemporaryスタンプを追加する
-    setStamps((prev) => [
-      ...prev.filter((stamp) => !stamp.id.startsWith(TEMPORARY_STAMP_PREFIX)),
-      {
-        id: TEMPORARY_STAMP_PREFIX + new Date().getTime(),
-        author: {
-          id: user.uid,
-          iconUrl: user.photoURL ?? "",
-          name: user.displayName ?? "",
+  const handleAddStamp = useCallback(
+    (page: number, x: number, y: number) => {
+      if (user == null || user.isAnonymous) {
+        setOpenPermissionModal(true)
+        return
+      }
+      // 既に存在しているtemporaryスタンプを消去し、新しくtemporaryスタンプを追加する
+      setStamps((prev) => [
+        ...prev.filter((stamp) => !stamp.id.startsWith(TEMPORARY_STAMP_PREFIX)),
+        {
+          id: TEMPORARY_STAMP_PREFIX + new Date().getTime(),
+          author: {
+            id: user.uid,
+            iconUrl: user.photoURL ?? "",
+            name: user.displayName ?? "",
+          },
+          comments: [],
+          position: {
+            page,
+            x,
+            y,
+          },
         },
-        comments: [],
-        position: {
-          page,
-          x,
-          y,
-        },
-      },
-    ])
-  }
+      ])
+    },
+    [user],
+  )
 
   /** スタンプと最初のコメントを投稿する */
   const handleSendCommentAndStamp = async (
@@ -193,6 +206,40 @@ const FileDetail: NextPage<Record<string, never>, FileDetailQuery> = () => {
     }
   }, [openSearchDrawer, isWideWidth])
 
+  const stampRender = useCallback(
+    (stamp) => {
+      const isTemporary = stamp.id.startsWith(TEMPORARY_STAMP_PREFIX)
+      return (
+        <div
+          key={stamp.id}
+          id={stamp.id}
+          className={`relative p-3 border-dashed border-2 transition rounded ${
+            hash == stamp.id ? "border-yellow-600" : "border-transparent"
+          }`}
+        >
+          <Stamp
+            stamp={stamp}
+            onAddComment={async (comment) => {
+              if (isTemporary) {
+                await handleSendCommentAndStamp(stamp, comment)
+              } else {
+                await handleSendComment(stamp.id, comment)
+              }
+            }}
+            isTemporary={isTemporary}
+            onClose={() => {
+              setHash(null)
+              if (isTemporary) {
+                handleDeleteTemporary(stamp)
+              }
+            }}
+          />
+        </div>
+      )
+    },
+    [hash, setHash],
+  )
+
   return (
     <>
       <div className="px-[10vw] py-8 bg-bgBlack relative min-h-screen">
@@ -209,38 +256,7 @@ const FileDetail: NextPage<Record<string, never>, FileDetailQuery> = () => {
             stamps={sortedStamps}
             onStampAdd={handleAddStamp}
             width={windowWidth * (sizeRate / 10.0)}
-            stampRender={(stamp) => {
-              const isTemporary = stamp.id.startsWith(TEMPORARY_STAMP_PREFIX)
-              return (
-                <div
-                  key={stamp.id}
-                  id={stamp.id}
-                  className={`relative p-3 border-dashed border-2 transition rounded ${
-                    hash == stamp.id
-                      ? "border-yellow-600"
-                      : "border-transparent"
-                  }`}
-                >
-                  <Stamp
-                    stamp={stamp}
-                    onAddComment={(comment) => {
-                      if (isTemporary) {
-                        handleSendCommentAndStamp(stamp, comment)
-                      } else {
-                        handleSendComment(stamp.id, comment)
-                      }
-                    }}
-                    isTemporary={isTemporary}
-                    onClose={() => {
-                      setHash(null)
-                      if (isTemporary) {
-                        handleDeleteTemporary(stamp)
-                      }
-                    }}
-                  />
-                </div>
-              )
-            }}
+            stampRender={stampRender}
           />
           {isWideWidth && (
             <SearchDawerColumn
@@ -260,14 +276,15 @@ const FileDetail: NextPage<Record<string, never>, FileDetailQuery> = () => {
           </IconButton>
           <SizeRateButton sizeRate={sizeRate} setSizeRate={setSizeRate} />
         </div>
-        {/* 戻るボタン */}
-        <div className="fixed top-0 left-0 m-4 space-y-8 rounded">
-          <BackButton />
-        </div>
-        {/* ログインボタン */}
-        {user === null && (
-          <div className="fixed left-0 m-4 space-y-8 rounded top-20">
+        {user == null || user.isAnonymous ? (
+          // ログインボタン
+          <div className="fixed top-0 left-0 m-4 space-y-8 rounded">
             <LoginButton />
+          </div>
+        ) : (
+          // 戻るボタン
+          <div className="fixed top-0 left-0 m-4 space-y-8 rounded">
+            <BackButton />
           </div>
         )}
       </div>
@@ -288,6 +305,11 @@ const FileDetail: NextPage<Record<string, never>, FileDetailQuery> = () => {
           autoCloseWhenClickShow
         />
       )}
+      <PermissionModal
+        open={openPermissionModal}
+        onClose={() => setOpenPermissionModal(false)}
+      />
+      <TutorialModal />
     </>
   )
 }
@@ -349,14 +371,51 @@ const BackButton: React.VFC = () => (
   </Link>
 )
 
-const LoginButton: React.VFC = () => (
-  <Link href="/login">
-    <a
-      className="flex items-center justify-center px-4 py-2 text-black text-white transition bg-gray-100 rounded-full group"
+const LoginButton: React.VFC = () => {
+  const [isError, setIsError] = useState<boolean>(false)
+  const router = useRouter()
+  const [, dispatch] = useReducer(authReducer.reducer, authReducer.initialState)
+
+  const reLogIn = async () => {
+    try {
+      await authUseCase.signIn(dispatch)
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
+  const loginWithGoogle = () => {
+    if (auth.currentUser) {
+      linkWithPopup(auth.currentUser, googleProvider)
+        .then((result) => {
+          const user = result.user
+          console.log(user)
+          setIsError(false)
+          router.push("/dashboard")
+        })
+        .catch(() => {
+          setIsError(true)
+        })
+    }
+  }
+
+  useEffect(() => {
+    isError && reLogIn()
+  }, [isError])
+
+  return (
+    <button
+      className="flex items-center justify-center px-4 py-2 space-x-2 text-black transition bg-gray-100 rounded-full hover:bg-gray-200"
       aria-label="ログインする"
+      onClick={loginWithGoogle}
     >
-      <ArrowLeft className="mr-2" />
-      <span className="opacity-100 pointer-events-none">ログインする</span>
-    </a>
-  </Link>
-)
+      <Image
+        src="/icons/g-logo.png"
+        width={24}
+        height={24}
+        className="object-fit"
+      />
+      <span>ログインする</span>
+    </button>
+  )
+}
