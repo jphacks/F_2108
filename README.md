@@ -64,14 +64,13 @@ Voice Tagでは、アップロードしたPDF資料に音声データを追加�
 ## 開発技術
 ### 活用した技術
 #### API・データ
-* 
-* 
+* Web Speech API
+* Google Drive API
 
 #### フレームワーク・ライブラリ・モジュール
-* フロント：React / Next.js / TypeScript / Konva.js
-* バックエンド：Fastify / TypeScript / TypeORM
-* その他：AWS / Vercel / Firebae Auth
-
+* フロント：TypeScript / React / Next.js / Tailwind.css / Konva.js / PDF.js
+* バックエンド：Fastify / TypeScript / TypeORM / ImageMagick
+* その他：Github Actions / Vercel / AWS / Firebae (auth, storage)
 
 #### デバイス
 * 
