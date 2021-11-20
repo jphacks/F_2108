@@ -1,6 +1,7 @@
 # Voice Tag - あなたの音声を付箋に -
 
-デモ動画：https://drive.google.com/file/d/1UXv9dv-x4fHQktSrwWDFD8oFag37dqoD/view?usp=sharing
+発表資料：https://docs.google.com/presentation/d/1k9OKzgEupLBzkmyd6TjX5fwokXsRn2yfYxU2xsJLMv0/edit?usp=sharing
+デモ：https://voice-tag-jp.vercel.app/57471d9a-b943-40e7-b97e-a46cda982c73
 
 ![image](https://user-images.githubusercontent.com/38308823/139521809-9698edc9-16e3-411c-bb2f-54a44ba91a27.png)
 <img src="https://user-images.githubusercontent.com/38308823/139538321-d6a0fc2c-bc8a-46cc-bf71-cf691b29bc09.png" width="400px"/> <img src="https://user-images.githubusercontent.com/38308823/139521840-21272e96-1632-413a-8f2c-b7f6b2ae6abc.png" width="400px"/>
@@ -13,7 +14,7 @@
 
 コロナ禍でリモートワークが増え、Slackやメールでのテキストベースのコミュニケーションが増加しました。その中で、対面で行われていたようなコミュニケーション（例えば同じ資料を指差しながらディスカッションしたり、わからない部分を資料作成者に直接聞いたり）が取りづらくなりました。
 
-またテキストベースであるがゆえに、認識違いが発生したり、過度に堅い文章になってしまったり、言い回しに拘り何度も文章を書き直してしまったりしたことはないでしょうか。
+またテキストベースであるがゆえに、雰囲気や温度感が伝わらず、認識違いが発生したり、過度に堅い文章になってしまったり、言い回しに拘り何度も文章を書き直してしまったりしたことはないでしょうか。
 
 ### 製品説明（具体的な製品の説明）
 Voice Tagは、PDFファイル上に**自分の声を付箋として残し**、共有できるサービスです。
