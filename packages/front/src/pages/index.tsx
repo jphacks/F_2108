@@ -14,7 +14,7 @@ const Login: FC = () => {
   const { width, height } = useWindowSize()
 
   useEffect(() => {
-    if (user && user.displayName !== null) {
+    if (user != null && !user.isAnonymous) {
       router.push("/dashboard")
     }
   }, [user])
