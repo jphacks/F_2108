@@ -206,36 +206,39 @@ const FileDetail: NextPage<Record<string, never>, FileDetailQuery> = () => {
     }
   }, [openSearchDrawer, isWideWidth])
 
-  const stampRender = useCallback((stamp) => {
-    const isTemporary = stamp.id.startsWith(TEMPORARY_STAMP_PREFIX)
-    return (
-      <div
-        key={stamp.id}
-        id={stamp.id}
-        className={`relative p-3 border-dashed border-2 transition rounded ${
-          hash == stamp.id ? "border-yellow-600" : "border-transparent"
-        }`}
-      >
-        <Stamp
-          stamp={stamp}
-          onAddComment={async (comment) => {
-            if (isTemporary) {
-              await handleSendCommentAndStamp(stamp, comment)
-            } else {
-              await handleSendComment(stamp.id, comment)
-            }
-          }}
-          isTemporary={isTemporary}
-          onClose={() => {
-            setHash(null)
-            if (isTemporary) {
-              handleDeleteTemporary(stamp)
-            }
-          }}
-        />
-      </div>
-    )
-  }, [])
+  const stampRender = useCallback(
+    (stamp) => {
+      const isTemporary = stamp.id.startsWith(TEMPORARY_STAMP_PREFIX)
+      return (
+        <div
+          key={stamp.id}
+          id={stamp.id}
+          className={`relative p-3 border-dashed border-2 transition rounded ${
+            hash == stamp.id ? "border-yellow-600" : "border-transparent"
+          }`}
+        >
+          <Stamp
+            stamp={stamp}
+            onAddComment={async (comment) => {
+              if (isTemporary) {
+                await handleSendCommentAndStamp(stamp, comment)
+              } else {
+                await handleSendComment(stamp.id, comment)
+              }
+            }}
+            isTemporary={isTemporary}
+            onClose={() => {
+              setHash(null)
+              if (isTemporary) {
+                handleDeleteTemporary(stamp)
+              }
+            }}
+          />
+        </div>
+      )
+    },
+    [hash, setHash],
+  )
 
   return (
     <>

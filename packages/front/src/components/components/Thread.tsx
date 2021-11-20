@@ -169,7 +169,7 @@ const Thread: React.VFC<Thread> = ({
         className
       }
     >
-      <div className="flex flex-col items-start px-6 pb-2 space-y-4 overflow-y-scroll scrollbar-none">
+      <div className="flex flex-col items-start px-6 pb-2 space-y-4">
         {sortedComment.map((comment) =>
           comment.dataType === "audio" ? (
             <div key={comment.id} className="first:mt-8 last:mb-8">
