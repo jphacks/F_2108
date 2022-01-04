@@ -6,10 +6,6 @@ variable "account_id" {
   type = string
 }
 
-variable "my_global_ip" {
-  type = string
-}
-
 variable "vpc_cidr" {
   type = string
 }
@@ -48,6 +44,14 @@ variable "cors_origin" {
 }
 
 variable "domain" {
+  type = string
+}
+
+variable "thumbnail_generator_exec_user_key" {
+  type = string
+}
+
+variable "thumbnail_generator_exec_user_secret" {
   type = string
 }
 

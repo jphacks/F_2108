@@ -67,21 +67,21 @@ resource "aws_lambda_layer_version" "ghostscript" {
   filename   = "lambda-layers/ghostscript-layer.zip"
 }
 
-resource "aws_iam_policy" "fire-pdf-generator" {
-  name = "${var.project}-pdf-generator"
-
-  policy = jsonencode({
-    Version : "2012-10-17",
-    Statement : [
-      {
-        Effect : "Allow",
-        Action : "lambda:InvokeFunction"
-        Resource : aws_lambda_function.pdf-generator.arn
-      }
-    ]
-  })
-
-  tags = {
-    Project = var.project
-  }
-}
+#resource "aws_iam_policy" "thumbnail-generator-invoke" {
+#  name = "${var.project}-thumbnail-generator-invoke"
+#
+#  policy = jsonencode({
+#    Version : "2012-10-17",
+#    Statement : [
+#      {
+#        Effect : "Allow",
+#        Action : "lambda:InvokeFunction"
+#        Resource : aws_lambda_function.pdf-generator.arn
+#      }
+#    ]
+#  })
+#
+#  tags = {
+#    Project = var.project
+#  }
+#}
