@@ -22,7 +22,7 @@ export const fileHandler = async (server: FastifyInstance) => {
     const currentUser = new User()
     currentUser.id = req.currentUser.id
 
-    const files = await repository
+    const query = repository
       .createQueryBuilder("file")
       .innerJoinAndSelect("file.author", "author")
       .innerJoinAndSelect("file.updated_by", "updated_by")
@@ -31,7 +31,7 @@ export const fileHandler = async (server: FastifyInstance) => {
       .orWhere("shared_to.id = :sharedToUserId", {
         sharedToUserId: currentUser.id,
       })
-      .getMany()
+    const files = await query.getMany()
 
     res.send({
       result: "success",

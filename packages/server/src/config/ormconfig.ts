@@ -4,12 +4,12 @@ const dir = process.env.NODE_ENV === "development" ? "./src/" : "./dist/"
 const extension = process.env.NODE_ENV === "development" ? "ts" : "js"
 
 export const ormconfig: ConnectionOptions = {
-  type: "mysql",
+  type: "postgres",
   host: process.env.DB_HOST ?? "localhost",
-  port: parseInt(process.env.DB_PORT ?? "3306"),
-  username: process.env.DB_USER ?? "root",
-  password: process.env.DB_PASSWORD ?? "",
-  database: process.env.DB_NAME ?? "db",
+  port: parseInt(process.env.DB_PORT ?? "5432"),
+  username: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
   entities: [dir + "entity/*." + extension],
   migrations: [dir + "migration/**/*." + extension],
   synchronize: false,

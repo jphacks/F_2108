@@ -19,10 +19,10 @@ export class Stamp {
   @Column()
   position_page: number
 
-  @Column({ type: "double" })
+  @Column({ type: "double precision" })
   position_x: number
 
-  @Column({ type: "double" })
+  @Column({ type: "double precision" })
   position_y: number
 
   @CreateDateColumn()
