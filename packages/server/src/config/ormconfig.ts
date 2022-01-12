@@ -19,6 +19,7 @@ export const ormconfig: ConnectionOptions = {
     migrationsDir: dir + "migration",
     subscribersDir: dir + "subscriber",
   },
+  ssl: process.env.NODE_ENV === "production",
 }
 
 // configファイルとしても利用するためdefault exportも定義
