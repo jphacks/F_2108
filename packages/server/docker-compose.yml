@@ -17,11 +17,12 @@ services:
     image: f-2108-app
     command: yarn dev:server
     environment:
+      PORT: $APP_PORT
       DB_HOST: db
     volumes:
       - .:/app/packages/server
     ports:
-      - "80:80"
+      - "7000:7000"
     depends_on:
       - db
 #  web:

@@ -19,7 +19,10 @@ export const ormconfig: ConnectionOptions = {
     migrationsDir: dir + "migration",
     subscribersDir: dir + "subscriber",
   },
-  ssl: process.env.NODE_ENV === "production",
+  ssl:
+    process.env.NODE_ENV === "production"
+      ? { rejectUnauthorized: false }
+      : false,
 }
 
 // configファイルとしても利用するためdefault exportも定義

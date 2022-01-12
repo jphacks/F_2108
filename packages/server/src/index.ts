@@ -51,7 +51,7 @@ server.setErrorHandler<FastifyError, { Reply: ResponseBody }>((err, _, res) => {
 const start = async () => {
   try {
     connection = await createConnection(ormconfig)
-    const PORT = process.env.APP_PORT || 3000
+    const PORT = process.env.PORT || 3000
     await server.listen(PORT, "0.0.0.0")
     console.log(`listening localhost:${PORT}`)
   } catch (e) {

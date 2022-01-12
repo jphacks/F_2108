@@ -85,6 +85,10 @@ export const fileHandler = async (server: FastifyInstance) => {
       const stampsResponse = await Promise.all(
         stamps.map((s) => buildStampResponse(s)),
       )
+      // NOTE: おそらくpostgresライブラリのバグで、number型のidが実行時にstringになっているので無理やり修正
+      for (const s of stampsResponse) {
+        s.position.page = parseInt(s.position.page.toString())
+      }
 
       res.send({
         result: "success",
