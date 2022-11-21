@@ -33,7 +33,7 @@
   },
   "dependencies": {
     "aws-sdk": "^2.1015.0",
-    "fastify": "^3.22.1",
+    "fastify": "^3.29.4",
     "fastify-bearer-auth": "^6.0.0",
     "fastify-cors": "^6.0.2",
     "fastify-error": "^0.3.1",
